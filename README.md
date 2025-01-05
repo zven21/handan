@@ -1,18 +1,42 @@
 # Handan
 
+:construction: :construction: :construction: 
+
+Handan is a project under construction, it is one of the ERP (MES) solutions for small and medium-sized enterprises.
+
+## **Getting Started**
+
 To start your Phoenix server:
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+Run mix setup to install and setup dependencies
+Start Phoenix endpoint with mix phx.server or inside IEx with iex -S mix phx.server
+Now you can visit localhost:4000 from your browser.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## **Features**
 
-## Learn more
+- [ ] Core
+- [ ] Accounts
+- [ ] Enterprise
+- [ ] Selling
+- [ ] Purchasing
+- [ ] Production
+- [ ] Subcontracting
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## **Contributing**
+
+Bug report or pull request are welcome.
+
+## **Make a pull request**
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+Please write unit test with your code if necessary.
+
+## **License**
+
+handan is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
