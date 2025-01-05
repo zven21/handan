@@ -20,11 +20,17 @@ This project utilizes the following technologies:
 * Commanded(CQRS): A command handling framework for building event-driven systems.
 * Absinthe(GraphQL): A query language for APIs that allows for more flexible and efficient data retrieval.
 
+
+## **Flow Diagram**
+
+![flow](./docs/flow.jpg)
+
 ## **Features**
 
 - [ ] Core
 - [ ] Accounts
 - [ ] Enterprise
+- [ ] Finance
 - [ ] Selling
 - [ ] Purchasing
 - [ ] Production
