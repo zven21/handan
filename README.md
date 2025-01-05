@@ -12,6 +12,14 @@ To start your Phoenix server:
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 * Now you can visit `localhost:4000` from your browser.
 
+## **Technologies Used**
+
+This project utilizes the following technologies:
+
+* Phoenix: A web framework for Elixir that allows for the creation of fast, scalable, and maintainable web applications.
+* Commanded(CQRS): A command handling framework for building event-driven systems.
+* Absinthe(GraphQL): A query language for APIs that allows for more flexible and efficient data retrieval.
+
 ## **Features**
 
 - [ ] Core
