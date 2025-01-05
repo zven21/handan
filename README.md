@@ -1,18 +1,55 @@
 # Handan
 
+:construction: :construction: :construction: 
+
+Handan is a project under construction, it is one of the ERP (MES) solutions for small and medium-sized enterprises.
+
+## **Getting Started**
+
 To start your Phoenix server:
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+* Run mix setup to install and setup dependencies
+* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+* Now you can visit `localhost:4000` from your browser.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## **Technologies Used**
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+This project utilizes the following technologies:
 
-## Learn more
+* Phoenix: A web framework for Elixir that allows for the creation of fast, scalable, and maintainable web applications.
+* Commanded(CQRS): A command handling framework for building event-driven systems.
+* Absinthe(GraphQL): A query language for APIs that allows for more flexible and efficient data retrieval.
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+
+## **Flow Diagram**
+
+![flow](./docs/flow.jpg)
+
+## **Features**
+
+- [ ] Core
+- [ ] Accounts
+- [ ] Enterprise
+- [ ] Finance
+- [ ] Selling
+- [ ] Purchasing
+- [ ] Production
+- [ ] Subcontracting
+
+## **Contributing**
+
+Bug report or pull request are welcome.
+
+## **Make a pull request**
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+Please write unit test with your code if necessary.
+
+## **License**
+
+handan is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
