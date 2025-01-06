@@ -56,4 +56,44 @@ defmodule Handan.Stock.ItemTest do
       assert {:error, :not_found} == Turbo.get(Item, item.uuid)
     end
   end
+
+  describe "increase stock item" do
+    setup [
+      :create_store,
+      :create_item
+    ]
+
+    test "should succeed with valid request", %{item: item, warehouse: warehouse} do
+      request = %{
+        item_uuid: item.uuid,
+        warehouse_uuid: warehouse.uuid,
+        stock_uom_uuid: item.default_stock_uom_uuid,
+        qty: 100
+      }
+
+      {:ok, updated_item} = Dispatcher.run(request, :increase_stock_item)
+
+      assert updated_item.stock_items |> Enum.find(fn stock_item -> stock_item.warehouse_uuid == warehouse.uuid end) |> Map.get(:total_on_hand) == Decimal.new(200)
+    end
+  end
+
+  describe "decrease stock item" do
+    setup [
+      :create_store,
+      :create_item
+    ]
+
+    test "should succeed with valid request", %{item: item, warehouse: warehouse} do
+      request = %{
+        item_uuid: item.uuid,
+        warehouse_uuid: warehouse.uuid,
+        stock_uom_uuid: item.default_stock_uom_uuid,
+        qty: 100
+      }
+
+      {:ok, updated_item} = Dispatcher.run(request, :decrease_stock_item)
+
+      assert updated_item.stock_items |> Enum.find(fn stock_item -> stock_item.warehouse_uuid == warehouse.uuid end) |> Map.get(:total_on_hand) == Decimal.new(0)
+    end
+  end
 end

@@ -9,7 +9,9 @@ defmodule Handan.Stock.Router do
 
   alias Handan.Stock.Commands.{
     CreateItem,
-    DeleteItem
+    DeleteItem,
+    IncreaseStockItem,
+    DecreaseStockItem
   }
 
   if Mix.env() == :dev do
@@ -23,7 +25,9 @@ defmodule Handan.Stock.Router do
   dispatch(
     [
       CreateItem,
-      DeleteItem
+      DeleteItem,
+      IncreaseStockItem,
+      DecreaseStockItem
     ],
     to: Item,
     lifespan: Item

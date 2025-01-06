@@ -47,5 +47,23 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:increase_stock_item) do
+    %__MODULE__{
+      command: Handan.Stock.Commands.IncreaseStockItem,
+      projection: Handan.Stock.Projections.Item,
+      result_type: :item_uuid,
+      preload: [:inventory_entries, :stock_items, :stock_uoms]
+    }
+  end
+
+  def match(:decrease_stock_item) do
+    %__MODULE__{
+      command: Handan.Stock.Commands.DecreaseStockItem,
+      projection: Handan.Stock.Projections.Item,
+      result_type: :item_uuid,
+      preload: [:inventory_entries, :stock_items, :stock_uoms]
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

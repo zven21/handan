@@ -4,6 +4,7 @@ defmodule Handan.Stock.Aggregates.Item do
   @required_fields []
 
   use Handan.EventSourcing.Type
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2, to_decimal: 1]
 
   deftype do
     field :item_uuid, Ecto.UUID
@@ -13,14 +14,18 @@ defmodule Handan.Stock.Aggregates.Item do
     field :stock_uoms, :map, default: %{}
     field :default_stock_uom_uuid, Ecto.UUID
     field :default_stock_uom_name, :string
-    field :opening_stocks, :map, default: %{}
-
+    field :total_on_hand, :decimal, default: 0
+    field :stock_items, :map, default: %{}
     field :deleted?, :boolean, default: false
   end
 
+  alias Decimal, as: D
+
   alias Handan.Stock.Commands.{
     CreateItem,
-    DeleteItem
+    DeleteItem,
+    IncreaseStockItem,
+    DecreaseStockItem
   }
 
   alias Handan.Stock.Events.{
@@ -28,7 +33,8 @@ defmodule Handan.Stock.Aggregates.Item do
     ItemDeleted,
     StockUOMCreated,
     OpeningStockCreated,
-    InventoryEntryCreated
+    InventoryEntryCreated,
+    StockItemQtyChanged
   }
 
   @doc """
@@ -100,6 +106,67 @@ defmodule Handan.Stock.Aggregates.Item do
 
   def execute(_, %DeleteItem{}), do: {:error, :not_allowed}
 
+  def execute(%__MODULE__{item_uuid: item_uuid} = state, %IncreaseStockItem{item_uuid: item_uuid, warehouse_uuid: warehouse_uuid} = cmd) do
+    if Map.has_key?(state.stock_items, warehouse_uuid) do
+      stock_item = Map.get(state.stock_items, warehouse_uuid)
+
+      stock_item_evt = %StockItemQtyChanged{
+        stock_item_uuid: stock_item.stock_item_uuid,
+        item_uuid: item_uuid,
+        stock_uom_uuid: stock_item.stock_uom_uuid,
+        warehouse_uuid: warehouse_uuid,
+        total_on_hand: decimal_add(stock_item.total_on_hand, cmd.qty)
+      }
+
+      inventory_entry_evt = %InventoryEntryCreated{
+        inventory_entry_uuid: Ecto.UUID.generate(),
+        item_uuid: item_uuid,
+        warehouse_uuid: warehouse_uuid,
+        stock_uom_uuid: stock_item.stock_uom_uuid,
+        actual_qty: cmd.qty,
+        qty_after_transaction: decimal_add(stock_item.total_on_hand, cmd.qty),
+        type: :increase_stock
+      }
+
+      [stock_item_evt, inventory_entry_evt]
+    else
+      {:error, :not_allowed}
+    end
+  end
+
+  def execute(_, %IncreaseStockItem{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{item_uuid: item_uuid} = state, %DecreaseStockItem{item_uuid: item_uuid, warehouse_uuid: warehouse_uuid} = cmd) do
+    if Map.has_key?(state.stock_items, warehouse_uuid) do
+      stock_item = Map.get(state.stock_items, warehouse_uuid)
+
+      if D.gte?(to_decimal(stock_item.total_on_hand), to_decimal(cmd.qty)) do
+        [
+          %StockItemQtyChanged{
+            stock_item_uuid: stock_item.stock_item_uuid,
+            item_uuid: item_uuid,
+            warehouse_uuid: warehouse_uuid,
+            stock_uom_uuid: stock_item.stock_uom_uuid,
+            total_on_hand: decimal_sub(stock_item.total_on_hand, cmd.qty)
+          },
+          %InventoryEntryCreated{
+            inventory_entry_uuid: Ecto.UUID.generate(),
+            item_uuid: item_uuid,
+            warehouse_uuid: warehouse_uuid,
+            stock_uom_uuid: stock_item.stock_uom_uuid,
+            actual_qty: D.negate(to_decimal(cmd.qty)),
+            qty_after_transaction: decimal_sub(stock_item.total_on_hand, cmd.qty),
+            type: :decrease_stock
+          }
+        ]
+      else
+        {:error, :insufficient_stock}
+      end
+    else
+      {:error, :not_allowed}
+    end
+  end
+
   def apply(%__MODULE__{} = state, %ItemCreated{} = evt) do
     %__MODULE__{
       state
@@ -125,9 +192,26 @@ defmodule Handan.Stock.Aggregates.Item do
     }
   end
 
-  def apply(%__MODULE__{} = state, %OpeningStockCreated{} = _evt) do
-    # TODO
-    state
+  def apply(%__MODULE__{} = state, %OpeningStockCreated{} = evt) do
+    updated_stock_items = state.stock_items |> Map.put(evt.warehouse_uuid, Map.from_struct(evt))
+    total_on_hand = updated_stock_items |> Map.values() |> Enum.reduce(0, fn stock_item, acc -> decimal_add(acc, stock_item.total_on_hand) end)
+
+    %__MODULE__{
+      state
+      | stock_items: updated_stock_items,
+        total_on_hand: total_on_hand
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %StockItemQtyChanged{} = evt) do
+    updated_stock_items = state.stock_items |> Map.put(evt.warehouse_uuid, Map.from_struct(evt))
+    total_on_hand = updated_stock_items |> Map.values() |> Enum.reduce(0, fn stock_item, acc -> decimal_add(acc, stock_item.total_on_hand) end)
+
+    %__MODULE__{
+      state
+      | stock_items: updated_stock_items,
+        total_on_hand: total_on_hand
+    }
   end
 
   def apply(%__MODULE__{} = state, %InventoryEntryCreated{} = _evt) do
