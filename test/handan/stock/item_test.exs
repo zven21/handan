@@ -15,6 +15,13 @@ defmodule Handan.Stock.ItemTest do
 
       assert item.name == request.name
     end
+
+    test "should fail with invalid request" do
+      request = build(:item, name: nil)
+
+      assert {:error, changeset} = Dispatcher.run(request, :create_item)
+      assert %{name: ["can't be blank"]} == changeset
+    end
   end
 
   describe "delete item" do
@@ -24,7 +31,7 @@ defmodule Handan.Stock.ItemTest do
 
     test "should succeed with valid request", %{item: item} do
       request = %{
-        item_uuid: item.uuid,
+        item_uuid: item.uuid
       }
 
       assert :ok = Dispatcher.run(request, :delete_item)
