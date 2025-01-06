@@ -6,11 +6,12 @@ Handan is a project under construction, it is one of the ERP (MES) solutions for
 
 ## **Getting Started**
 
-To start your Phoenix server:
+To start your Phoenix server and run tests:
 
-* Run mix setup to install and setup dependencies
+* Run `mix setup` to install and setup dependencies
+* Run `mix test` to run tests for your application
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-* Now you can visit `localhost:4000` from your browser.
+* Now you can visit `http://localhost:4000` from your browser.
 
 ## **Technologies Used**
 
@@ -29,6 +30,7 @@ This project utilizes the following technologies:
 
 - [x] Core Domain Model
 - [ ] Accounts
+- [x] Stock && Item
 - [ ] Enterprise
 - [ ] Finance
 - [ ] Selling

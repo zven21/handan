@@ -17,6 +17,9 @@ defmodule Handan.Application do
       # Start a worker by calling: Handan.Worker.start_link(arg)
       # {Handan.Worker, arg},
       # Start to serve requests, typically the last entry
+      Handan.EventApp,
+      Handan.Enterprise.Supervisor,
+      Handan.Stock.Supervisor,
       HandanWeb.Endpoint
     ]
 

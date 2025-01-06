@@ -24,11 +24,15 @@ defmodule Handan.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Handan.DataCase
+
+      # locale
+      import Handan.Factory
+      import Handan.Fixture
     end
   end
 
-  setup tags do
-    Handan.DataCase.setup_sandbox(tags)
+  setup _tags do
+    Handan.Storage.reset!()
     :ok
   end
 
