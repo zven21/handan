@@ -10,6 +10,7 @@ defmodule Handan.Stock.Aggregates.Item do
     field :name, :string
     field :selling_price, :decimal
     field :description, :string
+    field :stock_uoms, :map, default: %{}
     field :deleted?, :boolean, default: false
   end
 
@@ -20,7 +21,8 @@ defmodule Handan.Stock.Aggregates.Item do
 
   alias Handan.Stock.Events.{
     ItemCreated,
-    ItemDeleted
+    ItemDeleted,
+    StockUOMCreated
   }
 
   @doc """
@@ -40,7 +42,20 @@ defmodule Handan.Stock.Aggregates.Item do
       description: cmd.description
     }
 
-    [item_evt] |> List.flatten()
+    stock_uom_evts =
+      cmd.stock_uoms
+      |> Enum.map(fn stock_uom ->
+        %StockUOMCreated{
+          stock_uom_uuid: Ecto.UUID.generate(),
+          item_uuid: cmd.item_uuid,
+          uom_uuid: stock_uom.uom_uuid,
+          uom_name: stock_uom.uom_name,
+          conversion_factor: stock_uom.conversion_factor,
+          sequence: stock_uom.sequence
+        }
+      end)
+
+    [item_evt, stock_uom_evts] |> List.flatten()
   end
 
   def execute(_, %CreateItem{}), do: {:error, :not_allowed}
@@ -66,6 +81,15 @@ defmodule Handan.Stock.Aggregates.Item do
     %__MODULE__{
       state
       | deleted?: true
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %StockUOMCreated{} = evt) do
+    updated_stock_uoms = state.stock_uoms |> Map.put(evt.stock_uom_uuid, Map.from_struct(evt))
+
+    %__MODULE__{
+      state
+      | stock_uoms: updated_stock_uoms
     }
   end
 end

@@ -8,8 +8,17 @@ defmodule Handan.Stock.ItemTest do
   alias Handan.Stock.Projections.Item
 
   describe "create item" do
-    test "should succeed with valid request" do
-      request = build(:item, name: "item-name")
+    setup [
+      :create_store
+    ]
+
+    test "should succeed with valid request", %{store: store, uom: uom, uom_2: uom_2} do
+      stock_uoms = [
+        %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1},
+        %{uom_name: uom_2.name, uom_uuid: uom_2.uuid, conversion_factor: 10, sequence: 2}
+      ]
+
+      request = build(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid)
 
       assert {:ok, %Item{} = item} = Dispatcher.run(request, :create_item)
 
@@ -26,6 +35,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "delete item" do
     setup [
+      :create_store,
       :create_item
     ]
 

@@ -20,8 +20,13 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_item(_) do
-    {:ok, item} = fixture(:item, name: "item-name")
+  def create_item(%{store: store, uom: uom, uom_2: uom_2}) do
+    stock_uoms = [
+      %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1},
+      %{uom_name: uom_2.name, uom_uuid: uom_2.uuid, conversion_factor: 10, sequence: 2}
+    ]
+
+    {:ok, item} = fixture(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid)
 
     [
       item: item

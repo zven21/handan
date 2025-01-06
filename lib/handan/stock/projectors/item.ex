@@ -12,10 +12,11 @@ defmodule Handan.Stock.Projectors.Item do
 
   alias Handan.Stock.Events.{
     ItemCreated,
-    ItemDeleted
+    ItemDeleted,
+    StockUOMCreated
   }
 
-  alias Handan.Stock.Projections.Item
+  alias Handan.Stock.Projections.{Item, StockUOM}
 
   project(
     %ItemCreated{} = evt,
@@ -35,6 +36,23 @@ defmodule Handan.Stock.Projectors.Item do
   project(%ItemDeleted{} = evt, _meta, fn multi ->
     Ecto.Multi.delete_all(multi, :item_deleted, item_query(evt.item_uuid))
   end)
+
+  project(
+    %StockUOMCreated{} = evt,
+    _meta,
+    fn multi ->
+      stock_uom = %StockUOM{
+        uuid: evt.stock_uom_uuid,
+        item_uuid: evt.item_uuid,
+        uom_uuid: evt.uom_uuid,
+        uom_name: evt.uom_name,
+        conversion_factor: evt.conversion_factor,
+        sequence: evt.sequence
+      }
+
+      Ecto.Multi.insert(multi, :stock_uom_created, stock_uom)
+    end
+  )
 
   def after_update(_event, _metadata, _changes) do
     :ok
