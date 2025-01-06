@@ -5,6 +5,15 @@ defmodule Handan.Core.SellingContext do
 
   # Customer
   defmodule Customer do
+    @type t :: %__MODULE__{
+            id: integer,
+            name: String.t(),
+            contact_number: String.t(),
+            email: String.t(),
+            address: String.t(),
+            credit_limit: float
+          }
+
     # Unique identifier for the customer
     defstruct id: nil,
               # Customer name
@@ -21,6 +30,16 @@ defmodule Handan.Core.SellingContext do
 
   # Quotation
   defmodule Quotation do
+    @type t :: %__MODULE__{
+            id: integer,
+            customer_id: integer,
+            valid_until: Date.t(),
+            items: [QuotationItem.t()],
+            discount: float,
+            delivery_date: Date.t(),
+            payment_terms: String.t()
+          }
+
     # Quotation ID, uniquely identifies each quotation
     defstruct id: nil,
               # Associated customer ID, indicating the quotation object
@@ -39,8 +58,22 @@ defmodule Handan.Core.SellingContext do
 
   # Quotation Item
   defmodule QuotationItem do
+    @type t :: %__MODULE__{
+            id: integer,
+            quotation_id: integer,
+            item_name: String.t(),
+            item_spec: String.t(),
+            quantity: integer,
+            unit_price: float,
+            discounted_price: float,
+            paid_amount: float,
+            total_amount: float
+          }
+
     # Quotation ID associated with the specific quotation
-    defstruct quotation_id: nil,
+    defstruct id: nil,
+              # Quotation ID associated with the specific quotation
+              quotation_id: nil,
               # Item name, the name of the product or service in the quotation
               item_name: nil,
               # Item specification, the detailed specification of the product or service
@@ -59,6 +92,18 @@ defmodule Handan.Core.SellingContext do
 
   # Sales Order
   defmodule SalesOrder do
+    @type t :: %__MODULE__{
+            id: integer,
+            customer_id: integer,
+            order_date: Date.t(),
+            status: String.t(),
+            delivery_status: String.t(),
+            billing_status: String.t(),
+            items: [SalesOrderItem.t()],
+            paid_amount: float,
+            remaining_amount: float
+          }
+
     # Sales Order ID, used to identify each sales transaction
     defstruct id: nil,
               # Associated customer ID, indicating the customer to whom the order belongs
@@ -85,8 +130,22 @@ defmodule Handan.Core.SellingContext do
 
   # Sales Order Item
   defmodule SalesOrderItem do
+    @type t :: %__MODULE__{
+            id: integer,
+            sales_order_id: integer,
+            item_name: String.t(),
+            item_spec: String.t(),
+            ordered_quantity: integer,
+            delivered_quantity: integer,
+            remaining_quantity: integer,
+            unit_price: float,
+            amount: float
+          }
+
     # Sales Order ID associated with the specific sales order
-    defstruct sales_order_id: nil,
+    defstruct id: nil,
+              # Sales Order ID associated with the specific sales order
+              sales_order_id: nil,
               # Item name, the name of the product or service in the order
               item_name: nil,
               # Item specification, the detailed specification of the product or service
