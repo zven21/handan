@@ -552,12 +552,10 @@ defmodule Handan.Core.ProductionContext do
       material_requests: []
     }
 
-    # # 生成物料需求
+    # 生成物料需求
     material_request =
       [production_plan_item]
       |> Enum.map(fn item ->
-        IO.inspect(item, label: "item")
-
         bom.items
         |> Enum.map(fn bom_item ->
           %{

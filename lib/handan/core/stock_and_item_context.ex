@@ -1,6 +1,6 @@
 defmodule Handan.Core.StockAndItemContext do
   @moduledoc """
-  item mvp
+  stock and item mvp
   """
 
   defmodule Item do
