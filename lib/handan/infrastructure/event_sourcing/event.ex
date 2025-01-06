@@ -16,10 +16,6 @@ defmodule Handan.EventSourcing.Event do
         # field :item_uuid, Ecto.UUID
         # field :item_type, :string
 
-        # store
-        # field :store_uuid, Ecto.UUID
-        # field :user_uuid, Ecto.UUID
-
         unquote(block)
       end
 

@@ -3,5 +3,6 @@ defmodule Handan.EventRouter do
 
   use Commanded.Commands.CompositeRouter
 
+  router(Handan.Enterprise.Router)
   router(Handan.Stock.Router)
 end

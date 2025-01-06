@@ -3,6 +3,14 @@ defmodule Handan.Factory do
 
   use ExMachina
 
+  def store_factory() do
+    %{
+      store_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      description: sequence(:description, &"description-#{&1}")
+    }
+  end
+
   def item_factory() do
     %{
       item_uuid: Ecto.UUID.generate(),

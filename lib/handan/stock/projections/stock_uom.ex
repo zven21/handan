@@ -11,7 +11,7 @@ defmodule Handan.Stock.Projections.StockUOM do
     field :sequence, :integer, default: 0
 
     belongs_to :item, Handan.Stock.Projections.Item, references: :uuid, foreign_key: :item_uuid
-    belongs_to :uom, Handan.Stock.Projections.UOM, references: :uuid, foreign_key: :uom_uuid
+    belongs_to :uom, Handan.Enterprise.Projections.UOM, references: :uuid, foreign_key: :uom_uuid
 
     timestamps(type: :utc_datetime)
   end

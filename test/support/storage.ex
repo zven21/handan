@@ -33,6 +33,8 @@ defmodule Handan.Storage do
       stock_uoms,
       stock_items,
       uoms,
+      stores,
+      warehouses,
       projection_versions
     RESTART IDENTITY;
     """
