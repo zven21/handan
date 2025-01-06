@@ -51,7 +51,20 @@ defmodule Handan.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+
+      # cqrs
+      {:commanded, "~> 1.4"},
+      {:commanded_ecto_projections, "~> 1.3"},
+      {:commanded_eventstore_adapter, "~> 1.4"},
+      {:eventstore, "~> 1.4"},
+
+      # mock data
+      {:ex_machina, "~> 2.6.0", only: :test},
+      {:faker, "~> 0.16", only: :test},
+
+      # time
+      {:timex, "~> 3.7"}
     ]
   end
 
@@ -66,6 +79,7 @@ defmodule Handan.MixProject do
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      reset: ["event_store.drop", "event_store.create", "event_store.init", "ecto.reset"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind handan", "esbuild handan"],

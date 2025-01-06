@@ -1,4 +1,4 @@
-defmodule Handan.Stock.Productions.Warehouse do
+defmodule Handan.Stock.Projections.Warehouse do
   @moduledoc false
 
   use Ecto.Schema

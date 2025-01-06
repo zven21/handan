@@ -1,4 +1,4 @@
-defmodule Handan.Stock.Productions.Item do
+defmodule Handan.Stock.Projections.Item do
   @moduledoc false
 
   use Ecto.Schema
@@ -16,8 +16,8 @@ defmodule Handan.Stock.Productions.Item do
     field :opening_stock, :decimal
     field :selling_price, :decimal
 
-    has_many :stock_items, Handan.Stock.Productions.StockItem, foreign_key: :item_uuid
-    has_many :stock_uoms, Handan.Stock.Productions.StockUOM, foreign_key: :item_uuid
+    has_many :stock_items, Handan.Stock.Projections.StockItem, foreign_key: :item_uuid
+    has_many :stock_uoms, Handan.Stock.Projections.StockUOM, foreign_key: :item_uuid
 
     timestamps(type: :utc_datetime)
   end

@@ -1,4 +1,4 @@
-defmodule Handan.Stock.Productions.InventoryEntry do
+defmodule Handan.Stock.Projections.InventoryEntry do
   @moduledoc false
 
   use Ecto.Schema
@@ -13,9 +13,9 @@ defmodule Handan.Stock.Productions.InventoryEntry do
     field :thread_uuid, :binary_id
     field :thread_type, :string
 
-    belongs_to :item, Handan.Stock.Productions.Item, references: :uuid, foreign_key: :item_uuid
-    belongs_to :warehouse, Handan.Stock.Productions.Warehouse, references: :uuid, foreign_key: :warehouse_uuid
-    belongs_to :stock_uom, Handan.Stock.Productions.StockUOM, references: :uuid, foreign_key: :stock_uom_uuid
+    belongs_to :item, Handan.Stock.Projections.Item, references: :uuid, foreign_key: :item_uuid
+    belongs_to :warehouse, Handan.Stock.Projections.Warehouse, references: :uuid, foreign_key: :warehouse_uuid
+    belongs_to :stock_uom, Handan.Stock.Projections.StockUOM, references: :uuid, foreign_key: :stock_uom_uuid
 
     timestamps(type: :utc_datetime)
   end
