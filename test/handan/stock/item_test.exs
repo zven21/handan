@@ -12,17 +12,25 @@ defmodule Handan.Stock.ItemTest do
       :create_store
     ]
 
-    test "should succeed with valid request", %{store: store, uom: uom, uom_2: uom_2} do
+    test "should succeed with valid request", %{store: store, uom: uom, uom_2: uom_2, warehouse: warehouse} do
       stock_uoms = [
         %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1},
         %{uom_name: uom_2.name, uom_uuid: uom_2.uuid, conversion_factor: 10, sequence: 2}
       ]
 
-      request = build(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid)
+      opening_stocks = [
+        %{warehouse_uuid: warehouse.uuid, qty: 100}
+      ]
+
+      request = build(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid, opening_stocks: opening_stocks)
 
       assert {:ok, %Item{} = item} = Dispatcher.run(request, :create_item)
-
       assert item.name == request.name
+      assert length(item.stock_items) == 1
+      assert length(item.stock_uoms) == 2
+      assert item.inventory_entries |> length == 1
+      assert item.inventory_entries |> List.first() |> Map.get(:actual_qty) == Decimal.new(100)
+      assert item.inventory_entries |> List.first() |> Map.get(:qty_after_transaction) == Decimal.new(100)
     end
 
     test "should fail with invalid request" do

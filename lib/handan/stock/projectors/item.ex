@@ -26,7 +26,9 @@ defmodule Handan.Stock.Projectors.Item do
         uuid: evt.item_uuid,
         name: evt.name,
         selling_price: to_decimal(evt.selling_price),
-        description: evt.description
+        description: evt.description,
+        default_stock_uom_uuid: evt.default_stock_uom_uuid,
+        default_stock_uom_name: evt.default_stock_uom_name
       }
 
       Ecto.Multi.insert(multi, :item_created, item)

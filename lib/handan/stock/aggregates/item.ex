@@ -11,6 +11,10 @@ defmodule Handan.Stock.Aggregates.Item do
     field :selling_price, :decimal
     field :description, :string
     field :stock_uoms, :map, default: %{}
+    field :default_stock_uom_uuid, Ecto.UUID
+    field :default_stock_uom_name, :string
+    field :opening_stocks, :map, default: %{}
+
     field :deleted?, :boolean, default: false
   end
 
@@ -22,7 +26,9 @@ defmodule Handan.Stock.Aggregates.Item do
   alias Handan.Stock.Events.{
     ItemCreated,
     ItemDeleted,
-    StockUOMCreated
+    StockUOMCreated,
+    OpeningStockCreated,
+    InventoryEntryCreated
   }
 
   @doc """
@@ -39,7 +45,9 @@ defmodule Handan.Stock.Aggregates.Item do
       item_uuid: cmd.item_uuid,
       name: cmd.name,
       selling_price: cmd.selling_price,
-      description: cmd.description
+      description: cmd.description,
+      default_stock_uom_uuid: cmd.default_stock_uom_uuid,
+      default_stock_uom_name: cmd.default_stock_uom_name
     }
 
     stock_uom_evts =
@@ -55,7 +63,31 @@ defmodule Handan.Stock.Aggregates.Item do
         }
       end)
 
-    [item_evt, stock_uom_evts] |> List.flatten()
+    stock_items_evts =
+      cmd.opening_stocks
+      |> Enum.map(fn opening_stock ->
+        [
+          %OpeningStockCreated{
+            stock_item_uuid: Ecto.UUID.generate(),
+            item_uuid: cmd.item_uuid,
+            # store_uuid: opening_stock.store_uuid,
+            warehouse_uuid: opening_stock.warehouse_uuid,
+            stock_uom_uuid: cmd.default_stock_uom_uuid,
+            total_on_hand: opening_stock.qty
+          },
+          %InventoryEntryCreated{
+            inventory_entry_uuid: Ecto.UUID.generate(),
+            item_uuid: cmd.item_uuid,
+            warehouse_uuid: opening_stock.warehouse_uuid,
+            stock_uom_uuid: cmd.default_stock_uom_uuid,
+            actual_qty: opening_stock.qty,
+            qty_after_transaction: opening_stock.qty,
+            type: :opening_stock
+          }
+        ]
+      end)
+
+    [item_evt, stock_uom_evts, stock_items_evts] |> List.flatten()
   end
 
   def execute(_, %CreateItem{}), do: {:error, :not_allowed}
@@ -91,5 +123,15 @@ defmodule Handan.Stock.Aggregates.Item do
       state
       | stock_uoms: updated_stock_uoms
     }
+  end
+
+  def apply(%__MODULE__{} = state, %OpeningStockCreated{} = _evt) do
+    # TODO
+    state
+  end
+
+  def apply(%__MODULE__{} = state, %InventoryEntryCreated{} = _evt) do
+    # TODO
+    state
   end
 end

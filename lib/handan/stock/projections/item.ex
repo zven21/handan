@@ -9,15 +9,14 @@ defmodule Handan.Stock.Projections.Item do
     field :name, :string
     field :description, :string
     field :spec, :string
+    field :selling_price, :decimal
 
     field :default_stock_uom_name, :string
-    field :default_stock_uom_uuid, :string
-
-    field :opening_stock, :decimal
-    field :selling_price, :decimal
+    field :default_stock_uom_uuid, :binary_id
 
     has_many :stock_items, Handan.Stock.Projections.StockItem, foreign_key: :item_uuid
     has_many :stock_uoms, Handan.Stock.Projections.StockUOM, foreign_key: :item_uuid
+    has_many :inventory_entries, Handan.Stock.Projections.InventoryEntry, foreign_key: :item_uuid
 
     timestamps(type: :utc_datetime)
   end

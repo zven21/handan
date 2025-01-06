@@ -13,10 +13,10 @@ defmodule Handan.Stock.Commands.CreateItem do
 
     # multi-uoms
     field :stock_uoms, {:array, :map}, default: []
-    field :default_uom_name, :string
-    field :default_uom_uuid, Ecto.UUID
+    field :default_stock_uom_name, :string
+    field :default_stock_uom_uuid, Ecto.UUID
 
-    # 起初库存
+    # 期初(opening_stocks)
     field :opening_stocks, {:array, :map}, default: []
   end
 
@@ -55,7 +55,7 @@ defmodule Handan.Stock.Commands.CreateItem do
 
         default_uom = updated_stock_uoms |> Enum.find(fn item -> item.sequence == 1 end)
 
-        %{cmd | stock_uoms: updated_stock_uoms, default_uom_name: default_uom.uom_name, default_uom_uuid: default_uom.uuid}
+        %{cmd | stock_uoms: updated_stock_uoms, default_stock_uom_name: default_uom.uom_name, default_stock_uom_uuid: default_uom.uuid}
       end
 
       cmd

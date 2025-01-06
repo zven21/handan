@@ -36,7 +36,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Stock.Commands.CreateItem,
       projection: Handan.Stock.Projections.Item,
       result_type: :item_uuid,
-      preload: []
+      preload: [:inventory_entries, :stock_items, :stock_uoms]
     }
   end
 
