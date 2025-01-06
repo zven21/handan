@@ -12,7 +12,7 @@ defmodule Handan.Selling.CustomerTest do
       :create_store
     ]
 
-    test "should succeed with valid request", %{store: store} do
+    test "should succeed with valid request" do
       request = %{
         customer_uuid: Ecto.UUID.generate(),
         name: "customer-name",
@@ -32,7 +32,7 @@ defmodule Handan.Selling.CustomerTest do
       :create_customer
     ]
 
-    test "should succeed with valid request", %{customer: customer, store: store} do
+    test "should succeed with valid request", %{customer: customer} do
       request = %{
         customer_uuid: customer.uuid
       }

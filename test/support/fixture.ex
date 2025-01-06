@@ -25,7 +25,7 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_item(%{store: store, uom: uom, uom_2: uom_2, warehouse: warehouse}) do
+  def create_item(%{uom: uom, uom_2: uom_2, warehouse: warehouse}) do
     stock_uoms = [
       %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1},
       %{uom_name: uom_2.name, uom_uuid: uom_2.uuid, conversion_factor: 10, sequence: 2}
@@ -50,7 +50,25 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_sales_order(%{customer: customer, item: item, warehouse: warehouse}) do
+    sales_items = [
+      %{
+        sales_order_item_uuid: Ecto.UUID.generate(),
+        item_uuid: item.uuid,
+        ordered_qty: 100,
+        unit_price: 10.0
+      }
+    ]
+
+    {:ok, sales_order} = fixture(:sales_order, customer_uuid: customer.uuid, warehouse_uuid: warehouse.uuid, sales_items: sales_items)
+
+    [
+      sales_order: sales_order
+    ]
+  end
+
   def fixture(:store, attrs), do: Dispatcher.run(build(:store, attrs), :create_store)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
+  def fixture(:sales_order, attrs), do: Dispatcher.run(build(:sales_order, attrs), :create_sales_order)
 end

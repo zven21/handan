@@ -4,7 +4,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   @required_fields []
 
   use Handan.EventSourcing.Type
-  import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
+  # import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
 
   deftype do
     field :sales_order_uuid, Ecto.UUID
@@ -12,6 +12,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string
+    field :warehouse_uuid, Ecto.UUID
 
     field :total_amount, :decimal
     field :total_qty, :decimal
@@ -19,14 +20,19 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     field :delivery_status, :string
     field :billing_status, :string
     field :status, :string
+
+    # 销售订单项
     field :sales_items, :map, default: %{}
+
+    # 发货单
     field :delivery_notes, :map, default: %{}
     field :delivery_note_items, :map, default: %{}
+
+    # 销售发票
     field :sales_invoices, :map, default: %{}
+
     field :deleted?, :boolean, default: false
   end
-
-  alias Decimal, as: D
 
   alias Handan.Selling.Commands.{
     CreateSalesOrder,
@@ -57,6 +63,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
       customer_address: cmd.customer_address,
       total_amount: cmd.total_amount,
       total_qty: cmd.total_qty,
+      warehouse_uuid: cmd.warehouse_uuid,
       delivery_status: :not_delivered,
       billing_status: :not_billed
     }
@@ -69,7 +76,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
           sales_order_uuid: sales_item.sales_order_uuid,
           item_uuid: sales_item.item_uuid,
           item_name: sales_item.item_name,
-          warehouse_uuid: sales_item.warehouse_uuid,
           ordered_qty: sales_item.ordered_qty,
           delivered_qty: 0,
           remaining_qty: sales_item.ordered_qty,
@@ -94,15 +100,22 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %DeleteSalesOrder{}), do: {:error, :not_allowed}
 
-  def apply(%__MODULE__{} = state, %SalesOrderDeleted{} = evt) do
-    %__MODULE__{state | deleted?: true}
-  end
-
   def apply(%__MODULE__{} = state, %SalesOrderCreated{} = evt) do
-    %__MODULE__{state | sales_order_uuid: evt.sales_order_uuid}
+    %__MODULE__{
+      state
+      | sales_order_uuid: evt.sales_order_uuid,
+        status: evt.status,
+        delivery_status: evt.delivery_status,
+        billing_status: evt.billing_status,
+        customer_name: evt.customer_name,
+        warehouse_uuid: evt.warehouse_uuid,
+        customer_address: evt.customer_address,
+        total_amount: evt.total_amount,
+        total_qty: evt.total_qty
+    }
   end
 
-  def apply(%__MODULE__{} = state, %SalesOrderDeleted{} = evt) do
+  def apply(%__MODULE__{} = state, %SalesOrderDeleted{} = _evt) do
     %__MODULE__{state | deleted?: true}
   end
 

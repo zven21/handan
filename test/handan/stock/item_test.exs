@@ -12,7 +12,7 @@ defmodule Handan.Stock.ItemTest do
       :create_store
     ]
 
-    test "should succeed with valid request", %{store: store, uom: uom, uom_2: uom_2, warehouse: warehouse} do
+    test "should succeed with valid request", %{uom: uom, uom_2: uom_2, warehouse: warehouse} do
       stock_uoms = [
         %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1},
         %{uom_name: uom_2.name, uom_uuid: uom_2.uuid, conversion_factor: 10, sequence: 2}

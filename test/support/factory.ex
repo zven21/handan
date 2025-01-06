@@ -27,4 +27,12 @@ defmodule Handan.Factory do
       address: sequence(:address, &"address-#{&1}")
     }
   end
+
+  def sales_order_factory() do
+    %{
+      sales_order_uuid: Ecto.UUID.generate(),
+      customer_uuid: Ecto.UUID.generate(),
+      warehouse_uuid: Ecto.UUID.generate()
+    }
+  end
 end

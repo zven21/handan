@@ -60,7 +60,7 @@ defmodule Handan.Selling.Aggregates.Customer do
     }
   end
 
-  def apply(%__MODULE__{} = state, %CustomerDeleted{} = evt) do
+  def apply(%__MODULE__{} = state, %CustomerDeleted{} = _evt) do
     %__MODULE__{state | deleted?: true}
   end
 end

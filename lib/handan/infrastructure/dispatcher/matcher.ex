@@ -86,7 +86,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Selling.Commands.CreateSalesOrder,
       projection: Handan.Selling.Projections.SalesOrder,
       result_type: :sales_order_uuid,
-      preload: [:customer, :warehouse]
+      preload: [:customer, :warehouse, :sales_order_items]
     }
   end
 
