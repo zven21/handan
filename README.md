@@ -27,7 +27,7 @@ This project utilizes the following technologies:
 
 ## **Features**
 
-- [ ] Core
+- [x] Core Domain Model
 - [ ] Accounts
 - [ ] Enterprise
 - [ ] Finance
