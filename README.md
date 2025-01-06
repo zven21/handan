@@ -29,6 +29,7 @@ This project utilizes the following technologies:
 
 - [x] Core Domain Model
 - [ ] Accounts
+- [x] Stock && Item
 - [ ] Enterprise
 - [ ] Finance
 - [ ] Selling
