@@ -19,4 +19,12 @@ defmodule Handan.Factory do
       description: sequence(:description, &"description-#{&1}")
     }
   end
+
+  def customer_factory() do
+    %{
+      customer_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      address: sequence(:address, &"address-#{&1}")
+    }
+  end
 end

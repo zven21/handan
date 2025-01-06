@@ -65,5 +65,37 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  # selling
+  def match(:create_customer) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateCustomer,
+      projection: Handan.Selling.Projections.Customer,
+      result_type: :customer_uuid
+    }
+  end
+
+  def match(:delete_customer) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.DeleteCustomer,
+      projection: Handan.Selling.Projections.Customer
+    }
+  end
+
+  def match(:create_sales_order) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateSalesOrder,
+      projection: Handan.Selling.Projections.SalesOrder,
+      result_type: :sales_order_uuid,
+      preload: [:customer, :warehouse]
+    }
+  end
+
+  def match(:delete_sales_order) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.DeleteSalesOrder,
+      projection: Handan.Selling.Projections.SalesOrder
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

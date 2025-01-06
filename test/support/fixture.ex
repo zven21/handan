@@ -37,6 +37,15 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_customer(_context) do
+    {:ok, customer} = fixture(:customer, name: "customer-name")
+
+    [
+      customer: customer
+    ]
+  end
+
   def fixture(:store, attrs), do: Dispatcher.run(build(:store, attrs), :create_store)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
+  def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
 end

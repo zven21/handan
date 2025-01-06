@@ -20,6 +20,7 @@ defmodule Handan.Application do
       Handan.EventApp,
       Handan.Enterprise.Supervisor,
       Handan.Stock.Supervisor,
+      Handan.Selling.Supervisor,
       HandanWeb.Endpoint
     ]
 
