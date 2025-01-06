@@ -199,7 +199,6 @@ defmodule Handan.Core.StockAndItemContext do
       quantity: 5
     }
 
-    {updated_table_item, updated_paint_item, main_warehouse, table_ledger_entry,
-     paint_ledger_entry}
+    {updated_table_item, updated_paint_item, main_warehouse, table_ledger_entry, paint_ledger_entry}
   end
 end
