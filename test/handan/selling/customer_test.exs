@@ -15,7 +15,6 @@ defmodule Handan.Selling.CustomerTest do
     test "should succeed with valid request", %{store: store} do
       request = %{
         customer_uuid: Ecto.UUID.generate(),
-        store_uuid: store.uuid,
         name: "customer-name",
         address: "customer-address"
       }
@@ -35,8 +34,7 @@ defmodule Handan.Selling.CustomerTest do
 
     test "should succeed with valid request", %{customer: customer, store: store} do
       request = %{
-        customer_uuid: customer.uuid,
-        store_uuid: store.uuid
+        customer_uuid: customer.uuid
       }
 
       assert :ok = Dispatcher.run(request, :delete_customer)

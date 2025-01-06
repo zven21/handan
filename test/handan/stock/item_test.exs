@@ -22,7 +22,7 @@ defmodule Handan.Stock.ItemTest do
         %{warehouse_uuid: warehouse.uuid, qty: 100}
       ]
 
-      request = build(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid, opening_stocks: opening_stocks)
+      request = build(:item, name: "item-name", stock_uoms: stock_uoms, opening_stocks: opening_stocks)
 
       assert {:ok, %Item{} = item} = Dispatcher.run(request, :create_item)
       assert item.name == request.name

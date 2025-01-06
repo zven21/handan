@@ -8,7 +8,6 @@ defmodule Handan.Selling.Events.SalesOrderCreated do
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string
-    field :store_uuid, Ecto.UUID
     field :total_amount, :decimal
     field :total_qty, :decimal
     field :status, :string

@@ -1,7 +1,7 @@
 defmodule Handan.Selling.Commands.CreateSalesOrder do
   @moduledoc false
 
-  @required_fields ~w(sales_order_uuid customer_uuid store_uuid sales_items)a
+  @required_fields ~w(sales_order_uuid customer_uuid sales_items)a
 
   use Handan.EventSourcing.Command
 
@@ -11,9 +11,6 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
 
     field :customer_name, :string
     field :customer_address, :string
-
-    field :title, :string
-    field :store_uuid, Ecto.UUID
     field :total_amount, :decimal, default: 0
     field :total_qty, :decimal, default: 0
     field :sales_items, {:array, :map}
@@ -25,7 +22,7 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
     alias Handan.{Stock, Selling}
     alias Handan.Selling.Commands.CreateSalesOrder
 
-    def enrich(%CreateSalesOrder{store_uuid: _store_uuid} = cmd, _) do
+    def enrich(%CreateSalesOrder{} = cmd, _) do
       handle_customer_fn = fn cmd ->
         case Selling.get_customer(cmd.customer_uuid) do
           {:ok, customer} ->
@@ -49,7 +46,6 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
                 |> Map.put(:item_name, item.name)
                 |> Map.put(:unit_price, to_decimal(unit_price))
                 |> Map.put(:amount, decimal_mult(unit_price, sales_item.ordered_qty))
-                |> Map.put(:store_uuid, cmd.store_uuid)
                 |> Map.put(:sales_order_uuid, cmd.sales_order_uuid)
 
               _ ->

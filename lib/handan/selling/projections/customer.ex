@@ -10,8 +10,6 @@ defmodule Handan.Selling.Projections.Customer do
     field :address, :string
     field :balance, :decimal, default: 0
 
-    belongs_to :store, Handan.Store.Projections.Store, foreign_key: :store_uuid, references: :uuid
-
     timestamps(type: :utc_datetime)
   end
 end

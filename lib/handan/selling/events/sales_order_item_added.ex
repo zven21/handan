@@ -7,7 +7,6 @@ defmodule Handan.Selling.Events.SalesOrderItemAdded do
     field :sales_order_item_uuid, Ecto.UUID
     field :sales_order_uuid, Ecto.UUID
     field :item_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
     field :amount, :decimal
     field :unit_price, :decimal
     field :item_name, :string

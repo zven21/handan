@@ -9,9 +9,6 @@ defmodule Handan.Enterprise.Projections.Store do
     field :name, :string
     field :description, :string
 
-    has_many :warehouses, Handan.Enterprise.Projections.Warehouse, foreign_key: :store_uuid
-    has_many :uoms, Handan.Enterprise.Projections.UOM, foreign_key: :store_uuid
-
     timestamps(type: :utc_datetime)
   end
 end

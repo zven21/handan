@@ -20,7 +20,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Enterprise.Commands.CreateStore,
       projection: Handan.Enterprise.Projections.Store,
       result_type: :store_uuid,
-      preload: [:uoms, :warehouses]
+      preload: []
     }
   end
 

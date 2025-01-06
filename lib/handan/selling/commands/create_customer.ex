@@ -13,7 +13,6 @@ defmodule Handan.Selling.Commands.CreateCustomer do
   end
 
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
-    import Ecto.Query, warn: false
     alias Handan.Selling.Commands.CreateCustomer
 
     def enrich(%CreateCustomer{} = cmd, _) do

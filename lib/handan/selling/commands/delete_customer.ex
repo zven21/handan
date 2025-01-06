@@ -13,7 +13,6 @@ defmodule Handan.Selling.Commands.DeleteCustomer do
     import Ecto.Query, warn: false
 
     alias Handan.Selling.Commands.DeleteCustomer
-    alias Handan.Repo
 
     def enrich(%DeleteCustomer{} = cmd, _) do
       # 在这里处理任何需要的数据丰富逻辑

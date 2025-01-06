@@ -5,6 +5,5 @@ defmodule Handan.Selling.Events.SalesOrderDeleted do
 
   defevent do
     field :sales_order_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
   end
 end

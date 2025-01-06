@@ -52,7 +52,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     sales_order_evt = %SalesOrderCreated{
       sales_order_uuid: cmd.sales_order_uuid,
       customer_uuid: cmd.customer_uuid,
-      store_uuid: cmd.store_uuid,
       status: :draft,
       customer_name: cmd.customer_name,
       customer_address: cmd.customer_address,
@@ -68,7 +67,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         %SalesOrderItemAdded{
           sales_order_item_uuid: sales_item.sales_order_item_uuid,
           sales_order_uuid: sales_item.sales_order_uuid,
-          store_uuid: sales_item.store_uuid,
           item_uuid: sales_item.item_uuid,
           item_name: sales_item.item_name,
           warehouse_uuid: sales_item.warehouse_uuid,
@@ -86,7 +84,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %CreateSalesOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{} = state, %DeleteSalesOrder{} = cmd) do
+  def execute(%__MODULE__{} = _state, %DeleteSalesOrder{} = cmd) do
     sales_order_evt = %SalesOrderDeleted{
       sales_order_uuid: cmd.sales_order_uuid
     }

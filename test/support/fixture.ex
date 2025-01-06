@@ -3,14 +3,19 @@ defmodule Handan.Fixture do
 
   import Handan.Factory
 
+  alias Handan.Repo
   alias Handan.Dispatcher
+  alias Handan.Enterprise.Projections.{Warehouse, UOM}
 
   def create_store(_context) do
     {:ok, store} = fixture(:store, name: "store-name")
 
-    uom = hd(store.uoms)
-    uom_2 = Enum.at(store.uoms, 1)
-    warehouse = hd(store.warehouses)
+    uoms = Repo.all(UOM)
+    warehouses = Repo.all(Warehouse)
+
+    uom = hd(uoms)
+    uom_2 = Enum.at(uoms, 1)
+    warehouse = hd(warehouses)
 
     [
       store: store,
@@ -30,7 +35,7 @@ defmodule Handan.Fixture do
       %{warehouse_uuid: warehouse.uuid, qty: 100}
     ]
 
-    {:ok, item} = fixture(:item, name: "item-name", stock_uoms: stock_uoms, store_uuid: store.uuid, opening_stocks: opening_stocks)
+    {:ok, item} = fixture(:item, name: "item-name", stock_uoms: stock_uoms, opening_stocks: opening_stocks)
 
     [
       item: item

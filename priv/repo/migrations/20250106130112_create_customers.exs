@@ -7,11 +7,8 @@ defmodule Handan.Repo.Migrations.CreateCustomers do
       add :name, :string
       add :address, :string
       add :balance, :decimal
-      add :store_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
     end
-
-    create index(:customers, [:store_uuid])
   end
 end

@@ -6,7 +6,6 @@ defmodule Handan.Stock.Events.OpeningStockCreated do
   defevent do
     field :stock_item_uuid, Ecto.UUID
     field :item_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
     field :stock_uom_uuid, Ecto.UUID
     field :total_on_hand, :decimal

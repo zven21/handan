@@ -76,7 +76,6 @@ defmodule Handan.Stock.Aggregates.Item do
           %OpeningStockCreated{
             stock_item_uuid: Ecto.UUID.generate(),
             item_uuid: cmd.item_uuid,
-            # store_uuid: opening_stock.store_uuid,
             warehouse_uuid: opening_stock.warehouse_uuid,
             stock_uom_uuid: cmd.default_stock_uom_uuid,
             total_on_hand: opening_stock.qty
