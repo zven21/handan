@@ -41,6 +41,8 @@ defmodule Handan.Storage do
       delivery_notes,
       delivery_note_items,
       sales_invoices,
+      users,
+      users_tokens,
       projection_versions
     RESTART IDENTITY;
     """
