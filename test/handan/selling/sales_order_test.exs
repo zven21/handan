@@ -55,4 +55,39 @@ defmodule Handan.Selling.SalesOrderTest do
       assert {:error, :not_found} == Turbo.get(SalesOrder, sales_order.uuid)
     end
   end
+
+  describe "create delivery note" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order
+    ]
+
+    test "should succeed with valid request", %{store: store, customer: customer, sales_order: sales_order} do
+      sales_order_item = hd(sales_order.items)
+
+      request = %{
+        sales_order_uuid: sales_order.uuid,
+        store_uuid: store.uuid,
+        customer_uuid: customer.uuid,
+        delivery_note_uuid: Ecto.UUID.generate(),
+        delivery_items: [
+          %{
+            sales_order_item_uuid: sales_order_item.uuid,
+            actual_qty: 1
+          }
+        ]
+      }
+
+      assert {:ok, delivery_note} = Dispatcher.run(request, :create_delivery_note)
+
+      IO.inspect(delivery_note)
+
+      # assert delivery_note.uuid == request.delivery_note_uuid
+      # assert delivery_note.sales_order_uuid == sales_order.uuid
+      # assert delivery_note.customer_uuid == customer.uuid
+      # assert delivery_note.status == :draft
+    end
+  end
 end

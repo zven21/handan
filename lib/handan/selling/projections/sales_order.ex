@@ -17,7 +17,7 @@ defmodule Handan.Selling.Projections.SalesOrder do
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
     belongs_to :customer, Handan.Selling.Projections.Customer, foreign_key: :customer_uuid, references: :uuid
 
-    has_many :sales_order_items, Handan.Selling.Projections.SalesOrderItem, foreign_key: :sales_order_uuid
+    has_many :items, Handan.Selling.Projections.SalesOrderItem, foreign_key: :sales_order_uuid
 
     timestamps(type: :utc_datetime)
   end

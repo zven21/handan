@@ -12,7 +12,8 @@ defmodule Handan.Selling.Router do
     CreateSalesOrder,
     DeleteSalesOrder,
     CreateCustomer,
-    DeleteCustomer
+    DeleteCustomer,
+    CreateDeliveryNote
   }
 
   if Mix.env() == :dev do
@@ -27,7 +28,8 @@ defmodule Handan.Selling.Router do
   dispatch(
     [
       CreateSalesOrder,
-      DeleteSalesOrder
+      DeleteSalesOrder,
+      CreateDeliveryNote
     ],
     to: SalesOrder,
     lifespan: SalesOrder

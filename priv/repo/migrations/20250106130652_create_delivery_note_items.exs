@@ -7,9 +7,12 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNoteItems do
       add :delivery_note_uuid, :binary_id
       add :sales_order_uuid, :binary_id
       add :sales_order_item_uuid, :binary_id
-      add :qty, :decimal
       add :item_uuid, :binary_id
       add :item_name, :string
+
+      add :actual_qty, :decimal
+      add :amount, :decimal
+      add :unit_price, :decimal
 
       timestamps(type: :utc_datetime)
     end
@@ -17,5 +20,6 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNoteItems do
     create index(:delivery_note_items, [:delivery_note_uuid])
     create index(:delivery_note_items, [:sales_order_uuid])
     create index(:delivery_note_items, [:sales_order_item_uuid])
+    create index(:delivery_note_items, [:item_uuid])
   end
 end

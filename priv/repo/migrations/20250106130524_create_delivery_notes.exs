@@ -5,6 +5,8 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNotes do
     create table(:delivery_notes, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
       add :total_qty, :decimal
+      add :total_amount, :decimal
+      add :status, :string
       add :sales_order_uuid, :binary_id
       add :customer_uuid, :binary_id
       add :customer_name, :string

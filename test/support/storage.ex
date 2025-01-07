@@ -38,6 +38,8 @@ defmodule Handan.Storage do
       customers,
       sales_orders,
       sales_order_items,
+      delivery_notes,
+      delivery_note_items,
       projection_versions
     RESTART IDENTITY;
     """

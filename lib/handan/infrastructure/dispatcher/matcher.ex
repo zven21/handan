@@ -86,7 +86,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Selling.Commands.CreateSalesOrder,
       projection: Handan.Selling.Projections.SalesOrder,
       result_type: :sales_order_uuid,
-      preload: [:customer, :warehouse, :sales_order_items]
+      preload: [:customer, :warehouse, :items]
     }
   end
 
@@ -94,6 +94,15 @@ defmodule Handan.Dispatcher.Matcher do
     %__MODULE__{
       command: Handan.Selling.Commands.DeleteSalesOrder,
       projection: Handan.Selling.Projections.SalesOrder
+    }
+  end
+
+  def match(:create_delivery_note) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateDeliveryNote,
+      projection: Handan.Selling.Projections.DeliveryNote,
+      result_type: :delivery_note_uuid,
+      preload: [:sales_order, :items]
     }
   end
 

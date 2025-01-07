@@ -10,10 +10,12 @@ defmodule Handan.Selling.Projectors.SalesOrder do
   alias Handan.Selling.Events.{
     SalesOrderCreated,
     SalesOrderDeleted,
-    SalesOrderItemAdded
+    SalesOrderItemAdded,
+    DeliveryNoteCreated,
+    DeliveryNoteItemAdded
   }
 
-  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem}
+  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem}
 
   project(
     %SalesOrderCreated{} = evt,
@@ -54,6 +56,37 @@ defmodule Handan.Selling.Projectors.SalesOrder do
       }
 
     Ecto.Multi.insert(multi, :sales_order_item_added, sales_order_item)
+  end)
+
+  project(%DeliveryNoteCreated{} = evt, _meta, fn multi ->
+    delivery_note =
+      %DeliveryNote{
+        uuid: evt.delivery_note_uuid,
+        sales_order_uuid: evt.sales_order_uuid,
+        customer_uuid: evt.customer_uuid,
+        status: evt.status,
+        customer_name: evt.customer_name,
+        total_amount: to_decimal(evt.total_amount)
+      }
+
+    Ecto.Multi.insert(multi, :delivery_note_created, delivery_note)
+  end)
+
+  project(%DeliveryNoteItemAdded{} = evt, _meta, fn multi ->
+    delivery_note_item =
+      %DeliveryNoteItem{
+        uuid: evt.delivery_note_item_uuid,
+        delivery_note_uuid: evt.delivery_note_uuid,
+        sales_order_item_uuid: evt.sales_order_item_uuid,
+        sales_order_uuid: evt.sales_order_uuid,
+        item_uuid: evt.item_uuid,
+        actual_qty: to_decimal(evt.actual_qty),
+        amount: to_decimal(evt.amount),
+        unit_price: to_decimal(evt.unit_price),
+        item_name: evt.item_name
+      }
+
+    Ecto.Multi.insert(multi, :delivery_note_item_added, delivery_note_item)
   end)
 
   def after_update(_event, _metadata, _changes) do
