@@ -122,9 +122,46 @@ defmodule Handan.Selling.SalesOrderTest do
         delivery_note_uuid: delivery_note.uuid
       }
 
-      assert {:ok, sales_order} = Dispatcher.run(request, :confirm_delivery_note)
-      IO.inspect(sales_order, label: "sales_order")
-      # assert sales_order.delivery_status == :fully_delivered
+      assert {:ok, updated_delivery_note} = Dispatcher.run(request, :confirm_delivery_note)
+      {:ok, updated_sales_order} = Turbo.get(SalesOrder, sales_order.uuid)
+
+      assert updated_delivery_note.uuid == request.delivery_note_uuid
+      assert updated_delivery_note.sales_order_uuid == sales_order.uuid
+      assert updated_delivery_note.customer_uuid == sales_order.customer_uuid
+      assert updated_delivery_note.status == :to_deliver
+
+      assert updated_sales_order.status == :to_deliver_and_bill
+      assert updated_sales_order.delivery_status == :partly_delivered
+      assert updated_sales_order.billing_status == :not_billed
+    end
+  end
+
+  describe "confirm fully delivery note" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_fully_delivery_note
+    ]
+
+    test "should succeed with valid request", %{customer: customer, sales_order: sales_order, fully_delivery_note: fully_delivery_note} do
+      request = %{
+        sales_order_uuid: sales_order.uuid,
+        delivery_note_uuid: fully_delivery_note.uuid
+      }
+
+      assert {:ok, updated_delivery_note} = Dispatcher.run(request, :confirm_delivery_note)
+      {:ok, updated_sales_order} = Turbo.get(SalesOrder, sales_order.uuid)
+
+      assert updated_delivery_note.uuid == request.delivery_note_uuid
+      assert updated_delivery_note.sales_order_uuid == sales_order.uuid
+      assert updated_delivery_note.customer_uuid == customer.uuid
+      assert updated_delivery_note.status == :to_deliver
+
+      assert updated_sales_order.status == :to_bill
+      assert updated_sales_order.delivery_status == :fully_delivered
+      assert updated_sales_order.billing_status == :not_billed
     end
   end
 end
