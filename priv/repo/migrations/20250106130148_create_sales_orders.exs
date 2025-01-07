@@ -9,8 +9,15 @@ defmodule Handan.Repo.Migrations.CreateSalesOrders do
       add :delivery_status, :string
       add :billing_status, :string
       add :status, :string
+
       add :total_qty, :decimal
+      add :delivered_qty, :decimal
+      add :remaining_qty, :decimal
+
       add :total_amount, :decimal
+      add :paid_amount, :decimal
+      add :remaining_amount, :decimal
+
       add :warehouse_uuid, :binary_id
 
       timestamps(type: :utc_datetime)

@@ -124,5 +124,23 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_sales_invoice) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateSalesInvoice,
+      projection: Handan.Selling.Projections.SalesInvoice,
+      result_type: :sales_invoice_uuid,
+      preload: []
+    }
+  end
+
+  def match(:confirm_sales_invoice) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.ConfirmSalesInvoice,
+      projection: Handan.Selling.Projections.SalesInvoice,
+      result_type: :sales_invoice_uuid,
+      preload: []
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

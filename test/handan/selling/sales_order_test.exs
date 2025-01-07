@@ -164,4 +164,58 @@ defmodule Handan.Selling.SalesOrderTest do
       assert updated_sales_order.billing_status == :not_billed
     end
   end
+
+  describe "create sales invoice" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order
+    ]
+
+    test "should succeed with valid request", %{sales_order: sales_order} do
+      request = %{
+        sales_invoice_uuid: Ecto.UUID.generate(),
+        sales_order_uuid: sales_order.uuid,
+        amount: 1
+      }
+
+      assert {:ok, sales_invoice} = Dispatcher.run(request, :create_sales_invoice)
+
+      assert sales_invoice.sales_order_uuid == sales_order.uuid
+      assert sales_invoice.customer_uuid == sales_order.customer_uuid
+      assert sales_invoice.customer_name == sales_order.customer_name
+      assert sales_invoice.status == :draft
+    end
+  end
+
+  describe "confirm sales invoice" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_sales_invoice
+    ]
+
+    test "should succeed with valid request 1", %{sales_order: sales_order, sales_invoice: sales_invoice} do
+      request = %{
+        sales_invoice_uuid: sales_invoice.uuid,
+        sales_order_uuid: sales_order.uuid
+      }
+
+      assert {:ok, sales_invoice} = Dispatcher.run(request, :confirm_sales_invoice)
+      assert {:ok, updated_sales_order} = Turbo.get(SalesOrder, sales_order.uuid)
+
+      assert sales_invoice.sales_order_uuid == sales_order.uuid
+      assert sales_invoice.customer_uuid == sales_order.customer_uuid
+      assert sales_invoice.customer_name == sales_order.customer_name
+      assert sales_invoice.amount == Decimal.new(1)
+      assert sales_invoice.status == :submitted
+
+      assert updated_sales_order.status == :to_deliver
+      assert updated_sales_order.billing_status == :partly_billed
+      assert updated_sales_order.delivery_status == :not_delivered
+    end
+  end
 end

@@ -7,10 +7,12 @@ defmodule Handan.Selling.Projections.SalesInvoice do
   @foreign_key_type :binary_id
   schema "sales_invoices" do
     field :customer_name, :string
-    field :customer_uuid, :string
-    field :sales_order_uuid, :string
-    field :status, :string
-    field :total_amount, :decimal
+    field :amount, :decimal
+
+    field :status, Ecto.Enum, values: ~w(draft submitted unpaid paid partly_paid cancelled)a, default: :draft
+
+    belongs_to :sales_order, Handan.Selling.Projections.SalesOrder, foreign_key: :sales_order_uuid, references: :uuid
+    belongs_to :customer, Handan.Selling.Projections.Customer, foreign_key: :customer_uuid, references: :uuid
 
     timestamps(type: :utc_datetime)
   end

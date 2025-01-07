@@ -42,4 +42,11 @@ defmodule Handan.Factory do
       sales_order_uuid: Ecto.UUID.generate()
     }
   end
+
+  def sales_invoice_factory() do
+    %{
+      sales_invoice_uuid: Ecto.UUID.generate(),
+      sales_order_uuid: Ecto.UUID.generate()
+    }
+  end
 end

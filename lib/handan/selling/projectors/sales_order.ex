@@ -17,10 +17,12 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     SalesOrderConfirmed,
     SalesOrderStatusChanged,
     DeliveryNoteConfirmed,
-    SalesOrderItemAdjusted
+    SalesOrderItemAdjusted,
+    SalesInvoiceCreated,
+    SalesInvoiceConfirmed
   }
 
-  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem}
+  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem, SalesInvoice}
 
   project(
     %SalesOrderCreated{} = evt,
@@ -127,6 +129,24 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     Ecto.Multi.update_all(multi, :delivery_note_confirmed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
   end)
 
+  project(%SalesInvoiceCreated{} = evt, _meta, fn multi ->
+    sales_invoice =
+      %SalesInvoice{
+        uuid: evt.sales_invoice_uuid,
+        sales_order_uuid: evt.sales_order_uuid,
+        customer_uuid: evt.customer_uuid,
+        customer_name: evt.customer_name,
+        amount: to_decimal(evt.amount)
+      }
+
+    Ecto.Multi.insert(multi, :sales_invoice_created, sales_invoice)
+  end)
+
+  project(%SalesInvoiceConfirmed{} = evt, _meta, fn multi ->
+    set_fields = [status: evt.status]
+    Ecto.Multi.update_all(multi, :sales_invoice_confirmed, sales_invoice_query(evt.sales_invoice_uuid), set: set_fields)
+  end)
+
   def after_update(_event, _metadata, _changes) do
     :ok
   end
@@ -141,5 +161,9 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   defp delivery_note_query(uuid) do
     from(dn in DeliveryNote, where: dn.uuid == ^uuid)
+  end
+
+  defp sales_invoice_query(uuid) do
+    from(si in SalesInvoice, where: si.uuid == ^uuid)
   end
 end

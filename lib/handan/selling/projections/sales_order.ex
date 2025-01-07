@@ -13,7 +13,12 @@ defmodule Handan.Selling.Projections.SalesOrder do
     field :status, Ecto.Enum, values: ~w(draft to_deliver_and_bill to_bill to_deliver completed cancelled)a, default: :draft
 
     field :total_amount, :decimal, default: 0
+    field :paid_amount, :decimal, default: 0
+    field :remaining_amount, :decimal, default: 0
+
     field :total_qty, :decimal, default: 0
+    field :delivered_qty, :decimal, default: 0
+    field :remaining_qty, :decimal, default: 0
 
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
     belongs_to :customer, Handan.Selling.Projections.Customer, foreign_key: :customer_uuid, references: :uuid

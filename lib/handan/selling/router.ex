@@ -15,7 +15,9 @@ defmodule Handan.Selling.Router do
     DeleteCustomer,
     CreateDeliveryNote,
     ConfirmDeliveryNote,
-    ConfirmSalesOrder
+    ConfirmSalesOrder,
+    CreateSalesInvoice,
+    ConfirmSalesInvoice
   }
 
   if Mix.env() == :dev do
@@ -33,7 +35,9 @@ defmodule Handan.Selling.Router do
       DeleteSalesOrder,
       CreateDeliveryNote,
       ConfirmDeliveryNote,
-      ConfirmSalesOrder
+      ConfirmSalesOrder,
+      CreateSalesInvoice,
+      ConfirmSalesInvoice
     ],
     to: SalesOrder,
     lifespan: SalesOrder
