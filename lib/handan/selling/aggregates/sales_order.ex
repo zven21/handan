@@ -4,7 +4,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   @required_fields []
 
   use Handan.EventSourcing.Type
-  # import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
+  import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1, decimal_add: 2, decimal_sub: 2]
 
   deftype do
     field :sales_order_uuid, Ecto.UUID
@@ -46,6 +46,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     SalesOrderCreated,
     SalesOrderDeleted,
     SalesOrderItemAdded,
+    SalesOrderItemAdjusted,
     DeliveryNoteCreated,
     DeliveryNoteItemAdded,
     SalesOrderStatusChanged,
@@ -165,6 +166,72 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %CreateDeliveryNote{}), do: {:error, :not_allowed}
 
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmDeliveryNote{delivery_note_uuid: delivery_note_uuid} = cmd) do
+    if Map.has_key?(state.delivery_notes, delivery_note_uuid) do
+      delivery_note = Map.get(state.delivery_notes, delivery_note_uuid)
+
+      delivery_note_confirmed_evt = %DeliveryNoteConfirmed{
+        delivery_note_uuid: delivery_note.delivery_note_uuid,
+        sales_order_uuid: sales_order_uuid,
+        status: :to_deliver
+      }
+
+      sales_order_items_evt =
+        state.delivery_note_items
+        |> Map.values()
+        |> Enum.filter(fn delivery_item -> delivery_item.delivery_note_uuid == cmd.delivery_note_uuid end)
+        |> Enum.map(fn delivery_item ->
+          sales_order_item = Map.get(state.sales_items, delivery_item.sales_order_item_uuid)
+
+          new_delivered_qty = decimal_add(sales_order_item.delivered_qty, delivery_item.actual_qty)
+          new_remaining_qty = decimal_sub(sales_order_item.ordered_qty, new_delivered_qty)
+
+          %SalesOrderItemAdjusted{
+            sales_order_item_uuid: delivery_item.sales_order_item_uuid,
+            sales_order_uuid: sales_order_uuid,
+            delivered_qty: new_delivered_qty,
+            remaining_qty: new_remaining_qty
+          }
+        end)
+
+      # inventory_unit_outbound_evt =
+      #   state.delivery_note_items
+      #   |> Map.values()
+      #   |> Enum.filter(fn delivery_item -> delivery_item.delivery_note_uuid == cmd.delivery_note_uuid end)
+      #   |> Enum.map(fn delivery_item ->
+      #     %StockEntryOutbound{
+      #       stock_entry_uuid: Ecto.UUID.generate(),
+      #       thread_type: "sales_order_item",
+      #       thread_uuid: delivery_item.sales_order_item_uuid,
+      #       item_uuid: delivery_item.item_uuid,
+      #       item_name: delivery_item.item_name,
+      #       warehouse_uuid: delivery_item.warehouse_uuid,
+      #       store_uuid: delivery_item.store_uuid,
+      #       qty: delivery_item.stock_qty
+      #     }
+      #   end)
+
+      to_delivery_status = calculate_delivery_status(state, sales_order_items_evt)
+
+      sales_order_status_changed_evt = %SalesOrderStatusChanged{
+        sales_order_uuid: sales_order_uuid,
+        from_billing_status: state.billing_status,
+        to_billing_status: state.billing_status,
+        from_status: state.status,
+        to_status: calculate_status(%{delivery_status: to_delivery_status, billing_status: state.billing_status}),
+        from_delivery_status: state.delivery_status,
+        to_delivery_status: to_delivery_status
+      }
+
+      [delivery_note_confirmed_evt, sales_order_items_evt, sales_order_status_changed_evt]
+      |> List.flatten()
+    else
+      {:error, :delivery_note_not_found}
+    end
+  end
+
+  def execute(_, %ConfirmDeliveryNote{}), do: {:error, :not_allowed}
+
   def apply(%__MODULE__{} = state, %SalesOrderCreated{} = evt) do
     %__MODULE__{
       state
@@ -231,4 +298,48 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         billing_status: evt.to_billing_status
     }
   end
+
+  def apply(%__MODULE__{} = state, %SalesOrderItemAdjusted{} = evt) do
+    updated_sales_items =
+      state.sales_items
+      |> Map.update!(evt.sales_order_item_uuid, fn item ->
+        item
+        |> Map.merge(Map.from_struct(evt))
+      end)
+
+    %__MODULE__{
+      state
+      | sales_items: updated_sales_items
+    }
+  end
+
+  defp calculate_delivery_status(%{total_qty: total_qty} = state, updated_sales_items) do
+    deliveried_qty =
+      state.sales_items
+      |> Map.values()
+      |> Enum.map(fn sales_item ->
+        updated_sales_items
+        |> Enum.find(fn updated_sales_item -> updated_sales_item.sales_order_item_uuid == sales_item.sales_order_item_uuid end)
+        |> case do
+          nil -> sales_item
+          updated_sales_item -> Map.merge(sales_item, updated_sales_item)
+        end
+      end)
+      |> Enum.reduce(0, fn sales_item, acc ->
+        decimal_add(acc, sales_item.delivered_qty)
+      end)
+
+    case deliveried_qty do
+      value when value == total_qty -> :fully_delivered
+      0 -> :not_delivered
+      _ -> :partly_delivered
+    end
+  end
+
+  defp calculate_status(%{delivery_status: :fully_delivered, billing_status: :fully_billed}), do: :completed
+  defp calculate_status(%{delivery_status: :fully_delivered, billing_status: :partly_billed}), do: :to_bill
+  defp calculate_status(%{delivery_status: :fully_delivered, billing_status: :not_billed}), do: :to_bill
+  defp calculate_status(%{delivery_status: :partly_delivered, billing_status: :fully_billed}), do: :to_deliver_and_bill
+  defp calculate_status(%{delivery_status: :partly_delivered, billing_status: :partly_billed}), do: :to_deliver_and_bill
+  defp calculate_status(%{delivery_status: :partly_delivered, billing_status: :not_billed}), do: :to_deliver_and_bill
 end

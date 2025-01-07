@@ -16,7 +16,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     DeliveryNoteItemAdded,
     SalesOrderConfirmed,
     SalesOrderStatusChanged,
-    DeliveryNoteConfirmed
+    DeliveryNoteConfirmed,
+    SalesOrderItemAdjusted
   }
 
   alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem}
@@ -69,8 +70,9 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         sales_order_uuid: evt.sales_order_uuid,
         customer_uuid: evt.customer_uuid,
         status: to_atom(evt.status),
-        customer_name: evt.customer_name,
-        total_amount: to_decimal(evt.total_amount)
+        total_qty: to_decimal(evt.total_qty),
+        total_amount: to_decimal(evt.total_amount),
+        customer_name: evt.customer_name
       }
 
     Ecto.Multi.insert(multi, :delivery_note_created, delivery_note)
@@ -95,7 +97,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   project(%SalesOrderConfirmed{} = evt, _meta, fn multi ->
     set_fields = [
-      status: evt.status,
+      status: evt.status
     ]
 
     Ecto.Multi.update_all(multi, :sales_order_confirmed, sales_order_query(evt.sales_order_uuid), set: set_fields)
@@ -111,6 +113,19 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     Ecto.Multi.update_all(multi, :sales_order_status_changed, sales_order_query(evt.sales_order_uuid), set: set_fields)
   end)
 
+  project(%SalesOrderItemAdjusted{} = evt, _meta, fn multi ->
+    set_fields = [
+      delivered_qty: evt.delivered_qty,
+      remaining_qty: evt.remaining_qty
+    ]
+
+    Ecto.Multi.update_all(multi, :sales_order_item_adjusted, sales_order_item_query(evt.sales_order_item_uuid), set: set_fields)
+  end)
+
+  project(%DeliveryNoteConfirmed{} = evt, _meta, fn multi ->
+    set_fields = [status: evt.status]
+    Ecto.Multi.update_all(multi, :delivery_note_confirmed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
+  end)
 
   def after_update(_event, _metadata, _changes) do
     :ok
@@ -118,6 +133,10 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   defp sales_order_query(uuid) do
     from(so in SalesOrder, where: so.uuid == ^uuid)
+  end
+
+  defp sales_order_item_query(uuid) do
+    from(soi in SalesOrderItem, where: soi.uuid == ^uuid)
   end
 
   defp delivery_note_query(uuid) do

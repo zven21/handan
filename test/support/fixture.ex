@@ -67,8 +67,26 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_delivery_note(%{sales_order: sales_order}) do
+    sales_order_item = hd(sales_order.items)
+
+    delivery_items = [
+      %{
+        sales_order_item_uuid: sales_order_item.uuid,
+        actual_qty: 1
+      }
+    ]
+
+    {:ok, delivery_note} = fixture(:delivery_note, sales_order_uuid: sales_order.uuid, delivery_items: delivery_items)
+
+    [
+      delivery_note: delivery_note
+    ]
+  end
+
   def fixture(:store, attrs), do: Dispatcher.run(build(:store, attrs), :create_store)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
   def fixture(:sales_order, attrs), do: Dispatcher.run(build(:sales_order, attrs), :create_sales_order)
+  def fixture(:delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :create_delivery_note)
 end
