@@ -446,7 +446,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   end
 
   defp calculate_delivery_status(%{total_qty: total_qty} = state, updated_sales_items) do
-    deliveried_qty =
+    delivered_qty =
       state.sales_items
       |> Map.values()
       |> Enum.map(fn sales_item ->
@@ -461,7 +461,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         decimal_add(acc, sales_item.delivered_qty)
       end)
 
-    case deliveried_qty do
+    case delivered_qty do
       value when value == total_qty -> :fully_delivered
       0 -> :not_delivered
       _ -> :partly_delivered
