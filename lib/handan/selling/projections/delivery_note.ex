@@ -8,8 +8,8 @@ defmodule Handan.Selling.Projections.DeliveryNote do
   schema "delivery_notes" do
     field :customer_name, :string
     field :status, Ecto.Enum, values: ~w(draft to_deliver completed cancelled)a, default: :draft
-    field :total_qty, :decimal
-    field :total_amount, :decimal
+    field :total_qty, :decimal, default: 0
+    field :total_amount, :decimal, default: 0
 
     belongs_to :sales_order, Handan.Selling.Projections.SalesOrder, foreign_key: :sales_order_uuid, references: :uuid
     belongs_to :customer, Handan.Core.Customer, foreign_key: :customer_uuid, references: :uuid

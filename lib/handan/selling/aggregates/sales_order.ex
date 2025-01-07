@@ -210,23 +210,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
           }
         end)
 
-      # inventory_unit_outbound_evt =
-      #   state.delivery_note_items
-      #   |> Map.values()
-      #   |> Enum.filter(fn delivery_item -> delivery_item.delivery_note_uuid == cmd.delivery_note_uuid end)
-      #   |> Enum.map(fn delivery_item ->
-      #     %StockEntryOutbound{
-      #       stock_entry_uuid: Ecto.UUID.generate(),
-      #       thread_type: "sales_order_item",
-      #       thread_uuid: delivery_item.sales_order_item_uuid,
-      #       item_uuid: delivery_item.item_uuid,
-      #       item_name: delivery_item.item_name,
-      #       warehouse_uuid: delivery_item.warehouse_uuid,
-      #       store_uuid: delivery_item.store_uuid,
-      #       qty: delivery_item.stock_qty
-      #     }
-      #   end)
-
       to_delivery_status = calculate_delivery_status(state, sales_order_items_evt)
 
       sales_order_status_changed_evt = %SalesOrderStatusChanged{
