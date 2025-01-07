@@ -10,11 +10,8 @@ defmodule Handan.Repo.Migrations.CreateWarehouses do
       add :address, :string
       add :contact_name, :string
       add :contact_mobile, :string
-      add :store_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
     end
-
-    create index(:warehouses, [:store_uuid])
   end
 end

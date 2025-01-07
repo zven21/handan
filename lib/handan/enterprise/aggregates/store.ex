@@ -51,7 +51,6 @@ defmodule Handan.Enterprise.Aggregates.Store do
       |> Enum.map(fn unit ->
         %UOMCreated{
           uom_uuid: Ecto.UUID.generate(),
-          store_uuid: cmd.store_uuid,
           name: unit,
           description: unit
         }
@@ -60,7 +59,6 @@ defmodule Handan.Enterprise.Aggregates.Store do
     warehouse_evt = %WarehouseCreated{
       warehouse_uuid: Ecto.UUID.generate(),
       name: @default_warehouse_name,
-      store_uuid: cmd.store_uuid,
       is_default: true,
       address: "",
       contact_name: "",

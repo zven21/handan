@@ -4,7 +4,6 @@ defmodule Handan.Repo.Migrations.CreateStockUoms do
   def change do
     create table(:stock_uoms, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
-
       add :item_uuid, :binary_id
       add :uom_uuid, :binary_id
       add :uom_name, :string

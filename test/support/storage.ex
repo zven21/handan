@@ -35,6 +35,12 @@ defmodule Handan.Storage do
       uoms,
       stores,
       warehouses,
+      customers,
+      sales_orders,
+      sales_order_items,
+      delivery_notes,
+      delivery_note_items,
+      sales_invoices,
       projection_versions
     RESTART IDENTITY;
     """

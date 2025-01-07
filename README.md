@@ -30,12 +30,12 @@ This project utilizes the following technologies:
 
 - [x] Core Domain Model
 - [ ] Accounts
+- [x] Enterprise
 - [x] Stock && Item
-- [ ] Enterprise
-- [ ] Finance
-- [ ] Selling
+- [x] Selling
 - [ ] Purchasing
 - [ ] Production
+- [ ] Finance
 - [ ] Subcontracting
 
 ## **Contributing**

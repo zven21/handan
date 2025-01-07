@@ -31,11 +31,11 @@ defmodule Handan.Infrastructure.DecimalHelper do
     D.sub(to_decimal(number1), to_decimal(number2))
   end
 
-  def decimal_mul(nil, nil), do: nil
-  def decimal_mul(nil, number), do: number
-  def decimal_mul(number, nil), do: number
+  def decimal_mult(nil, nil), do: nil
+  def decimal_mult(nil, number), do: number
+  def decimal_mult(number, nil), do: number
 
-  def decimal_mul(number1, number2) do
+  def decimal_mult(number1, number2) do
     D.mult(to_decimal(number1), to_decimal(number2))
   end
 

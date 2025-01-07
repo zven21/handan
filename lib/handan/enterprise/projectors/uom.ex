@@ -13,7 +13,6 @@ defmodule Handan.Enterprise.Projectors.UOM do
     uom = %UOM{
       uuid: evt.uom_uuid,
       name: evt.name,
-      store_uuid: evt.store_uuid,
       description: evt.description
     }
 

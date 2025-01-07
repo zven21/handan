@@ -10,5 +10,6 @@ defmodule Handan.Stock.Commands.DecreaseStockItem do
     field :warehouse_uuid, Ecto.UUID
     field :stock_uom_uuid, Ecto.UUID
     field :qty, :decimal
+    field :type, :string
   end
 end

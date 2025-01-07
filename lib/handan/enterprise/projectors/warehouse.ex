@@ -15,7 +15,6 @@ defmodule Handan.Enterprise.Projectors.Warehouse do
     fn multi ->
       warehouse = %Warehouse{
         uuid: evt.warehouse_uuid,
-        store_uuid: evt.store_uuid,
         name: evt.name,
         address: evt.address,
         is_default: evt.is_default,

@@ -20,7 +20,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Enterprise.Commands.CreateStore,
       projection: Handan.Enterprise.Projections.Store,
       result_type: :store_uuid,
-      preload: [:uoms, :warehouses]
+      preload: []
     }
   end
 
@@ -62,6 +62,92 @@ defmodule Handan.Dispatcher.Matcher do
       projection: Handan.Stock.Projections.Item,
       result_type: :item_uuid,
       preload: [:inventory_entries, :stock_items, :stock_uoms]
+    }
+  end
+
+  # selling
+  def match(:create_customer) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateCustomer,
+      projection: Handan.Selling.Projections.Customer,
+      result_type: :customer_uuid
+    }
+  end
+
+  def match(:delete_customer) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.DeleteCustomer,
+      projection: Handan.Selling.Projections.Customer
+    }
+  end
+
+  def match(:create_sales_order) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateSalesOrder,
+      projection: Handan.Selling.Projections.SalesOrder,
+      result_type: :sales_order_uuid,
+      preload: [:customer, :warehouse, :items]
+    }
+  end
+
+  def match(:confirm_sales_order) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.ConfirmSalesOrder,
+      projection: Handan.Selling.Projections.SalesOrder,
+      result_type: :sales_order_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_sales_order) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.DeleteSalesOrder,
+      projection: Handan.Selling.Projections.SalesOrder
+    }
+  end
+
+  def match(:create_delivery_note) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateDeliveryNote,
+      projection: Handan.Selling.Projections.DeliveryNote,
+      result_type: :delivery_note_uuid,
+      preload: [:sales_order, :items]
+    }
+  end
+
+  def match(:confirm_delivery_note) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.ConfirmDeliveryNote,
+      projection: Handan.Selling.Projections.DeliveryNote,
+      result_type: :delivery_note_uuid,
+      preload: []
+    }
+  end
+
+  def match(:create_sales_invoice) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CreateSalesInvoice,
+      projection: Handan.Selling.Projections.SalesInvoice,
+      result_type: :sales_invoice_uuid,
+      preload: []
+    }
+  end
+
+  def match(:confirm_sales_invoice) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.ConfirmSalesInvoice,
+      projection: Handan.Selling.Projections.SalesInvoice,
+      result_type: :sales_invoice_uuid,
+      preload: []
+    }
+  end
+
+  def match(:complete_delivery_note) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CompleteDeliveryNote,
+      projection: Handan.Selling.Projections.DeliveryNote,
+      result_type: :delivery_note_uuid,
+      preload: []
     }
   end
 

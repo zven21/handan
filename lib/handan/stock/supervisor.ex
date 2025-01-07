@@ -11,7 +11,8 @@ defmodule Handan.Stock.Supervisor do
     children = [
       Handan.Stock.Projectors.Item,
       Handan.Stock.Projectors.StockItem,
-      Handan.Stock.Projectors.InventoryEntry
+      Handan.Stock.Projectors.InventoryEntry,
+      Handan.Stock.Workflow
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

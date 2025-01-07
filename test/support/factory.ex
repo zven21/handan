@@ -19,4 +19,34 @@ defmodule Handan.Factory do
       description: sequence(:description, &"description-#{&1}")
     }
   end
+
+  def customer_factory() do
+    %{
+      customer_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      address: sequence(:address, &"address-#{&1}")
+    }
+  end
+
+  def sales_order_factory() do
+    %{
+      sales_order_uuid: Ecto.UUID.generate(),
+      customer_uuid: Ecto.UUID.generate(),
+      warehouse_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def delivery_note_factory() do
+    %{
+      delivery_note_uuid: Ecto.UUID.generate(),
+      sales_order_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def sales_invoice_factory() do
+    %{
+      sales_invoice_uuid: Ecto.UUID.generate(),
+      sales_order_uuid: Ecto.UUID.generate()
+    }
+  end
 end

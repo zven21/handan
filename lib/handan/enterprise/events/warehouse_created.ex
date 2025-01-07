@@ -6,7 +6,6 @@ defmodule Handan.Enterprise.Events.WarehouseCreated do
   defevent do
     field :warehouse_uuid, Ecto.UUID
     field :name, :string
-    field :store_uuid, Ecto.UUID
     field :address, :string
     field :contact_name, :string
     field :contact_mobile, :string
