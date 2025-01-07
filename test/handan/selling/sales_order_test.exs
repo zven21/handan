@@ -56,6 +56,28 @@ defmodule Handan.Selling.SalesOrderTest do
     end
   end
 
+  describe "confirm sales order" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order
+    ]
+
+    test "should succeed with valid request", %{sales_order: sales_order} do
+      request = %{
+        sales_order_uuid: sales_order.uuid
+      }
+
+      assert {:ok, sales_order} = Dispatcher.run(request, :confirm_sales_order)
+
+      IO.inspect(sales_order, label: "sales_order")
+
+      # assert {:ok, %SalesOrder{} = sales_order} = Turbo.get(SalesOrder, sales_order.uuid)
+      # assert sales_order.status == :to_deliver_and_bill
+    end
+  end
+
   describe "create delivery note" do
     setup [
       :create_store,

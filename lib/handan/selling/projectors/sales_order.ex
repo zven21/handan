@@ -13,7 +13,10 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     SalesOrderDeleted,
     SalesOrderItemAdded,
     DeliveryNoteCreated,
-    DeliveryNoteItemAdded
+    DeliveryNoteItemAdded,
+    SalesOrderConfirmed,
+    SalesOrderStatusChanged,
+    DeliveryNoteConfirmed
   }
 
   alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem}
@@ -90,11 +93,34 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     Ecto.Multi.insert(multi, :delivery_note_item_added, delivery_note_item)
   end)
 
+  project(%SalesOrderConfirmed{} = evt, _meta, fn multi ->
+    set_fields = [
+      status: evt.status,
+    ]
+
+    Ecto.Multi.update_all(multi, :sales_order_confirmed, sales_order_query(evt.sales_order_uuid), set: set_fields)
+  end)
+
+  project(%SalesOrderStatusChanged{} = evt, _meta, fn multi ->
+    set_fields = [
+      status: evt.to_status,
+      delivery_status: evt.to_delivery_status,
+      billing_status: evt.to_billing_status
+    ]
+
+    Ecto.Multi.update_all(multi, :sales_order_status_changed, sales_order_query(evt.sales_order_uuid), set: set_fields)
+  end)
+
+
   def after_update(_event, _metadata, _changes) do
     :ok
   end
 
   defp sales_order_query(uuid) do
     from(so in SalesOrder, where: so.uuid == ^uuid)
+  end
+
+  defp delivery_note_query(uuid) do
+    from(dn in DeliveryNote, where: dn.uuid == ^uuid)
   end
 end

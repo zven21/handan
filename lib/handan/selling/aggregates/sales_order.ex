@@ -37,7 +37,9 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   alias Handan.Selling.Commands.{
     CreateSalesOrder,
     DeleteSalesOrder,
-    CreateDeliveryNote
+    CreateDeliveryNote,
+    ConfirmDeliveryNote,
+    ConfirmSalesOrder
   }
 
   alias Handan.Selling.Events.{
@@ -45,7 +47,10 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     SalesOrderDeleted,
     SalesOrderItemAdded,
     DeliveryNoteCreated,
-    DeliveryNoteItemAdded
+    DeliveryNoteItemAdded,
+    SalesOrderStatusChanged,
+    DeliveryNoteConfirmed,
+    SalesOrderConfirmed
   }
 
   @doc """
@@ -92,6 +97,25 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   end
 
   def execute(_, %CreateSalesOrder{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = cmd) do
+    sales_order_confirmed_evt = %SalesOrderConfirmed{
+      sales_order_uuid: sales_order_uuid,
+      status: :to_deliver_and_bill
+    }
+
+    status_changed_evt = %SalesOrderStatusChanged{
+      sales_order_uuid: sales_order_uuid,
+      from_status: :draft,
+      to_status: :to_deliver_and_bill,
+      from_delivery_status: state.delivery_status,
+      to_delivery_status: state.delivery_status,
+      from_billing_status: state.billing_status,
+      to_billing_status: state.billing_status
+    }
+
+    [sales_order_confirmed_evt, status_changed_evt]
+  end
 
   def execute(%__MODULE__{} = _state, %DeleteSalesOrder{} = cmd) do
     sales_order_evt = %SalesOrderDeleted{
@@ -185,6 +209,26 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     %__MODULE__{
       state
       | delivery_note_items: new_delivery_note_items
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %DeliveryNoteConfirmed{} = evt) do
+    state
+  end
+
+  def apply(%__MODULE__{} = state, %SalesOrderConfirmed{} = evt) do
+    %__MODULE__{
+      state
+      | status: evt.status
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %SalesOrderStatusChanged{} = evt) do
+    %__MODULE__{
+      state
+      | status: evt.to_status,
+        delivery_status: evt.to_delivery_status,
+        billing_status: evt.to_billing_status
     }
   end
 end
