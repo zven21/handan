@@ -3,9 +3,12 @@ defmodule Handan.Selling.SalesOrderTest do
 
   use Handan.DataCase
 
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_sub: 2]
+
   alias Handan.Turbo
   alias Handan.Dispatcher
   alias Handan.Selling.Projections.SalesOrder
+  alias Handan.Stock.Projections.StockItem
 
   describe "create sales order" do
     setup [
@@ -183,8 +186,14 @@ defmodule Handan.Selling.SalesOrderTest do
         delivery_note_uuid: fully_delivery_note.uuid
       }
 
+      sales_order_item = hd(sales_order.items)
+
+      assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: sales_order.warehouse_uuid, item_uuid: sales_order_item.item_uuid})
       assert {:ok, updated_delivery_note} = Dispatcher.run(request, :complete_delivery_note)
-      # TODO: 需要验证库存是否减少
+      assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: sales_order.warehouse_uuid, item_uuid: sales_order_item.item_uuid})
+
+      # assert
+      assert after_stock_item.total_on_hand == decimal_sub(before_stock_item.total_on_hand, sales_order_item.ordered_qty)
       assert updated_delivery_note.status == :completed
     end
   end
