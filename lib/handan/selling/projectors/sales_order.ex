@@ -12,14 +12,21 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     SalesOrderCreated,
     SalesOrderDeleted,
     SalesOrderItemAdded,
-    DeliveryNoteCreated,
-    DeliveryNoteItemAdded,
     SalesOrderConfirmed,
     SalesOrderStatusChanged,
-    DeliveryNoteConfirmed,
-    SalesOrderItemAdjusted,
+    SalesOrderItemAdjusted
+  }
+
+  alias Handan.Selling.Events.{
     SalesInvoiceCreated,
     SalesInvoiceConfirmed
+  }
+
+  alias Handan.Selling.Events.{
+    DeliveryNoteCreated,
+    DeliveryNoteItemAdded,
+    DeliveryNoteConfirmed,
+    DeliveryNoteCompleted
   }
 
   alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, DeliveryNote, DeliveryNoteItem, SalesInvoice}
@@ -55,6 +62,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         sales_order_uuid: evt.sales_order_uuid,
         item_uuid: evt.item_uuid,
         item_name: evt.item_name,
+        stock_uom_uuid: evt.stock_uom_uuid,
+        uom_name: evt.uom_name,
         ordered_qty: to_decimal(evt.ordered_qty),
         delivered_qty: to_decimal(evt.delivered_qty),
         remaining_qty: to_decimal(evt.remaining_qty),
@@ -90,6 +99,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         item_uuid: evt.item_uuid,
         actual_qty: to_decimal(evt.actual_qty),
         amount: to_decimal(evt.amount),
+        stock_uom_uuid: evt.stock_uom_uuid,
+        uom_name: evt.uom_name,
         unit_price: to_decimal(evt.unit_price),
         item_name: evt.item_name
       }
@@ -127,6 +138,11 @@ defmodule Handan.Selling.Projectors.SalesOrder do
   project(%DeliveryNoteConfirmed{} = evt, _meta, fn multi ->
     set_fields = [status: evt.status]
     Ecto.Multi.update_all(multi, :delivery_note_confirmed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
+  end)
+
+  project(%DeliveryNoteCompleted{} = evt, _meta, fn multi ->
+    set_fields = [status: evt.status]
+    Ecto.Multi.update_all(multi, :delivery_note_completed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
   end)
 
   project(%SalesInvoiceCreated{} = evt, _meta, fn multi ->

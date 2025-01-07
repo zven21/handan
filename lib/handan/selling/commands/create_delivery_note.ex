@@ -1,7 +1,7 @@
 defmodule Handan.Selling.Commands.CreateDeliveryNote do
   @moduledoc false
 
-  @required_fields ~w(delivery_note_uuid sales_order_uuid store_uuid delivery_items)a
+  @required_fields ~w(delivery_note_uuid sales_order_uuid delivery_items)a
 
   use Handan.EventSourcing.Command
 
@@ -39,6 +39,8 @@ defmodule Handan.Selling.Commands.CreateDeliveryNote do
                   |> Map.put(:item_uuid, sales_order_item.item_uuid)
                   |> Map.put(:delivery_note_uuid, cmd.delivery_note_uuid)
                   |> Map.put(:amount, decimal_mult(delivery_item.actual_qty, sales_order_item.unit_price))
+                  |> Map.put(:stock_uom_uuid, sales_order_item.stock_uom_uuid)
+                  |> Map.put(:uom_name, sales_order_item.uom_name)
                   |> Map.put(:unit_price, sales_order_item.unit_price)
                 else
                   Map.put(delivery_item, :item_uuid, nil)

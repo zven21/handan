@@ -142,5 +142,14 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:complete_delivery_note) do
+    %__MODULE__{
+      command: Handan.Selling.Commands.CompleteDeliveryNote,
+      projection: Handan.Selling.Projections.DeliveryNote,
+      result_type: :delivery_note_uuid,
+      preload: []
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

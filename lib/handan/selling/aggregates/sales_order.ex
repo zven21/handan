@@ -44,11 +44,18 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   alias Handan.Selling.Commands.{
     CreateSalesOrder,
     DeleteSalesOrder,
-    CreateDeliveryNote,
-    ConfirmDeliveryNote,
-    ConfirmSalesOrder,
+    ConfirmSalesOrder
+  }
+
+  alias Handan.Selling.Commands.{
     CreateSalesInvoice,
     ConfirmSalesInvoice
+  }
+
+  alias Handan.Selling.Commands.{
+    CreateDeliveryNote,
+    ConfirmDeliveryNote,
+    CompleteDeliveryNote
   }
 
   alias Handan.Selling.Events.{
@@ -63,8 +70,11 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     DeliveryNoteConfirmed,
     SalesOrderConfirmed,
     SalesInvoiceCreated,
-    SalesInvoiceConfirmed
+    SalesInvoiceConfirmed,
+    DeliveryNoteCompleted
   }
+
+  alias Handan.Stock.Events.InventoryUnitOutbound
 
   @doc """
   停止已删除的聚合
@@ -105,7 +115,9 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
           delivered_qty: 0,
           remaining_qty: sales_item.ordered_qty,
           unit_price: sales_item.unit_price,
-          amount: sales_item.amount
+          amount: sales_item.amount,
+          stock_uom_uuid: sales_item.stock_uom_uuid,
+          uom_name: sales_item.uom_name
         }
       end)
 
@@ -168,6 +180,8 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
             sales_order_item_uuid: delivery_item.sales_order_item_uuid,
             sales_order_uuid: state.sales_order_uuid,
             item_uuid: delivery_item.item_uuid,
+            stock_uom_uuid: delivery_item.stock_uom_uuid,
+            uom_name: delivery_item.uom_name,
             actual_qty: delivery_item.actual_qty,
             amount: delivery_item.amount,
             unit_price: delivery_item.unit_price,
@@ -299,6 +313,39 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     end
   end
 
+  def execute(_, %ConfirmSalesInvoice{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %CompleteDeliveryNote{sales_order_uuid: sales_order_uuid, delivery_note_uuid: delivery_note_uuid} = _cmd) do
+    if Map.has_key?(state.delivery_notes, delivery_note_uuid) do
+      delivery_note = Map.get(state.delivery_notes, delivery_note_uuid)
+
+      delivery_note_completed_evt = %DeliveryNoteCompleted{
+        delivery_note_uuid: delivery_note.delivery_note_uuid,
+        sales_order_uuid: sales_order_uuid,
+        status: :completed
+      }
+
+      delivery_note_item_evts =
+        state.delivery_note_items
+        |> Map.values()
+        |> Enum.filter(fn delivery_item -> delivery_item.delivery_note_uuid == delivery_note_uuid end)
+        |> Enum.map(fn delivery_item ->
+          %InventoryUnitOutbound{
+            item_uuid: delivery_item.item_uuid,
+            warehouse_uuid: state.warehouse_uuid,
+            stock_uom_uuid: delivery_item.stock_uom_uuid,
+            actual_qty: delivery_item.actual_qty,
+            type: "outbound"
+          }
+        end)
+
+      [delivery_note_item_evts, delivery_note_completed_evt]
+      |> List.flatten()
+    else
+      {:error, :delivery_note_not_found}
+    end
+  end
+
   def apply(%__MODULE__{} = state, %SalesOrderCreated{} = evt) do
     %__MODULE__{
       state
@@ -426,6 +473,24 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         delivered_qty: evt.delivered_qty,
         remaining_qty: evt.remaining_qty
     }
+  end
+
+  def apply(%__MODULE__{} = state, %DeliveryNoteCompleted{} = evt) do
+    updated_delivery_notes =
+      state.delivery_notes
+      |> Map.update!(evt.delivery_note_uuid, fn delivery_note ->
+        delivery_note
+        |> Map.merge(Map.from_struct(evt))
+      end)
+
+    %__MODULE__{
+      state
+      | delivery_notes: updated_delivery_notes
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %InventoryUnitOutbound{} = _evt) do
+    state
   end
 
   defp calculate_delivery_status(%{total_qty: total_qty} = state, updated_sales_items) do

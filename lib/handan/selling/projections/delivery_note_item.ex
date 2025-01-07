@@ -10,6 +10,9 @@ defmodule Handan.Selling.Projections.DeliveryNoteItem do
     field :unit_price, :decimal
     field :item_name, :string
 
+    field :stock_uom_uuid, Ecto.UUID
+    field :uom_name, :string
+
     belongs_to :delivery_note, Handan.Selling.Projections.DeliveryNote, foreign_key: :delivery_note_uuid, references: :uuid
     belongs_to :sales_order, Handan.Selling.Projections.SalesOrder, foreign_key: :sales_order_uuid, references: :uuid
     belongs_to :sales_order_item, Handan.Selling.Projections.SalesOrderItem, foreign_key: :sales_order_item_uuid, references: :uuid

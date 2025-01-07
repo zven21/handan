@@ -9,6 +9,9 @@ defmodule Handan.Selling.Events.DeliveryNoteItemAdded do
     field :sales_order_uuid, Ecto.UUID
     field :item_uuid, Ecto.UUID
 
+    field :stock_uom_uuid, Ecto.UUID
+    field :uom_name, :string
+
     field :actual_qty, :decimal
     field :amount, :decimal
     field :unit_price, :decimal

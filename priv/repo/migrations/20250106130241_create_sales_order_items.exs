@@ -11,6 +11,9 @@ defmodule Handan.Repo.Migrations.CreateSalesOrderItems do
       add :delivered_qty, :decimal, default: 0
       add :remaining_qty, :decimal, default: 0
 
+      add :stock_uom_uuid, :binary_id
+      add :uom_name, :string
+
       add :item_uuid, :binary_id
       add :sales_order_uuid, :binary_id
 

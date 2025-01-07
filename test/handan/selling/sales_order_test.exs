@@ -14,7 +14,7 @@ defmodule Handan.Selling.SalesOrderTest do
       :create_item
     ]
 
-    test "should succeed with valid request", %{customer: customer, item: item, warehouse: warehouse} do
+    test "should succeed with valid request", %{customer: customer, item: item, stock_uom: stock_uom, warehouse: warehouse} do
       request = %{
         sales_order_uuid: Ecto.UUID.generate(),
         customer_uuid: customer.uuid,
@@ -24,7 +24,9 @@ defmodule Handan.Selling.SalesOrderTest do
             sales_order_item_uuid: Ecto.UUID.generate(),
             item_uuid: item.uuid,
             ordered_qty: 100,
-            unit_price: 10.0
+            unit_price: 10.0,
+            stock_uom_uuid: stock_uom.uuid,
+            uom_name: stock_uom.uom_name
           }
         ]
       }
@@ -162,6 +164,28 @@ defmodule Handan.Selling.SalesOrderTest do
       assert updated_sales_order.status == :to_bill
       assert updated_sales_order.delivery_status == :fully_delivered
       assert updated_sales_order.billing_status == :not_billed
+    end
+  end
+
+  describe "complete delivery note" do
+    setup [
+      :create_store,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_fully_delivery_note,
+      :confirm_delivery_note
+    ]
+
+    test "should succeed with valid request", %{sales_order: sales_order, fully_delivery_note: fully_delivery_note} do
+      request = %{
+        sales_order_uuid: sales_order.uuid,
+        delivery_note_uuid: fully_delivery_note.uuid
+      }
+
+      assert {:ok, updated_delivery_note} = Dispatcher.run(request, :complete_delivery_note)
+      # TODO: 需要验证库存是否减少
+      assert updated_delivery_note.status == :completed
     end
   end
 

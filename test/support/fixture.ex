@@ -37,8 +37,11 @@ defmodule Handan.Fixture do
 
     {:ok, item} = fixture(:item, name: "item-name", stock_uoms: stock_uoms, opening_stocks: opening_stocks)
 
+    stock_uom = hd(item.stock_uoms)
+
     [
-      item: item
+      item: item,
+      stock_uom: stock_uom
     ]
   end
 
@@ -50,13 +53,15 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_sales_order(%{customer: customer, item: item, warehouse: warehouse}) do
+  def create_sales_order(%{customer: customer, item: item, stock_uom: stock_uom, warehouse: warehouse}) do
     sales_items = [
       %{
         sales_order_item_uuid: Ecto.UUID.generate(),
         item_uuid: item.uuid,
         ordered_qty: 100,
-        unit_price: 10.0
+        unit_price: 10.0,
+        stock_uom_uuid: stock_uom.uuid,
+        uom_name: stock_uom.uom_name
       }
     ]
 
@@ -84,7 +89,7 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_fully_delivery_note(%{store: store, sales_order: sales_order}) do
+  def create_fully_delivery_note(%{sales_order: sales_order}) do
     sales_order_item = hd(sales_order.items)
 
     delivery_items = [
@@ -94,10 +99,18 @@ defmodule Handan.Fixture do
       }
     ]
 
-    {:ok, delivery_note} = fixture(:delivery_note, store_uuid: store.uuid, sales_order_uuid: sales_order.uuid, delivery_items: delivery_items)
+    {:ok, delivery_note} = fixture(:delivery_note, sales_order_uuid: sales_order.uuid, delivery_items: delivery_items)
 
     [
       fully_delivery_note: delivery_note
+    ]
+  end
+
+  def confirm_delivery_note(%{fully_delivery_note: fully_delivery_note}) do
+    {:ok, delivery_note} = fixture(:confirm_delivery_note, sales_order_uuid: fully_delivery_note.sales_order_uuid, delivery_note_uuid: fully_delivery_note.uuid)
+
+    [
+      delivery_note: delivery_note
     ]
   end
 
@@ -114,5 +127,6 @@ defmodule Handan.Fixture do
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
   def fixture(:sales_order, attrs), do: Dispatcher.run(build(:sales_order, attrs), :create_sales_order)
   def fixture(:delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :create_delivery_note)
+  def fixture(:confirm_delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :confirm_delivery_note)
   def fixture(:sales_invoice, attrs), do: Dispatcher.run(build(:sales_invoice, attrs), :create_sales_invoice)
 end

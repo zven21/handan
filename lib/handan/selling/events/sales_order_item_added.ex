@@ -10,6 +10,10 @@ defmodule Handan.Selling.Events.SalesOrderItemAdded do
     field :amount, :decimal
     field :unit_price, :decimal
     field :item_name, :string
+
+    field :stock_uom_uuid, Ecto.UUID
+    field :uom_name, :string
+
     field :ordered_qty, :decimal
     field :delivered_qty, :decimal
     field :remaining_qty, :decimal

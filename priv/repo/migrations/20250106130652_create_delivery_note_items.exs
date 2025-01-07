@@ -10,6 +10,9 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNoteItems do
       add :item_uuid, :binary_id
       add :item_name, :string
 
+      add :uom_name, :string
+      add :stock_uom_uuid, :binary_id
+
       add :actual_qty, :decimal
       add :amount, :decimal
       add :unit_price, :decimal

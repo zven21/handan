@@ -8,6 +8,9 @@ defmodule Handan.Selling.Projections.SalesOrderItem do
   schema "sales_order_items" do
     field :item_name, :string
     field :unit_price, :decimal
+    field :stock_uom_uuid, Ecto.UUID
+    field :uom_name, :string
+
     field :amount, :decimal
     field :ordered_qty, :decimal
     field :delivered_qty, :decimal
