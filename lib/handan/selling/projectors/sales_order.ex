@@ -6,6 +6,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   import Ecto.Query, warn: false
   import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
+  import Handan.Infrastructure.Helper, only: [to_atom: 1]
 
   alias Handan.Selling.Events.{
     SalesOrderCreated,
@@ -27,9 +28,9 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         customer_name: evt.customer_name,
         total_amount: to_decimal(evt.total_amount),
         total_qty: to_decimal(evt.total_qty),
-        status: evt.status,
-        delivery_status: evt.delivery_status,
-        billing_status: evt.billing_status,
+        status: to_atom(evt.status),
+        delivery_status: to_atom(evt.delivery_status),
+        billing_status: to_atom(evt.billing_status),
         warehouse_uuid: evt.warehouse_uuid
       }
 
@@ -64,7 +65,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         uuid: evt.delivery_note_uuid,
         sales_order_uuid: evt.sales_order_uuid,
         customer_uuid: evt.customer_uuid,
-        status: evt.status,
+        status: to_atom(evt.status),
         customer_name: evt.customer_name,
         total_amount: to_decimal(evt.total_amount)
       }

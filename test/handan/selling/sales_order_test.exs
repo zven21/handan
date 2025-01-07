@@ -82,12 +82,10 @@ defmodule Handan.Selling.SalesOrderTest do
 
       assert {:ok, delivery_note} = Dispatcher.run(request, :create_delivery_note)
 
-      IO.inspect(delivery_note)
-
-      # assert delivery_note.uuid == request.delivery_note_uuid
-      # assert delivery_note.sales_order_uuid == sales_order.uuid
-      # assert delivery_note.customer_uuid == customer.uuid
-      # assert delivery_note.status == :draft
+      assert delivery_note.uuid == request.delivery_note_uuid
+      assert delivery_note.sales_order_uuid == sales_order.uuid
+      assert delivery_note.customer_uuid == customer.uuid
+      assert delivery_note.status == :draft
     end
   end
 end

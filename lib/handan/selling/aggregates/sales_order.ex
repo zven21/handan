@@ -149,6 +149,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         delivery_status: evt.delivery_status,
         billing_status: evt.billing_status,
         customer_name: evt.customer_name,
+        customer_uuid: evt.customer_uuid,
         warehouse_uuid: evt.warehouse_uuid,
         customer_address: evt.customer_address,
         total_amount: evt.total_amount,

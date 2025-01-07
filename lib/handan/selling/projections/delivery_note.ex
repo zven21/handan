@@ -7,7 +7,7 @@ defmodule Handan.Selling.Projections.DeliveryNote do
   @foreign_key_type :binary_id
   schema "delivery_notes" do
     field :customer_name, :string
-    field :status, :string
+    field :status, Ecto.Enum, values: ~w(draft to_deliver completed cancelled)a, default: :draft
     field :total_qty, :decimal
     field :total_amount, :decimal
 
