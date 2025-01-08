@@ -1,17 +1,13 @@
 defmodule Handan.Selling.CustomerTest do
   @moduledoc false
 
-  use Handan.DataCase, async: true
+  use Handan.DataCase
 
   alias Handan.Turbo
   alias Handan.Dispatcher
   alias Handan.Selling.Projections.Customer
 
   describe "create customer" do
-    setup [
-      :create_company
-    ]
-
     test "should succeed with valid request" do
       request = %{
         customer_uuid: Ecto.UUID.generate(),
@@ -28,7 +24,6 @@ defmodule Handan.Selling.CustomerTest do
 
   describe "delete customer" do
     setup [
-      :create_company,
       :create_customer
     ]
 

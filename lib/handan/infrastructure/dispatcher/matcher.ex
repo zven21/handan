@@ -167,5 +167,91 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_supplier) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreateSupplier,
+      projection: Handan.Purchasing.Projections.Supplier,
+      result_type: :supplier_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_supplier) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.DeleteSupplier,
+      projection: Handan.Purchasing.Projections.Supplier
+    }
+  end
+
+  def match(:create_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreatePurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder,
+      result_type: :purchase_order_uuid,
+      preload: [:items]
+    }
+  end
+
+  def match(:delete_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.DeletePurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder
+    }
+  end
+
+  def match(:confirm_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.ConfirmPurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder,
+      result_type: :purchase_order_uuid,
+      preload: []
+    }
+  end
+
+  def match(:create_receipt_note) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreateReceiptNote,
+      projection: Handan.Purchasing.Projections.ReceiptNote,
+      result_type: :receipt_note_uuid,
+      preload: []
+    }
+  end
+
+  def match(:confirm_receipt_note) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.ConfirmReceiptNote,
+      projection: Handan.Purchasing.Projections.ReceiptNote,
+      result_type: :receipt_note_uuid,
+      preload: []
+    }
+  end
+
+  def match(:complete_receipt_note) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CompleteReceiptNote,
+      projection: Handan.Purchasing.Projections.ReceiptNote,
+      result_type: :receipt_note_uuid,
+      preload: []
+    }
+  end
+
+  def match(:create_purchase_invoice) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreatePurchaseInvoice,
+      projection: Handan.Purchasing.Projections.PurchaseInvoice,
+      result_type: :purchase_invoice_uuid,
+      preload: []
+    }
+  end
+
+  def match(:confirm_purchase_invoice) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.ConfirmPurchaseInvoice,
+      projection: Handan.Purchasing.Projections.PurchaseInvoice,
+      result_type: :purchase_invoice_uuid,
+      preload: []
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

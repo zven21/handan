@@ -22,6 +22,7 @@ defmodule Handan.Application do
       Handan.Accounts.Supervisor,
       Handan.Stock.Supervisor,
       Handan.Selling.Supervisor,
+      Handan.Purchasing.Supervisor,
       HandanWeb.Endpoint
     ]
 

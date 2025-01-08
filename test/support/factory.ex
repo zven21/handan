@@ -12,9 +12,10 @@ defmodule Handan.Factory do
     }
   end
 
-  def company_factory() do
+  def company_factory(%{user_uuid: user_uuid}) do
     %{
       company_uuid: Ecto.UUID.generate(),
+      user_uuid: user_uuid,
       name: sequence(:name, &"name-#{&1}"),
       description: sequence(:description, &"description-#{&1}")
     }
@@ -32,6 +33,14 @@ defmodule Handan.Factory do
   def customer_factory() do
     %{
       customer_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      address: sequence(:address, &"address-#{&1}")
+    }
+  end
+
+  def supplier_factory() do
+    %{
+      supplier_uuid: Ecto.UUID.generate(),
       name: sequence(:name, &"name-#{&1}"),
       address: sequence(:address, &"address-#{&1}")
     }
@@ -56,6 +65,27 @@ defmodule Handan.Factory do
     %{
       sales_invoice_uuid: Ecto.UUID.generate(),
       sales_order_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def purchase_order_factory() do
+    %{
+      purchase_order_uuid: Ecto.UUID.generate(),
+      supplier_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def receipt_note_factory() do
+    %{
+      receipt_note_uuid: Ecto.UUID.generate(),
+      purchase_order_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def purchase_invoice_factory() do
+    %{
+      purchase_invoice_uuid: Ecto.UUID.generate(),
+      purchase_order_uuid: Ecto.UUID.generate()
     }
   end
 

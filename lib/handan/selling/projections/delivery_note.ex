@@ -12,7 +12,7 @@ defmodule Handan.Selling.Projections.DeliveryNote do
     field :total_amount, :decimal, default: 0
 
     belongs_to :sales_order, Handan.Selling.Projections.SalesOrder, foreign_key: :sales_order_uuid, references: :uuid
-    belongs_to :customer, Handan.Core.Customer, foreign_key: :customer_uuid, references: :uuid
+    belongs_to :customer, Handan.Selling.Projections.Customer, foreign_key: :customer_uuid, references: :uuid
 
     has_many :items, Handan.Selling.Projections.DeliveryNoteItem, foreign_key: :delivery_note_uuid
 

@@ -9,6 +9,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "create item" do
     setup [
+      :register_user,
       :create_company
     ]
 
@@ -43,6 +44,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "delete item" do
     setup [
+      :register_user,
       :create_company,
       :create_item
     ]
@@ -59,6 +61,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "increase stock item" do
     setup [
+      :register_user,
       :create_company,
       :create_item
     ]
@@ -79,6 +82,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "decrease stock item" do
     setup [
+      :register_user,
       :create_company,
       :create_item
     ]

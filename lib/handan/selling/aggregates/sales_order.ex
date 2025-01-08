@@ -267,6 +267,8 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     end
   end
 
+  def execute(_, %CreateSalesInvoice{}), do: {:error, :not_allowed}
+
   def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesInvoice{sales_order_uuid: sales_order_uuid} = cmd) do
     if Map.has_key?(state.sales_invoices, cmd.sales_invoice_uuid) do
       sales_invoice = Map.get(state.sales_invoices, cmd.sales_invoice_uuid)
