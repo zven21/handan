@@ -222,7 +222,7 @@ defmodule Handan.Core.ProductionContext do
   defmodule JobCard do
     @type t :: %__MODULE__{
             id: integer,
-            work_order_id: integer,
+            work_order_item_id: integer,
             status: String.t(),
             start_time: DateTime.t(),
             end_time: DateTime.t(),
@@ -232,7 +232,7 @@ defmodule Handan.Core.ProductionContext do
 
     defstruct id: nil,
               # 所属工作订单ID
-              work_order_id: nil,
+              work_order_item_id: nil,
               # 作业卡状态
               status: nil,
               # 作业卡开始时间
@@ -467,7 +467,7 @@ defmodule Handan.Core.ProductionContext do
     # 作业卡
     job_card = %JobCard{
       id: 1,
-      work_order_id: 1,
+      work_order_item_id: 1,
       status: "执行中",
       start_time: DateTime.utc_now(),
       end_time: DateTime.utc_now() |> DateTime.add(3600 * 24 * 7),
