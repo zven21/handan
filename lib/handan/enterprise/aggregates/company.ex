@@ -1,12 +1,15 @@
-defmodule Handan.Enterprise.Aggregates.Store do
-  @moduledoc false
+defmodule Handan.Enterprise.Aggregates.Company do
+  @moduledoc """
+  Aggregate for company.
+  Represents the meaning of small and medium-sized enterprises, this is the basic information configuration of the enterprise.
+  """
 
   @required_fields []
 
   use Handan.EventSourcing.Type
 
   deftype do
-    field :store_uuid, Ecto.UUID
+    field :company_uuid, Ecto.UUID
     field :name, :string
     field :description, :string
     field :deleted?, :boolean, default: false
@@ -15,13 +18,13 @@ defmodule Handan.Enterprise.Aggregates.Store do
   end
 
   alias Handan.Enterprise.Commands.{
-    CreateStore,
-    DeleteStore
+    CreateCompany,
+    DeleteCompany
   }
 
   alias Handan.Enterprise.Events.{
-    StoreCreated,
-    StoreDeleted
+    CompanyCreated,
+    CompanyDeleted
   }
 
   alias Handan.Enterprise.Events.UOMCreated
@@ -31,17 +34,17 @@ defmodule Handan.Enterprise.Aggregates.Store do
   @default_warehouse_name "默认仓库"
 
   @doc """
-  Stop the store aggregate after it has been deleted
+  Stop the company aggregate after it has been deleted
   """
-  def after_event(%StoreDeleted{}), do: :stop
+  def after_event(%CompanyDeleted{}), do: :stop
   def after_event(_), do: :timer.hours(1)
   def after_command(_), do: :timer.hours(1)
   def after_error(_), do: :timer.hours(1)
 
   # create store
-  def execute(%__MODULE__{store_uuid: nil}, %CreateStore{} = cmd) do
-    store_evt = %StoreCreated{
-      store_uuid: cmd.store_uuid,
+  def execute(%__MODULE__{company_uuid: nil}, %CreateCompany{} = cmd) do
+    company_evt = %CompanyCreated{
+      company_uuid: cmd.company_uuid,
       name: cmd.name,
       description: cmd.description
     }
@@ -65,29 +68,29 @@ defmodule Handan.Enterprise.Aggregates.Store do
       contact_mobile: ""
     }
 
-    [store_evt, uom_evts, warehouse_evt] |> List.flatten()
+    [company_evt, uom_evts, warehouse_evt] |> List.flatten()
   end
 
-  def execute(_, %CreateStore{}), do: {:error, :not_allowed}
+  def execute(_, %CreateCompany{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{store_uuid: store_uuid} = _state, %DeleteStore{store_uuid: store_uuid} = _cmd) do
-    %StoreDeleted{
-      store_uuid: store_uuid
+  def execute(%__MODULE__{company_uuid: company_uuid} = _state, %DeleteCompany{company_uuid: company_uuid} = _cmd) do
+    %CompanyDeleted{
+      company_uuid: company_uuid
     }
   end
 
-  def execute(_, %DeleteStore{}), do: {:error, :not_allowed}
+  def execute(_, %DeleteCompany{}), do: {:error, :not_allowed}
 
-  def apply(%__MODULE__{} = state, %StoreCreated{} = evt) do
+  def apply(%__MODULE__{} = state, %CompanyCreated{} = evt) do
     %__MODULE__{
       state
-      | store_uuid: evt.store_uuid,
+      | company_uuid: evt.company_uuid,
         name: evt.name,
         description: evt.description
     }
   end
 
-  def apply(%__MODULE__{} = state, %StoreDeleted{} = _evt) do
+  def apply(%__MODULE__{} = state, %CompanyDeleted{} = _evt) do
     %__MODULE__{
       state
       | deleted?: true

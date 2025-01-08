@@ -9,7 +9,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "create item" do
     setup [
-      :create_store
+      :create_company
     ]
 
     test "should succeed with valid request", %{uom: uom, uom_2: uom_2, warehouse: warehouse} do
@@ -43,7 +43,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "delete item" do
     setup [
-      :create_store,
+      :create_company,
       :create_item
     ]
 
@@ -59,7 +59,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "increase stock item" do
     setup [
-      :create_store,
+      :create_company,
       :create_item
     ]
 
@@ -79,7 +79,7 @@ defmodule Handan.Stock.ItemTest do
 
   describe "decrease stock item" do
     setup [
-      :create_store,
+      :create_company,
       :create_item
     ]
 

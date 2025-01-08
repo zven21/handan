@@ -7,35 +7,35 @@ defmodule Handan.Enterprise.Projectors.Store do
   import Ecto.Query, warn: false
 
   alias Handan.Enterprise.Events.{
-    StoreCreated,
-    StoreDeleted
+    CompanyCreated,
+    CompanyDeleted
   }
 
-  alias Handan.Enterprise.Projections.Store
+  alias Handan.Enterprise.Projections.Company
 
   project(
-    %StoreCreated{} = evt,
+    %CompanyCreated{} = evt,
     _meta,
     fn multi ->
-      store = %Store{
-        uuid: evt.store_uuid,
+      company = %Company{
+        uuid: evt.company_uuid,
         name: evt.name,
         description: evt.description
       }
 
-      Ecto.Multi.insert(multi, :store_created, store)
+      Ecto.Multi.insert(multi, :company_created, company)
     end
   )
 
-  project(%StoreDeleted{store_uuid: uuid}, _meta, fn multi ->
-    Ecto.Multi.delete_all(multi, :store_deleted, store_query(uuid))
+  project(%CompanyDeleted{company_uuid: uuid}, _meta, fn multi ->
+    Ecto.Multi.delete_all(multi, :company_deleted, company_query(uuid))
   end)
 
   def after_update(_event, _metadata, _changes) do
     :ok
   end
 
-  def store_query(uuid) do
-    from(s in Store, where: s.uuid == ^uuid)
+  def company_query(uuid) do
+    from(c in Company, where: c.uuid == ^uuid)
   end
 end

@@ -9,7 +9,7 @@ defmodule Handan.Selling.CustomerTest do
 
   describe "create customer" do
     setup [
-      :create_store
+      :create_company
     ]
 
     test "should succeed with valid request" do
@@ -28,7 +28,7 @@ defmodule Handan.Selling.CustomerTest do
 
   describe "delete customer" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer
     ]
 

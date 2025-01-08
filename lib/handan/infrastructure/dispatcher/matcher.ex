@@ -15,19 +15,19 @@ defmodule Handan.Dispatcher.Matcher do
 
   require Logger
 
-  def match(:create_store) do
+  def match(:create_company) do
     %__MODULE__{
-      command: Handan.Enterprise.Commands.CreateStore,
-      projection: Handan.Enterprise.Projections.Store,
-      result_type: :store_uuid,
+      command: Handan.Enterprise.Commands.CreateCompany,
+      projection: Handan.Enterprise.Projections.Company,
+      result_type: :company_uuid,
       preload: []
     }
   end
 
-  def match(:delete_store) do
+  def match(:delete_company) do
     %__MODULE__{
-      command: Handan.Enterprise.Commands.DeleteStore,
-      projection: Handan.Enterprise.Projections.Store
+      command: Handan.Enterprise.Commands.DeleteCompany,
+      projection: Handan.Enterprise.Projections.Company
     }
   end
 
