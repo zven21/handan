@@ -301,7 +301,6 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
-<<<<<<< HEAD
   def match(:create_production_plan) do
     %__MODULE__{
       command: Handan.Production.Commands.CreateProductionPlan,
