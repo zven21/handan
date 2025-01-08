@@ -104,4 +104,11 @@ defmodule Handan.Factory do
       description: sequence(:description, &"description-#{&1}")
     }
   end
+
+  def workstation_factory() do
+    %{
+      workstation_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}")
+    }
+  end
 end

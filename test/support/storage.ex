@@ -53,6 +53,7 @@ defmodule Handan.Storage do
       bom_items,
       processes,
       bom_processes,
+      workstations,
       projection_versions
     RESTART IDENTITY;
     """

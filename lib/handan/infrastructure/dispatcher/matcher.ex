@@ -285,5 +285,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_workstation) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateWorkstation,
+      projection: Handan.Production.Projections.Workstation,
+      result_type: :workstation_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_workstation) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteWorkstation,
+      projection: Handan.Production.Projections.Workstation
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end
