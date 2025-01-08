@@ -17,9 +17,9 @@ To start your Phoenix server and run tests:
 
 This project utilizes the following technologies:
 
-* Phoenix: A web framework for Elixir that allows for the creation of fast, scalable, and maintainable web applications.
-* Commanded(CQRS): A command handling framework for building event-driven systems.
-* Absinthe(GraphQL): A query language for APIs that allows for more flexible and efficient data retrieval.
+* **Phoenix**: A web framework for Elixir that allows for the creation of fast, scalable, and maintainable web applications.
+* **Commanded(CQRS)**: A command handling framework for building event-driven systems.
+* **Absinthe(GraphQL)**: A query language for APIs that allows for more flexible and efficient data retrieval.
 
 
 ## **Flow Diagram**
