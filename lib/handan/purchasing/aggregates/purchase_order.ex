@@ -53,6 +53,11 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     CompleteReceiptNote
   }
 
+  alias Handan.Purchasing.Commands.{
+    CreatePurchaseInvoice,
+    ConfirmPurchaseInvoice
+  }
+
   alias Handan.Purchasing.Events.{
     PurchaseOrderCreated,
     PurchaseOrderDeleted,
@@ -63,7 +68,10 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     ReceiptNoteCreated,
     ReceiptNoteConfirmed,
     ReceiptNoteCompleted,
-    ReceiptNoteItemAdded
+    ReceiptNoteItemAdded,
+    PurchaseOrderSummaryChanged,
+    PurchaseInvoiceCreated,
+    PurchaseInvoiceConfirmed
   }
 
   @doc """
@@ -238,6 +246,79 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %ConfirmReceiptNote{}), do: {:error, :not_allowed}
 
+  def execute(%__MODULE__{} = state, %CreatePurchaseInvoice{} = cmd) do
+    if Map.has_key?(state.purchase_invoices, cmd.purchase_invoice_uuid) do
+      {:error, :purchase_invoice_already_exists}
+    else
+      case D.gte?(state.remaining_amount, cmd.amount) do
+        true ->
+          purchase_invoice_evt = %PurchaseInvoiceCreated{
+            purchase_invoice_uuid: cmd.purchase_invoice_uuid,
+            purchase_order_uuid: state.purchase_order_uuid,
+            supplier_uuid: state.supplier_uuid,
+            supplier_name: state.supplier_name,
+            supplier_address: state.supplier_address,
+            amount: cmd.amount
+          }
+
+          purchase_invoice_evt
+
+        false ->
+          {:error, :amount_too_large}
+      end
+    end
+  end
+
+  def execute(_, %CreatePurchaseInvoice{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %ConfirmPurchaseInvoice{purchase_order_uuid: purchase_order_uuid} = cmd) do
+    if Map.has_key?(state.purchase_invoices, cmd.purchase_invoice_uuid) do
+      purchase_invoice = Map.get(state.purchase_invoices, cmd.purchase_invoice_uuid)
+
+      case D.gte?(state.remaining_amount, purchase_invoice.amount) do
+        true ->
+          new_paid_amount = decimal_add(state.paid_amount, purchase_invoice.amount)
+          new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
+
+          purchase_invoice_confirmed_evt = %PurchaseInvoiceConfirmed{
+            purchase_invoice_uuid: purchase_invoice.purchase_invoice_uuid,
+            purchase_order_uuid: purchase_order_uuid,
+            status: :submitted
+          }
+
+          purchase_order_summary_changed_evt = %PurchaseOrderSummaryChanged{
+            purchase_order_uuid: purchase_order_uuid,
+            paid_amount: new_paid_amount,
+            remaining_amount: new_remaining_amount,
+            received_qty: state.received_qty,
+            remaining_qty: state.remaining_qty
+          }
+
+          to_billing_status = calculate_billing_status(state, state.purchase_invoices)
+
+          purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
+            purchase_order_uuid: purchase_order_uuid,
+            from_billing_status: state.billing_status,
+            to_billing_status: to_billing_status,
+            from_receipt_status: state.receipt_status,
+            to_receipt_status: state.receipt_status,
+            from_status: state.status,
+            to_status: calculate_status(%{receipt_status: state.receipt_status, billing_status: to_billing_status})
+          }
+
+          [purchase_invoice_confirmed_evt, purchase_order_summary_changed_evt, purchase_order_status_changed_evt]
+          |> List.flatten()
+
+        false ->
+          {:error, :amount_too_large}
+      end
+    else
+      {:error, :sales_invoice_not_found}
+    end
+  end
+
+  def execute(_, %ConfirmPurchaseInvoice{}), do: {:error, :not_allowed}
+
   def apply(%__MODULE__{} = purchase_order, %PurchaseOrderCreated{} = event) do
     %__MODULE__{
       purchase_order
@@ -307,6 +388,27 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
       end)
 
     %__MODULE__{state | purchase_items: updated_purchase_items}
+  end
+
+  def apply(%__MODULE__{} = state, %PurchaseInvoiceCreated{} = evt) do
+    new_purchase_invoices = Map.put(state.purchase_invoices, evt.purchase_invoice_uuid, Map.from_struct(evt))
+
+    %__MODULE__{state | purchase_invoices: new_purchase_invoices}
+  end
+
+  def apply(%__MODULE__{} = state, %PurchaseInvoiceConfirmed{} = evt) do
+    updated_purchase_invoices =
+      state.purchase_invoices
+      |> Map.update!(evt.purchase_invoice_uuid, fn item ->
+        item
+        |> Map.merge(Map.from_struct(evt))
+      end)
+
+    %__MODULE__{state | purchase_invoices: updated_purchase_invoices}
+  end
+
+  def apply(%__MODULE__{} = state, %PurchaseOrderSummaryChanged{} = evt) do
+    %__MODULE__{state | paid_amount: evt.paid_amount, remaining_amount: evt.remaining_amount, received_qty: evt.received_qty, remaining_qty: evt.remaining_qty}
   end
 
   defp calculate_receipt_status(%{total_qty: total_qty} = state, updated_purchase_items) do

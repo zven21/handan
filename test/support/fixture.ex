@@ -174,6 +174,14 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_purchase_invoice(%{purchase_order: purchase_order}) do
+    {:ok, purchase_invoice} = fixture(:purchase_invoice, purchase_order_uuid: purchase_order.uuid, amount: 1)
+
+    [
+      purchase_invoice: purchase_invoice
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -185,4 +193,5 @@ defmodule Handan.Fixture do
   def fixture(:supplier, attrs), do: Dispatcher.run(build(:supplier, attrs), :create_supplier)
   def fixture(:purchase_order, attrs), do: Dispatcher.run(build(:purchase_order, attrs), :create_purchase_order)
   def fixture(:receipt_note, attrs), do: Dispatcher.run(build(:receipt_note, attrs), :create_receipt_note)
+  def fixture(:purchase_invoice, attrs), do: Dispatcher.run(build(:purchase_invoice, attrs), :create_purchase_invoice)
 end

@@ -14,6 +14,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     SalesOrderItemAdded,
     SalesOrderConfirmed,
     SalesOrderStatusChanged,
+    SalesOrderSummaryChanged,
     SalesOrderItemAdjusted
   }
 
@@ -124,6 +125,17 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     ]
 
     Ecto.Multi.update_all(multi, :sales_order_status_changed, sales_order_query(evt.sales_order_uuid), set: set_fields)
+  end)
+
+  project(%SalesOrderSummaryChanged{} = evt, _meta, fn multi ->
+    set_fields = [
+      paid_amount: evt.paid_amount,
+      remaining_amount: evt.remaining_amount,
+      delivered_qty: evt.delivered_qty,
+      remaining_qty: evt.remaining_qty
+    ]
+
+    Ecto.Multi.update_all(multi, :sales_order_summary_changed, sales_order_query(evt.sales_order_uuid), set: set_fields)
   end)
 
   project(%SalesOrderItemAdjusted{} = evt, _meta, fn multi ->

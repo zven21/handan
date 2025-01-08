@@ -13,6 +13,7 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     PurchaseOrderDeleted,
     PurchaseOrderItemAdded,
     PurchaseOrderConfirmed,
+    PurchaseOrderSummaryChanged,
     PurchaseOrderStatusChanged,
     PurchaseOrderItemAdjusted
   }
@@ -126,6 +127,17 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     Ecto.Multi.update_all(multi, :purchase_order_status_changed, purchase_order_query(evt.purchase_order_uuid), set: set_fields)
   end)
 
+  project(%PurchaseOrderSummaryChanged{} = evt, _meta, fn multi ->
+    set_fields = [
+      paid_amount: evt.paid_amount,
+      remaining_amount: evt.remaining_amount,
+      received_qty: evt.received_qty,
+      remaining_qty: evt.remaining_qty
+    ]
+
+    Ecto.Multi.update_all(multi, :purchase_order_summary_changed, purchase_order_query(evt.purchase_order_uuid), set: set_fields)
+  end)
+
   project(%PurchaseOrderItemAdjusted{} = evt, _meta, fn multi ->
     set_fields = [
       received_qty: evt.received_qty,
@@ -140,23 +152,23 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     Ecto.Multi.update_all(multi, :receipt_note_confirmed, receipt_note_query(evt.receipt_note_uuid), set: set_fields)
   end)
 
-  # project(%PurchaseInvoiceCreated{} = evt, _meta, fn multi ->
-  #   purchase_invoice =
-  #     %PurchaseInvoice{
-  #       uuid: evt.purchase_invoice_uuid,
-  #       purchase_order_uuid: evt.purchase_order_uuid,
-  #       supplier_uuid: evt.supplier_uuid,
-  #       supplier_name: evt.supplier_name,
-  #       amount: to_decimal(evt.amount)
-  #     }
+  project(%PurchaseInvoiceCreated{} = evt, _meta, fn multi ->
+    purchase_invoice =
+      %PurchaseInvoice{
+        uuid: evt.purchase_invoice_uuid,
+        purchase_order_uuid: evt.purchase_order_uuid,
+        supplier_uuid: evt.supplier_uuid,
+        supplier_name: evt.supplier_name,
+        amount: to_decimal(evt.amount)
+      }
 
-  #   Ecto.Multi.insert(multi, :purchase_invoice_created, purchase_invoice)
-  # end)
+    Ecto.Multi.insert(multi, :purchase_invoice_created, purchase_invoice)
+  end)
 
-  # project(%PurchaseInvoiceConfirmed{} = evt, _meta, fn multi ->
-  #   set_fields = [status: evt.status]
-  #   Ecto.Multi.update_all(multi, :purchase_invoice_confirmed, purchase_invoice_query(evt.purchase_invoice_uuid), set: set_fields)
-  # end)
+  project(%PurchaseInvoiceConfirmed{} = evt, _meta, fn multi ->
+    set_fields = [status: evt.status]
+    Ecto.Multi.update_all(multi, :purchase_invoice_confirmed, purchase_invoice_query(evt.purchase_invoice_uuid), set: set_fields)
+  end)
 
   def after_update(_event, _metadata, _changes) do
     :ok

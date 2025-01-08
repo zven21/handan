@@ -169,59 +169,59 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
   #   end
   # end
 
-  # describe "create purchase invoice" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order
-  #   ]
+  describe "create purchase invoice" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order
+    ]
 
-  #   test "should succeed with valid request", %{purchase_order: purchase_order} do
-  #     request = %{
-  #       purchase_invoice_uuid: Ecto.UUID.generate(),
-  #       purchase_order_uuid: purchase_order.uuid,
-  #       amount: 1
-  #     }
+    test "should succeed with valid request", %{purchase_order: purchase_order} do
+      request = %{
+        purchase_invoice_uuid: Ecto.UUID.generate(),
+        purchase_order_uuid: purchase_order.uuid,
+        amount: 1
+      }
 
-  #     assert {:ok, purchase_invoice} = Dispatcher.run(request, :create_purchase_invoice)
+      assert {:ok, purchase_invoice} = Dispatcher.run(request, :create_purchase_invoice)
 
-  #     assert purchase_invoice.purchase_order_uuid == purchase_order.uuid
-  #     assert purchase_invoice.supplier_uuid == purchase_order.supplier_uuid
-  #     assert purchase_invoice.supplier_name == purchase_order.supplier_name
-  #     assert purchase_invoice.status == :draft
-  #   end
-  # end
+      assert purchase_invoice.purchase_order_uuid == purchase_order.uuid
+      assert purchase_invoice.supplier_uuid == purchase_order.supplier_uuid
+      assert purchase_invoice.supplier_name == purchase_order.supplier_name
+      assert purchase_invoice.status == :draft
+    end
+  end
 
-  # describe "confirm purchase invoice" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order,
-  #     :create_purchase_invoice
-  #   ]
+  describe "confirm purchase invoice" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order,
+      :create_purchase_invoice
+    ]
 
-  #   test "should succeed with valid request 1", %{purchase_order: purchase_order, purchase_invoice: purchase_invoice} do
-  #     request = %{
-  #       purchase_invoice_uuid: purchase_invoice.uuid,
-  #       purchase_order_uuid: purchase_order.uuid
-  #     }
+    test "should succeed with valid request 1", %{purchase_order: purchase_order, purchase_invoice: purchase_invoice} do
+      request = %{
+        purchase_invoice_uuid: purchase_invoice.uuid,
+        purchase_order_uuid: purchase_order.uuid
+      }
 
-  #     assert {:ok, purchase_invoice} = Dispatcher.run(request, :confirm_purchase_invoice)
-  #     assert {:ok, updated_purchase_order} = Turbo.get(PurchaseOrder, purchase_order.uuid)
+      assert {:ok, purchase_invoice} = Dispatcher.run(request, :confirm_purchase_invoice)
+      assert {:ok, updated_purchase_order} = Turbo.get(PurchaseOrder, purchase_order.uuid)
 
-  #     assert purchase_invoice.purchase_order_uuid == purchase_order.uuid
-  #     assert purchase_invoice.supplier_uuid == purchase_order.supplier_uuid
-  #     assert purchase_invoice.supplier_name == purchase_order.supplier_name
-  #     assert purchase_invoice.amount == Decimal.new(1)
-  #     assert purchase_invoice.status == :submitted
+      assert purchase_invoice.purchase_order_uuid == purchase_order.uuid
+      assert purchase_invoice.supplier_uuid == purchase_order.supplier_uuid
+      assert purchase_invoice.supplier_name == purchase_order.supplier_name
+      assert purchase_invoice.amount == Decimal.new(1)
+      assert purchase_invoice.status == :submitted
 
-  #     assert updated_purchase_order.status == :to_receive
-  #     assert updated_purchase_order.receipt_status == :not_received
-  #     assert updated_purchase_order.billing_status == :partly_billed
-  #   end
-  # end
+      assert updated_purchase_order.status == :to_receive
+      assert updated_purchase_order.receipt_status == :not_received
+      assert updated_purchase_order.billing_status == :partly_billed
+    end
+  end
 end

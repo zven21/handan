@@ -226,20 +226,20 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
-  def match(:create_receipt_invoice) do
+  def match(:create_purchase_invoice) do
     %__MODULE__{
-      command: Handan.Purchasing.Commands.CreateReceiptInvoice,
-      projection: Handan.Purchasing.Projections.ReceiptInvoice,
-      result_type: :receipt_invoice_uuid,
+      command: Handan.Purchasing.Commands.CreatePurchaseInvoice,
+      projection: Handan.Purchasing.Projections.PurchaseInvoice,
+      result_type: :purchase_invoice_uuid,
       preload: []
     }
   end
 
-  def match(:confirm_receipt_invoice) do
+  def match(:confirm_purchase_invoice) do
     %__MODULE__{
-      command: Handan.Purchasing.Commands.ConfirmReceiptInvoice,
-      projection: Handan.Purchasing.Projections.ReceiptInvoice,
-      result_type: :receipt_invoice_uuid,
+      command: Handan.Purchasing.Commands.ConfirmPurchaseInvoice,
+      projection: Handan.Purchasing.Projections.PurchaseInvoice,
+      result_type: :purchase_invoice_uuid,
       preload: []
     }
   end

@@ -12,7 +12,12 @@ defmodule Handan.Repo.Migrations.CreatePurchaseOrders do
       add :supplier_address, :string
 
       add :total_amount, :decimal
+      add :paid_amount, :decimal
+      add :remaining_amount, :decimal
+
       add :total_qty, :decimal
+      add :received_qty, :decimal
+      add :remaining_qty, :decimal
 
       add :supplier_uuid, :binary_id
       add :warehouse_uuid, :binary_id

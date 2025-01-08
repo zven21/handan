@@ -16,7 +16,12 @@ defmodule Handan.Purchasing.Projections.PurchaseOrder do
     field :supplier_address, :string
 
     field :total_amount, :decimal
+    field :paid_amount, :decimal
+    field :remaining_amount, :decimal
+
     field :total_qty, :decimal
+    field :received_qty, :decimal
+    field :remaining_qty, :decimal
 
     belongs_to :supplier, Handan.Purchasing.Projections.Supplier, foreign_key: :supplier_uuid, references: :uuid
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
