@@ -167,5 +167,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_supplier) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreateSupplier,
+      projection: Handan.Purchasing.Projections.Supplier,
+      result_type: :supplier_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_supplier) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.DeleteSupplier,
+      projection: Handan.Purchasing.Projections.Supplier
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

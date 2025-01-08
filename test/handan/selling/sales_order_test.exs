@@ -12,6 +12,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create sales order" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item
@@ -45,6 +46,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "delete sales order" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -63,6 +65,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm sales order" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -81,6 +84,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create delivery note" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -113,6 +117,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm delivery note" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -142,6 +147,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm fully delivery note" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -171,6 +177,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "complete delivery note" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -199,6 +206,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create sales invoice" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,
@@ -223,6 +231,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm sales invoice" do
     setup [
+      :register_user,
       :create_company,
       :create_customer,
       :create_item,

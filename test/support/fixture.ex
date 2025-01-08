@@ -130,6 +130,14 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_supplier(_context) do
+    {:ok, supplier} = fixture(:supplier, name: "supplier-name", address: "supplier-address")
+
+    [
+      supplier: supplier
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -138,4 +146,5 @@ defmodule Handan.Fixture do
   def fixture(:delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :create_delivery_note)
   def fixture(:confirm_delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :confirm_delivery_note)
   def fixture(:sales_invoice, attrs), do: Dispatcher.run(build(:sales_invoice, attrs), :create_sales_invoice)
+  def fixture(:supplier, attrs), do: Dispatcher.run(build(:supplier, attrs), :create_supplier)
 end
