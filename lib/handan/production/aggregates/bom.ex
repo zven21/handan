@@ -1,5 +1,6 @@
 defmodule Handan.Production.Aggregates.BOM do
   @moduledoc false
+
   @required_fields []
 
   use Handan.EventSourcing.Type
@@ -9,6 +10,10 @@ defmodule Handan.Production.Aggregates.BOM do
     field :item_uuid, Ecto.UUID
     field :item_name, :string
     field :name, :string
+
+    field :bom_items, :map, default: %{}
+    field :bom_processes, :map, default: %{}
+
     field :deleted?, :boolean, default: false
   end
 
@@ -19,7 +24,9 @@ defmodule Handan.Production.Aggregates.BOM do
 
   alias Handan.Production.Events.{
     BOMCreated,
-    BOMDeleted
+    BOMDeleted,
+    BOMItemAdded,
+    BOMProcessAdded
   }
 
   def after_event(%BOMDeleted{}), do: :stop
@@ -36,7 +43,31 @@ defmodule Handan.Production.Aggregates.BOM do
       name: cmd.name
     }
 
-    bom_evt
+    bom_items_evt =
+      cmd.bom_items
+      |> Enum.map(fn item ->
+        %BOMItemAdded{
+          bom_item_uuid: item.bom_item_uuid,
+          bom_uuid: cmd.bom_uuid,
+          item_uuid: item.item_uuid,
+          qty: item.qty,
+          item_name: item.item_name
+        }
+      end)
+
+    bom_processes_evt =
+      cmd.bom_processes
+      |> Enum.map(fn process ->
+        %BOMProcessAdded{
+          bom_process_uuid: process.bom_process_uuid,
+          bom_uuid: cmd.bom_uuid,
+          process_uuid: process.process_uuid,
+          process_name: process.process_name,
+          position: process.position
+        }
+      end)
+
+    [bom_evt, bom_items_evt, bom_processes_evt] |> List.flatten()
   end
 
   def execute(_, %CreateBOM{}), do: {:error, :not_allowed}
@@ -64,5 +95,19 @@ defmodule Handan.Production.Aggregates.BOM do
 
   def apply(%__MODULE__{} = state, %BOMDeleted{} = _evt) do
     %__MODULE__{state | deleted?: true}
+  end
+
+  def apply(%__MODULE__{} = state, %BOMItemAdded{} = evt) do
+    %__MODULE__{
+      state
+      | bom_items: Map.put(state.bom_items, evt.bom_item_uuid, evt)
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %BOMProcessAdded{} = evt) do
+    %__MODULE__{
+      state
+      | bom_processes: Map.put(state.bom_processes, evt.bom_process_uuid, evt)
+    }
   end
 end

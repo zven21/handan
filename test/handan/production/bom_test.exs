@@ -11,7 +11,8 @@ defmodule Handan.Production.BOMTest do
     setup [
       :register_user,
       :create_company,
-      :create_item
+      :create_item,
+      :create_process
     ]
 
     test "should succeed with valid request", %{item: item} do
@@ -24,6 +25,40 @@ defmodule Handan.Production.BOMTest do
       assert {:ok, %BOM{} = bom} = Dispatcher.run(request, :create_bom)
 
       assert bom.name == request.name
+    end
+
+    test "should succeed with valid request with bom_items", %{item: item} do
+      request = %{
+        bom_uuid: Ecto.UUID.generate(),
+        name: "bom-name",
+        item_uuid: item.uuid,
+        bom_items: [
+          %{
+            item_uuid: item.uuid,
+            qty: 1
+          }
+        ]
+      }
+
+      assert {:ok, %BOM{} = bom} = Dispatcher.run(request, :create_bom)
+      assert length(bom.bom_items) == 1
+    end
+
+    test "should succeed with valid request with bom_processes", %{item: item, process: process} do
+      request = %{
+        bom_uuid: Ecto.UUID.generate(),
+        name: "bom-name",
+        item_uuid: item.uuid,
+        bom_processes: [
+          %{
+            process_uuid: process.uuid,
+            position: 1
+          }
+        ]
+      }
+
+      assert {:ok, %BOM{} = bom} = Dispatcher.run(request, :create_bom)
+      assert length(bom.bom_processes) == 1
     end
   end
 

@@ -1,13 +1,12 @@
 defmodule Handan.Production.Projections.BOMItem do
-  @moduledoc """
-  Bill of Materials Item
-  """
+  @moduledoc false
 
   use Ecto.Schema
 
   @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "bom_items" do
+    field :item_name, :string
     field :qty, :integer, default: 0
 
     belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid

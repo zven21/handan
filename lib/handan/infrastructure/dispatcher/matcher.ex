@@ -258,7 +258,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Production.Commands.CreateBOM,
       projection: Handan.Production.Projections.BOM,
       result_type: :bom_uuid,
-      preload: []
+      preload: [:bom_items, :bom_processes]
     }
   end
 

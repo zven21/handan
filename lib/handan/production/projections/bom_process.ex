@@ -5,7 +5,7 @@ defmodule Handan.Production.Projections.BOMProcess do
 
   use Ecto.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "bom_processes" do
     field :position, :integer
