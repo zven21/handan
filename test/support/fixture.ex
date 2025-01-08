@@ -15,8 +15,8 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_company(_context) do
-    {:ok, company} = fixture(:company, name: "company-name")
+  def create_company(%{user: user}) do
+    {:ok, company} = fixture(:company, name: "company-name", user_uuid: user.uuid)
 
     uoms = Repo.all(UOM)
     warehouses = Repo.all(Warehouse)

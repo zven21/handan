@@ -16,6 +16,7 @@ defmodule Handan.Accounts.Commands.RegisterUser do
 
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     alias Handan.Accounts.Commands.RegisterUser
+
     def enrich(%RegisterUser{password: password, mobile: mobile} = cmd, _) do
       case Handan.Accounts.get_user_by_mobile(mobile) do
         nil ->

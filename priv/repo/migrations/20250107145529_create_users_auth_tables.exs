@@ -20,7 +20,8 @@ defmodule Handan.Repo.Migrations.CreateUsersAuthTables do
     create table(:users_tokens, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
 
-      add :user_uuid, references(:users, type: :binary_id, on_delete: :delete_all, column: :uuid), null: false
+      add :user_uuid, references(:users, type: :binary_id, on_delete: :delete_all, column: :uuid),
+        null: false
 
       add :token, :binary, null: false
       add :context, :string, null: false
