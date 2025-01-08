@@ -40,7 +40,7 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
           |> Enum.map(fn purchase_item ->
             case Stock.get_item(purchase_item.item_uuid) do
               {:ok, item} ->
-                unit_price = Map.get(purchase_item, :unit_price, item.purchasing_price)
+                unit_price = Map.get(purchase_item, :unit_price, item.selling_price)
 
                 purchase_item
                 |> Map.put_new(:purchase_order_item_uuid, Ecto.UUID.generate())

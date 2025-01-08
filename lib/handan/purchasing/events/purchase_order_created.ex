@@ -23,8 +23,8 @@ defmodule Handan.Purchasing.Events.PurchaseOrderCreated do
 
     # 状态
     field :status, :string
-    field :delivery_status, :string
-    field :payment_status, :string
+    field :receipt_status, :string
+    field :billing_status, :string
 
     field :warehouse_uuid, Ecto.UUID
   end

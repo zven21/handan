@@ -183,5 +183,28 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreatePurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder,
+      result_type: :purchase_order_uuid,
+      preload: [:items]
+    }
+  end
+
+  def match(:delete_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.DeletePurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder
+    }
+  end
+
+  def match(:confirm_purchase_order) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.ConfirmPurchaseOrder,
+      projection: Handan.Purchasing.Projections.PurchaseOrder
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

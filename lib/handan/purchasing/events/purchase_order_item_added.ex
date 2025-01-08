@@ -15,7 +15,7 @@ defmodule Handan.Purchasing.Events.PurchaseOrderItemAdded do
     field :uom_name, :string
 
     field :ordered_qty, :decimal
-    field :delivered_qty, :decimal
+    field :received_qty, :decimal
     field :remaining_qty, :decimal
     field :warehouse_uuid, Ecto.UUID
   end
