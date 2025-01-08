@@ -7,8 +7,8 @@ defmodule Handan.Fixture do
   alias Handan.Dispatcher
   alias Handan.Enterprise.Projections.{Warehouse, UOM}
 
-  def create_store(_context) do
-    {:ok, store} = fixture(:store, name: "store-name")
+  def create_company(_context) do
+    {:ok, company} = fixture(:company, name: "company-name")
 
     uoms = Repo.all(UOM)
     warehouses = Repo.all(Warehouse)
@@ -18,7 +18,7 @@ defmodule Handan.Fixture do
     warehouse = hd(warehouses)
 
     [
-      store: store,
+      company: company,
       uom: uom,
       uom_2: uom_2,
       warehouse: warehouse
@@ -122,7 +122,7 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def fixture(:store, attrs), do: Dispatcher.run(build(:store, attrs), :create_store)
+  def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
   def fixture(:sales_order, attrs), do: Dispatcher.run(build(:sales_order, attrs), :create_sales_order)

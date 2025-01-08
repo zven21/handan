@@ -7,7 +7,6 @@ defmodule Handan.Selling.Commands.CreateCustomer do
 
   defcommand do
     field :customer_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
     field :name, :string
     field :address, :string
   end

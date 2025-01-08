@@ -12,7 +12,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create sales order" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item
     ]
@@ -45,7 +45,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "delete sales order" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order
@@ -63,7 +63,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm sales order" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order
@@ -81,18 +81,17 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create delivery note" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order
     ]
 
-    test "should succeed with valid request", %{store: store, customer: customer, sales_order: sales_order} do
+    test "should succeed with valid request", %{customer: customer, sales_order: sales_order} do
       sales_order_item = hd(sales_order.items)
 
       request = %{
         sales_order_uuid: sales_order.uuid,
-        store_uuid: store.uuid,
         customer_uuid: customer.uuid,
         delivery_note_uuid: Ecto.UUID.generate(),
         delivery_items: [
@@ -114,7 +113,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm delivery note" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order,
@@ -143,7 +142,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm fully delivery note" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order,
@@ -172,7 +171,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "complete delivery note" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order,
@@ -200,7 +199,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "create sales invoice" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order
@@ -224,7 +223,7 @@ defmodule Handan.Selling.SalesOrderTest do
 
   describe "confirm sales invoice" do
     setup [
-      :create_store,
+      :create_company,
       :create_customer,
       :create_item,
       :create_sales_order,

@@ -18,7 +18,7 @@ defmodule Handan.Dispatcher.Matcher do
   @doc "match for command"
   def match(:register_user) do
     return_fn = fn request, info ->
-      {:ok, user} = Handan.Accounts.get(info.projection, Map.get(request, :user_uuid), preload: info.preload)
+      {:ok, user} = Handan.Turbo.get(info.projection, Map.get(request, :user_uuid), preload: info.preload)
       token = Handan.Accounts.generate_user_session_token(user)
       {:ok, %{user: user, token: token}}
     end
@@ -32,10 +32,19 @@ defmodule Handan.Dispatcher.Matcher do
   end
 
 
-  def match(:delete_store) do
+  def match(:create_company) do
     %__MODULE__{
-      command: Handan.Enterprise.Commands.DeleteStore,
-      projection: Handan.Enterprise.Projections.Store
+      command: Handan.Enterprise.Commands.CreateCompany,
+      projection: Handan.Enterprise.Projections.Company,
+      result_type: :company_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_company) do
+    %__MODULE__{
+      command: Handan.Enterprise.Commands.DeleteCompany,
+      projection: Handan.Enterprise.Projections.Company
     }
   end
 
