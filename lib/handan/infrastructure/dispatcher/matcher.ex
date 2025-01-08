@@ -301,6 +301,7 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+<<<<<<< HEAD
   def match(:create_production_plan) do
     %__MODULE__{
       command: Handan.Production.Commands.CreateProductionPlan,
@@ -314,6 +315,22 @@ defmodule Handan.Dispatcher.Matcher do
     %__MODULE__{
       command: Handan.Production.Commands.DeleteProductionPlan,
       projection: Handan.Production.Projections.ProductionPlan
+    }
+  end
+
+  def match(:create_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.CreatePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod,
+      result_type: :payment_method_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.DeletePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod
     }
   end
 

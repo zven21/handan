@@ -24,6 +24,7 @@ defmodule Handan.Application do
       Handan.Selling.Supervisor,
       Handan.Purchasing.Supervisor,
       Handan.Production.Supervisor,
+      Handan.Finance.Supervisor,
       HandanWeb.Endpoint
     ]
 
