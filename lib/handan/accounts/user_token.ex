@@ -1,9 +1,10 @@
-defmodule Handan.Accounts.UserToken do
+defmodule Handan.Accounts.Projections.UserToken do
   @moduledoc false
 
   use Ecto.Schema
   import Ecto.Query
-  alias Handan.Accounts.UserToken
+
+  alias Handan.Accounts.Projections.UserToken
 
   @hash_algorithm :sha256
   @rand_size 32
@@ -22,7 +23,7 @@ defmodule Handan.Accounts.UserToken do
     field :context, :string
     field :sent_to, :string
 
-    belongs_to :user, Handan.Accounts.User, references: :uuid, foreign_key: :user_uuid
+    belongs_to :user, Handan.Accounts.Projections.User, references: :uuid, foreign_key: :user_uuid
 
     timestamps(type: :utc_datetime, updated_at: false)
   end

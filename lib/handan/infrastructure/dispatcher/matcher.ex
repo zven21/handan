@@ -15,14 +15,22 @@ defmodule Handan.Dispatcher.Matcher do
 
   require Logger
 
-  def match(:create_store) do
+  @doc "match for command"
+  def match(:register_user) do
+    return_fn = fn request, info ->
+      {:ok, user} = Handan.Accounts.get(info.projection, Map.get(request, :user_uuid), preload: info.preload)
+      token = Handan.Accounts.generate_user_session_token(user)
+      {:ok, %{user: user, token: token}}
+    end
+
     %__MODULE__{
-      command: Handan.Enterprise.Commands.CreateStore,
-      projection: Handan.Enterprise.Projections.Store,
-      result_type: :store_uuid,
-      preload: []
+      command: Handan.Accounts.Commands.RegisterUser,
+      projection: Handan.Accounts.Projections.User,
+      preload: [],
+      result_type: return_fn
     }
   end
+
 
   def match(:delete_store) do
     %__MODULE__{

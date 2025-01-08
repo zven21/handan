@@ -6,7 +6,8 @@ defmodule Handan.Accounts do
   import Ecto.Query, warn: false
   alias Handan.Repo
 
-  alias Handan.Accounts.{User, UserToken, UserNotifier}
+  alias Handan.Accounts.Projections.{User, UserToken}
+  alias Handan.Accounts.UserNotifier
 
   ## Database getters
 
@@ -24,6 +25,13 @@ defmodule Handan.Accounts do
   """
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: email)
+  end
+
+  @doc """
+  Gets a user by mobile.
+  """
+  def get_user_by_mobile(mobile) when is_binary(mobile) do
+    Repo.get_by(User, mobile: mobile)
   end
 
   @doc """
