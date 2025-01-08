@@ -32,7 +32,9 @@ defmodule Handan.Production.Aggregates.Workstation do
   def execute(%__MODULE__{workstation_uuid: nil}, %CreateWorkstation{} = cmd) do
     workstation_evt = %WorkstationCreated{
       workstation_uuid: cmd.workstation_uuid,
-      name: cmd.name
+      name: cmd.name,
+      admin_uuid: cmd.admin_uuid,
+      members: cmd.members
     }
 
     [workstation_evt]

@@ -8,10 +8,17 @@ defmodule Handan.Production.WorkstationTest do
   alias Handan.Production.Projections.Workstation
 
   describe "create workstation" do
-    test "should succeed with valid request" do
+    setup [
+      :register_user,
+      :create_company
+    ]
+
+    test "should succeed with valid request", %{staff: staff} do
       request = %{
         workstation_uuid: Ecto.UUID.generate(),
-        name: "workstation-name"
+        name: "workstation-name",
+        admin_uuid: staff.uuid,
+        member_ids: [staff.uuid]
       }
 
       assert {:ok, %Workstation{} = workstation} = Dispatcher.run(request, :create_workstation)

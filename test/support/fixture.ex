@@ -5,7 +5,7 @@ defmodule Handan.Fixture do
 
   alias Handan.Repo
   alias Handan.Dispatcher
-  alias Handan.Enterprise.Projections.{Warehouse, UOM}
+  alias Handan.Enterprise.Projections.{Warehouse, UOM, Staff}
 
   def register_user(_context) do
     {:ok, %{user: user}} = fixture(:user, %{email: "test@example.com"})
@@ -20,16 +20,19 @@ defmodule Handan.Fixture do
 
     uoms = Repo.all(UOM)
     warehouses = Repo.all(Warehouse)
+    staffs = Repo.all(Staff)
 
     uom = hd(uoms)
     uom_2 = Enum.at(uoms, 1)
+    staff_1 = hd(staffs)
     warehouse = hd(warehouses)
 
     [
       company: company,
       uom: uom,
       uom_2: uom_2,
-      warehouse: warehouse
+      warehouse: warehouse,
+      staff: staff_1
     ]
   end
 

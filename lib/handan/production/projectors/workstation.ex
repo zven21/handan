@@ -18,7 +18,9 @@ defmodule Handan.Production.Projectors.Workstation do
     fn multi ->
       workstation = %Workstation{
         uuid: evt.workstation_uuid,
-        name: evt.name
+        name: evt.name,
+        admin_uuid: evt.admin_uuid,
+        members: evt.members
       }
 
       Ecto.Multi.insert(multi, :workstation_created, workstation)
