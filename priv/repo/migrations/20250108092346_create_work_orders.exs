@@ -3,13 +3,15 @@ defmodule Handan.Repo.Migrations.CreateWorkOrders do
 
   def change do
     create table(:work_orders, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :production_plan_item_uuid, :string
+      add :uuid, :binary_id, primary_key: true
+      add :production_plan_item_uuid, :binary_id
       add :status, :string
-      add :start_time, :naive_datetime
-      add :end_time, :naive_datetime
+      add :start_time, :utc_datetime
+      add :end_time, :utc_datetime
 
       timestamps(type: :utc_datetime)
     end
+
+    create index(:work_orders, [:production_plan_item_uuid])
   end
 end

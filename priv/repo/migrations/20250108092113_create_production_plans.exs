@@ -3,11 +3,11 @@ defmodule Handan.Repo.Migrations.CreateProductionPlans do
 
   def change do
     create table(:production_plans, primary_key: false) do
-      add :id, :binary_id, primary_key: true
+      add :uuid, :binary_id, primary_key: true
       add :title, :string
-      add :start_date, :string
-      add :end_date, :string
       add :status, :string
+      add :start_date, :date
+      add :end_date, :date
 
       timestamps(type: :utc_datetime)
     end

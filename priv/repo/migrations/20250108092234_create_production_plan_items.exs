@@ -3,15 +3,20 @@ defmodule Handan.Repo.Migrations.CreateProductionPlanItems do
 
   def change do
     create table(:production_plan_items, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :production_plan_uuid, :string
-      add :item_uuid, :string
+      add :uuid, :binary_id, primary_key: true
+      add :production_plan_uuid, :binary_id
+      add :item_uuid, :binary_id
       add :item_name, :string
-      add :planned_qty, :decimal
-      add :started_at, :naive_datetime
-      add :ended_at, :naive_datetime
+
+      add :planned_qty, :decimal, default: 0
+
+      add :start_time, :utc_datetime
+      add :end_time, :utc_datetime
 
       timestamps(type: :utc_datetime)
     end
+
+    create index(:production_plan_items, [:production_plan_uuid])
+    create index(:production_plan_items, [:item_uuid])
   end
 end

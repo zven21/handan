@@ -3,15 +3,18 @@ defmodule Handan.Repo.Migrations.CreateJobCards do
 
   def change do
     create table(:job_cards, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :work_order_item_uuid, :string
+      add :uuid, :binary_id, primary_key: true
+      add :work_order_item_uuid, :binary_id
       add :status, :string
-      add :start_time, :string
-      add :end_time, :string
-      add :production_qty, :decimal
-      add :defective_qty, :decimal
+      add :start_time, :utc_datetime
+      add :end_time, :utc_datetime
+      add :production_qty, :decimal, default: 0
+      add :defective_qty, :decimal, default: 0
+      add :operator_staff_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
     end
+
+    create index(:job_cards, [:work_order_item_uuid])
   end
 end
