@@ -16,11 +16,12 @@ defmodule Handan.Purchasing.Router do
   alias Handan.Purchasing.Commands.{
     CreatePurchaseOrder,
     DeletePurchaseOrder,
-    CreateReceiptNote,
     CreatePurchaseInvoice,
     ConfirmPurchaseInvoice,
+    ConfirmPurchaseOrder,
+    CreateReceiptNote,
     ConfirmReceiptNote,
-    ConfirmPurchaseOrder
+    CompleteReceiptNote
   }
 
   if Mix.env() == :dev do
@@ -49,7 +50,8 @@ defmodule Handan.Purchasing.Router do
       ConfirmPurchaseInvoice,
       ConfirmReceiptNote,
       ConfirmPurchaseOrder,
-      DeletePurchaseOrder
+      DeletePurchaseOrder,
+      CompleteReceiptNote
     ],
     to: PurchaseOrder,
     lifespan: PurchaseOrder

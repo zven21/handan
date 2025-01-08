@@ -226,6 +226,15 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:complete_receipt_note) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CompleteReceiptNote,
+      projection: Handan.Purchasing.Projections.ReceiptNote,
+      result_type: :receipt_note_uuid,
+      preload: []
+    }
+  end
+
   def match(:create_purchase_invoice) do
     %__MODULE__{
       command: Handan.Purchasing.Commands.CreatePurchaseInvoice,

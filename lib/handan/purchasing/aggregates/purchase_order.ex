@@ -74,6 +74,8 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     PurchaseInvoiceConfirmed
   }
 
+  alias Handan.Stock.Events.InventoryUnitInbound
+
   @doc """
   停止已删除的聚合
   """
@@ -124,7 +126,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %CreatePurchaseOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %DeletePurchaseOrder{purchase_order_uuid: purchase_order_uuid} = cmd) do
+  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = _state, %DeletePurchaseOrder{purchase_order_uuid: purchase_order_uuid} = _cmd) do
     purchase_order_evt = %PurchaseOrderDeleted{
       purchase_order_uuid: purchase_order_uuid
     }
@@ -198,7 +200,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
         %ConfirmReceiptNote{purchase_order_uuid: purchase_order_uuid, receipt_note_uuid: receipt_note_uuid} = cmd
       ) do
     if Map.has_key?(state.receipt_notes, receipt_note_uuid) do
-      receipt_note = Map.get(state.receipt_notes, receipt_note_uuid)
+      # receipt_note = Map.get(state.receipt_notes, receipt_note_uuid)
 
       receipt_note_confirmed_evt = %ReceiptNoteConfirmed{
         receipt_note_uuid: receipt_note_uuid,
@@ -319,6 +321,42 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %ConfirmPurchaseInvoice{}), do: {:error, :not_allowed}
 
+  def execute(
+        %__MODULE__{purchase_order_uuid: purchase_order_uuid} = state,
+        %CompleteReceiptNote{purchase_order_uuid: purchase_order_uuid, receipt_note_uuid: receipt_note_uuid} = _cmd
+      ) do
+    if Map.has_key?(state.receipt_notes, receipt_note_uuid) do
+      receipt_note = Map.get(state.receipt_notes, receipt_note_uuid)
+
+      receipt_note_completed_evt = %ReceiptNoteCompleted{
+        receipt_note_uuid: receipt_note.receipt_note_uuid,
+        purchase_order_uuid: purchase_order_uuid,
+        status: :completed
+      }
+
+      receipt_note_item_evts =
+        state.receipt_note_items
+        |> Map.values()
+        |> Enum.filter(fn receipt_item -> receipt_item.receipt_note_uuid == receipt_note_uuid end)
+        |> Enum.map(fn receipt_item ->
+          %InventoryUnitInbound{
+            item_uuid: receipt_item.item_uuid,
+            warehouse_uuid: state.warehouse_uuid,
+            stock_uom_uuid: receipt_item.stock_uom_uuid,
+            actual_qty: receipt_item.actual_qty,
+            type: "inbound"
+          }
+        end)
+
+      [receipt_note_item_evts, receipt_note_completed_evt]
+      |> List.flatten()
+    else
+      {:error, :receipt_note_not_found}
+    end
+  end
+
+  def execute(_, %CompleteReceiptNote{}), do: {:error, :not_allowed}
+
   def apply(%__MODULE__{} = purchase_order, %PurchaseOrderCreated{} = event) do
     %__MODULE__{
       purchase_order
@@ -339,7 +377,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     }
   end
 
-  def apply(%__MODULE__{} = state, %PurchaseOrderDeleted{} = event) do
+  def apply(%__MODULE__{} = state, %PurchaseOrderDeleted{} = _event) do
     %__MODULE__{state | deleted?: true}
   end
 
@@ -411,6 +449,24 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     %__MODULE__{state | paid_amount: evt.paid_amount, remaining_amount: evt.remaining_amount, received_qty: evt.received_qty, remaining_qty: evt.remaining_qty}
   end
 
+  def apply(%__MODULE__{} = state, %ReceiptNoteCompleted{} = evt) do
+    updated_receipt_notes =
+      state.receipt_notes
+      |> Map.update!(evt.receipt_note_uuid, fn receipt_note ->
+        receipt_note
+        |> Map.merge(Map.from_struct(evt))
+      end)
+
+    %__MODULE__{
+      state
+      | receipt_notes: updated_receipt_notes
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %InventoryUnitInbound{} = _evt) do
+    state
+  end
+
   defp calculate_receipt_status(%{total_qty: total_qty} = state, updated_purchase_items) do
     received_qty =
       state.purchase_items
@@ -434,7 +490,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     end
   end
 
-  defp calculate_billing_status(%{total_amount: total_amount} = state, purchase_invoices) do
+  defp calculate_billing_status(%{total_amount: total_amount} = _state, purchase_invoices) do
     paid_amount =
       purchase_invoices
       |> Map.values()

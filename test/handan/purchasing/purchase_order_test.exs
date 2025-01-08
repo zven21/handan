@@ -1,9 +1,12 @@
 defmodule Handan.Purchasing.PurchaseOrderTest do
   use Handan.DataCase
 
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
+
   alias Handan.Turbo
   alias Handan.Dispatcher
   alias Handan.Purchasing.Projections.PurchaseOrder
+  alias Handan.Stock.Projections.StockItem
 
   describe "create purchase order" do
     setup [
@@ -141,33 +144,33 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
     end
   end
 
-  # describe "complete receipt note" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order,
-  #     :create_receipt_note,
-  #     :confirm_receipt_note
-  #   ]
+  describe "complete receipt note" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order,
+      :create_receipt_note,
+      :confirm_receipt_note
+    ]
 
-  #   test "should succeed with valid request", %{purchase_order: purchase_order, receipt_note: receipt_note} do
-  #     request = %{
-  #       purchase_order_uuid: purchase_order.uuid,
-  #       receipt_note_uuid: receipt_note.uuid
-  #     }
+    test "should succeed with valid request", %{purchase_order: purchase_order, receipt_note: receipt_note} do
+      request = %{
+        purchase_order_uuid: purchase_order.uuid,
+        receipt_note_uuid: receipt_note.uuid
+      }
 
-  #     purchase_order_item = hd(purchase_order.items)
+      purchase_order_item = hd(purchase_order.items)
 
-  #     assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: purchase_order.warehouse_uuid, item_uuid: purchase_order_item.item_uuid})
-  #     assert {:ok, updated_receipt_note} = Dispatcher.run(request, :complete_receipt_note)
-  #     assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: purchase_order.warehouse_uuid, item_uuid: purchase_order_item.item_uuid})
+      assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: purchase_order.warehouse_uuid, item_uuid: purchase_order_item.item_uuid})
+      assert {:ok, updated_receipt_note} = Dispatcher.run(request, :complete_receipt_note)
+      assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: purchase_order.warehouse_uuid, item_uuid: purchase_order_item.item_uuid})
 
-  #     assert after_stock_item.total_on_hand == decimal_sub(before_stock_item.total_on_hand, purchase_order_item.ordered_qty)
-  #     assert updated_receipt_note.status == :completed
-  #   end
-  # end
+      assert after_stock_item.total_on_hand == decimal_add(before_stock_item.total_on_hand, purchase_order_item.ordered_qty)
+      assert updated_receipt_note.status == :completed
+    end
+  end
 
   describe "create purchase invoice" do
     setup [
