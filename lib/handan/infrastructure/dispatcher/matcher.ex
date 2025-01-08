@@ -202,7 +202,9 @@ defmodule Handan.Dispatcher.Matcher do
   def match(:confirm_purchase_order) do
     %__MODULE__{
       command: Handan.Purchasing.Commands.ConfirmPurchaseOrder,
-      projection: Handan.Purchasing.Projections.PurchaseOrder
+      projection: Handan.Purchasing.Projections.PurchaseOrder,
+      result_type: :purchase_order_uuid,
+      preload: []
     }
   end
 

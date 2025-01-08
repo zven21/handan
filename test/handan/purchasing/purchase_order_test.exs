@@ -40,43 +40,43 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
     end
   end
 
-  # describe "delete purchase order" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order
-  #   ]
+  describe "delete purchase order" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order
+    ]
 
-  #   test "should succeed with valid request", %{purchase_order: purchase_order} do
-  #     request = %{
-  #       purchase_order_uuid: purchase_order.uuid
-  #     }
+    test "should succeed with valid request", %{purchase_order: purchase_order} do
+      request = %{
+        purchase_order_uuid: purchase_order.uuid
+      }
 
-  #     assert :ok = Dispatcher.run(request, :delete_purchase_order)
-  #     assert {:error, :not_found} == Turbo.get(PurchaseOrder, purchase_order.uuid)
-  #   end
-  # end
+      assert :ok = Dispatcher.run(request, :delete_purchase_order)
+      assert {:error, :not_found} == Turbo.get(PurchaseOrder, purchase_order.uuid)
+    end
+  end
 
-  # describe "confirm purchase order" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order
-  #   ]
+  describe "confirm purchase order" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order
+    ]
 
-  #   test "should succeed with valid request", %{purchase_order: purchase_order} do
-  #     request = %{
-  #       purchase_order_uuid: purchase_order.uuid
-  #     }
+    test "should succeed with valid request", %{purchase_order: purchase_order} do
+      request = %{
+        purchase_order_uuid: purchase_order.uuid
+      }
 
-  #     assert {:ok, purchase_order} = Dispatcher.run(request, :confirm_purchase_order)
-  #     assert purchase_order.status == :to_receive_and_bill
-  #   end
-  # end
+      assert {:ok, purchase_order} = Dispatcher.run(request, :confirm_purchase_order)
+      assert purchase_order.status == :to_receive_and_bill
+    end
+  end
 
   # describe "create receipt note" do
   #   setup [

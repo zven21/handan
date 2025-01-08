@@ -138,6 +138,25 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_purchase_order(%{supplier: supplier, item: item, stock_uom: stock_uom, warehouse: warehouse}) do
+    purchase_items = [
+      %{
+        purchase_order_item_uuid: Ecto.UUID.generate(),
+        item_uuid: item.uuid,
+        ordered_qty: 100,
+        unit_price: 10.0,
+        stock_uom_uuid: stock_uom.uuid,
+        uom_name: stock_uom.uom_name
+      }
+    ]
+
+    {:ok, purchase_order} = fixture(:purchase_order, supplier_uuid: supplier.uuid, warehouse_uuid: warehouse.uuid, purchase_items: purchase_items)
+
+    [
+      purchase_order: purchase_order
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -147,4 +166,5 @@ defmodule Handan.Fixture do
   def fixture(:confirm_delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :confirm_delivery_note)
   def fixture(:sales_invoice, attrs), do: Dispatcher.run(build(:sales_invoice, attrs), :create_sales_invoice)
   def fixture(:supplier, attrs), do: Dispatcher.run(build(:supplier, attrs), :create_supplier)
+  def fixture(:purchase_order, attrs), do: Dispatcher.run(build(:purchase_order, attrs), :create_purchase_order)
 end

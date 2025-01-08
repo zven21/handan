@@ -51,7 +51,8 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     PurchaseOrderCreated,
     PurchaseOrderDeleted,
     PurchaseOrderConfirmed,
-    PurchaseOrderItemAdded
+    PurchaseOrderItemAdded,
+    PurchaseOrderStatusChanged
   }
 
   @doc """
@@ -114,6 +115,25 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %DeletePurchaseOrder{}), do: {:error, :not_allowed}
 
+  def execute(%__MODULE__{status: :draft, purchase_order_uuid: purchase_order_uuid} = state, %ConfirmPurchaseOrder{purchase_order_uuid: purchase_order_uuid}) do
+    purchase_order_evt = %PurchaseOrderConfirmed{
+      purchase_order_uuid: purchase_order_uuid,
+      status: :to_receive_and_bill
+    }
+
+    status_changed_evt = %PurchaseOrderStatusChanged{
+      purchase_order_uuid: purchase_order_uuid,
+      from_status: :draft,
+      to_status: :to_receive_and_bill,
+      from_receipt_status: state.receipt_status,
+      to_receipt_status: state.receipt_status,
+      from_billing_status: state.billing_status,
+      to_billing_status: state.billing_status
+    }
+
+    [purchase_order_evt, status_changed_evt]
+  end
+
   def apply(%__MODULE__{} = purchase_order, %PurchaseOrderCreated{} = event) do
     %__MODULE__{
       purchase_order
@@ -143,5 +163,13 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
       state
       | purchase_items: new_purchase_items
     }
+  end
+
+  def apply(%__MODULE__{} = state, %PurchaseOrderConfirmed{} = evt) do
+    %__MODULE__{state | status: evt.status}
+  end
+
+  def apply(%__MODULE__{} = state, %PurchaseOrderStatusChanged{} = evt) do
+    %__MODULE__{state | status: evt.to_status, receipt_status: evt.to_receipt_status, billing_status: evt.to_billing_status}
   end
 end
