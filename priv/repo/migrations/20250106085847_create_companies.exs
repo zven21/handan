@@ -1,8 +1,8 @@
-defmodule Handan.Repo.Migrations.CreateStores do
+defmodule Handan.Repo.Migrations.CreateCompanies do
   use Ecto.Migration
 
   def change do
-    create table(:stores, primary_key: false) do
+    create table(:companies, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
       add :name, :string
       add :description, :string

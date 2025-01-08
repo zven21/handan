@@ -4,12 +4,12 @@ defmodule Handan.Enterprise.Router do
   use Commanded.Commands.Router
 
   alias Handan.Enterprise.Aggregates.{
-    Store
+    Company
   }
 
   alias Handan.Enterprise.Commands.{
-    CreateStore,
-    DeleteStore
+    CreateCompany,
+    DeleteCompany
   }
 
   if Mix.env() == :dev do
@@ -18,14 +18,14 @@ defmodule Handan.Enterprise.Router do
 
   middleware(Handan.EventSourcing.Middleware.Enrich)
 
-  identify(Store, by: :store_uuid, prefix: "store-")
+  identify(Company, by: :company_uuid, prefix: "company-")
 
   dispatch(
     [
-      CreateStore,
-      DeleteStore
+      CreateCompany,
+      DeleteCompany
     ],
-    to: Store,
-    lifespan: Store
+    to: Company,
+    lifespan: Company
   )
 end

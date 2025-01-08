@@ -1,12 +1,12 @@
-defmodule Handan.Enterprise.Commands.CreateStore do
+defmodule Handan.Enterprise.Commands.CreateCompany do
   @moduledoc false
 
-  @required_fields ~w(store_uuid name)a
+  @required_fields ~w(company_uuid name)a
 
   use Handan.EventSourcing.Command
 
   defcommand do
-    field :store_uuid, Ecto.UUID
+    field :company_uuid, Ecto.UUID
     field :name, :string
     field :description, :string
     field :logo_url, :string

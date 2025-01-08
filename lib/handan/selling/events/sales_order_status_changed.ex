@@ -5,7 +5,6 @@ defmodule Handan.Selling.Events.SalesOrderStatusChanged do
 
   defevent do
     field :sales_order_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
 
     field :from_status, :string
     field :to_status, :string

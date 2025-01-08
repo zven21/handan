@@ -10,7 +10,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   deftype do
     field :sales_order_uuid, Ecto.UUID
-    field :store_uuid, Ecto.UUID
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string

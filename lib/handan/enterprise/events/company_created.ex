@@ -1,10 +1,10 @@
-defmodule Handan.Enterprise.Events.StoreCreated do
+defmodule Handan.Enterprise.Events.CompanyCreated do
   @moduledoc false
 
   use Handan.EventSourcing.Event
 
   defevent do
-    field :store_uuid, Ecto.UUID
+    field :company_uuid, Ecto.UUID
     field :name, :string
     field :description, :string
     field :logo_url, :string

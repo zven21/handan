@@ -33,7 +33,7 @@ defmodule Handan.Storage do
       stock_uoms,
       stock_items,
       uoms,
-      stores,
+      companies,
       warehouses,
       customers,
       sales_orders,
