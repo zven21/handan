@@ -34,7 +34,7 @@ This project utilizes the following technologies:
 - [x] Stock && Item
 - [x] Selling
 - [x] Purchasing
-- [x] Production
+- [ ] Production
 - [ ] Finance
 - [ ] Subcontracting
 

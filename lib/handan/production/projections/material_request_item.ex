@@ -6,6 +6,11 @@ defmodule Handan.Production.Projections.MaterialRequestItem do
   @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "material_request_items" do
+    # TODO
+    # field :stock_qty, :decimal
+    # field :remaining_qty, :decimal
+    # field :received_qty, :decimal
+
     field :actual_qty, :decimal
     field :item_name, :string
     field :uom_name, :string
