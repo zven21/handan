@@ -3,15 +3,19 @@ defmodule Handan.Production.Projectors.ProductionPlan do
 
   use Commanded.Projections.Ecto, application: Handan.EventApp, repo: Handan.Repo, name: __MODULE__, consistency: :strong
   use Handan.EventSourcing.EventHandlerFailureContext
+
   import Ecto.Query, warn: false
+  import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
 
   alias Handan.Production.Events.{
     ProductionPlanCreated,
     ProductionPlanDeleted,
-    ProductionPlanItemAdded
+    ProductionPlanItemAdded,
+    MaterialRequestCreated,
+    MaterialRequestItemAdded
   }
 
-  alias Handan.Production.Projections.{ProductionPlan, ProductionPlanItem}
+  alias Handan.Production.Projections.{ProductionPlan, ProductionPlanItem, MaterialRequest, MaterialRequestItem}
 
   project(
     %ProductionPlanCreated{} = evt,
@@ -46,6 +50,29 @@ defmodule Handan.Production.Projectors.ProductionPlan do
     }
 
     Ecto.Multi.insert(multi, :production_plan_item_added, production_plan_item)
+  end)
+
+  project(%MaterialRequestCreated{} = evt, _meta, fn multi ->
+    material_request = %MaterialRequest{
+      uuid: evt.material_request_uuid,
+      production_plan_uuid: evt.production_plan_uuid
+    }
+
+    Ecto.Multi.insert(multi, :material_request_created, material_request)
+  end)
+
+  project(%MaterialRequestItemAdded{} = evt, _meta, fn multi ->
+    material_request_item = %MaterialRequestItem{
+      uuid: evt.material_request_item_uuid,
+      material_request_uuid: evt.material_request_uuid,
+      item_uuid: evt.item_uuid,
+      item_name: evt.item_name,
+      actual_qty: to_decimal(evt.actual_qty),
+      stock_uom_uuid: evt.stock_uom_uuid,
+      uom_name: evt.uom_name
+    }
+
+    Ecto.Multi.insert(multi, :material_request_item_added, material_request_item)
   end)
 
   def after_update(_event, _metadata, _changes) do

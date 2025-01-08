@@ -8,7 +8,7 @@ defmodule Handan.Production.Projections.MaterialRequestItem do
   schema "material_request_items" do
     field :actual_qty, :decimal
     field :item_name, :string
-    field :umo_name, :string
+    field :uom_name, :string
 
     belongs_to :material_request, Handan.Production.Projections.MaterialRequest, foreign_key: :material_request_uuid, references: :uuid
     belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid

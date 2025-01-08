@@ -9,7 +9,8 @@ defmodule Handan.Repo.Migrations.CreateMaterialRequestItems do
       add :item_uuid, :binary_id
       add :item_name, :string
       add :stock_uom_uuid, :binary_id
-      add :umo_name, :string
+      add :uom_name, :string
+      add :material_request_uuid, :binary_id
 
       add :from_warehouse_uuid, :binary_id
       add :to_warehouse_uuid, :binary_id
@@ -19,6 +20,7 @@ defmodule Handan.Repo.Migrations.CreateMaterialRequestItems do
 
     create index(:material_request_items, [:bom_uuid])
     create index(:material_request_items, [:item_uuid])
+    create index(:material_request_items, [:material_request_uuid])
     create index(:material_request_items, [:stock_uom_uuid])
     create index(:material_request_items, [:from_warehouse_uuid])
     create index(:material_request_items, [:to_warehouse_uuid])

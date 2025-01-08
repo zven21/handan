@@ -39,7 +39,9 @@ defmodule Handan.Production.Projectors.BOM do
       bom_uuid: evt.bom_uuid,
       item_uuid: evt.item_uuid,
       qty: evt.qty,
-      item_name: evt.item_name
+      item_name: evt.item_name,
+      uom_name: evt.uom_name,
+      stock_uom_uuid: evt.stock_uom_uuid
     }
 
     Ecto.Multi.insert(multi, :bom_item_added, bom_item)

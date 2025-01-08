@@ -5,6 +5,7 @@ defmodule Handan.Fixture do
 
   alias Handan.Repo
   alias Handan.Dispatcher
+  alias Handan.Stock
   alias Handan.Enterprise.Projections.{Warehouse, UOM, Staff}
 
   def register_user(_context) do
@@ -193,11 +194,30 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_bom(%{item: item}) do
-    {:ok, bom} = fixture(:bom, name: "bom-name", item_uuid: item.uuid)
+  def create_bom(%{item: item, uom: uom}) do
+    stock_uoms = [
+      %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1}
+    ]
+
+    {:ok, sub_item} = fixture(:item, name: "sub-bom-name", stock_uoms: stock_uoms)
+
+    {:ok, bom} =
+      fixture(:bom,
+        name: "bom-name",
+        item_uuid: item.uuid,
+        bom_items: [
+          %{
+            item_uuid: sub_item.uuid,
+            qty: 10
+          }
+        ]
+      )
+
+    {:ok, updated_item} = Stock.get_item(item.uuid)
 
     [
-      bom: bom
+      bom: bom,
+      has_bom_item: updated_item
     ]
   end
 

@@ -58,7 +58,9 @@ defmodule Handan.Production.Aggregates.BOM do
           bom_uuid: cmd.bom_uuid,
           item_uuid: item.item_uuid,
           qty: item.qty,
-          item_name: item.item_name
+          item_name: item.item_name,
+          uom_name: item.uom_name,
+          stock_uom_uuid: item.stock_uom_uuid
         }
       end)
 

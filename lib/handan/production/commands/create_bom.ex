@@ -40,6 +40,8 @@ defmodule Handan.Production.Commands.CreateBOM do
                 entry
                 |> Map.put(:bom_item_uuid, Ecto.UUID.generate())
                 |> Map.put(:item_name, item.name)
+                |> Map.put(:stock_uom_uuid, item.default_stock_uom_uuid)
+                |> Map.put(:uom_name, item.default_stock_uom_name)
 
               _ ->
                 Map.put(entry, :item_uuid, nil)

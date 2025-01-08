@@ -306,7 +306,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Production.Commands.CreateProductionPlan,
       projection: Handan.Production.Projections.ProductionPlan,
       result_type: :production_plan_uuid,
-      preload: [:items]
+      preload: [:items, [material_request: :items]]
     }
   end
 

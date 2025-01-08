@@ -11,6 +11,7 @@ defmodule Handan.Production.Projections.ProductionPlan do
     field :end_date, :date
     field :status, :string
 
+    has_one :material_request, Handan.Production.Projections.MaterialRequest, foreign_key: :production_plan_uuid
     has_many :items, Handan.Production.Projections.ProductionPlanItem, foreign_key: :production_plan_uuid
 
     timestamps(type: :utc_datetime)

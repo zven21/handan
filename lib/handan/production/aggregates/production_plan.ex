@@ -11,9 +11,11 @@ defmodule Handan.Production.Aggregates.ProductionPlan do
     field :start_date, :date
     field :end_date, :date
     field :status, :string
+    field :material_request_uuid, Ecto.UUID
 
     # 生产计划项
     field :plan_items, :map, default: %{}
+    field :material_request_items, :map, default: %{}
 
     field :deleted?, :boolean, default: false
   end
@@ -26,7 +28,9 @@ defmodule Handan.Production.Aggregates.ProductionPlan do
   alias Handan.Production.Events.{
     ProductionPlanCreated,
     ProductionPlanDeleted,
-    ProductionPlanItemAdded
+    ProductionPlanItemAdded,
+    MaterialRequestCreated,
+    MaterialRequestItemAdded
   }
 
   @doc """
@@ -59,7 +63,36 @@ defmodule Handan.Production.Aggregates.ProductionPlan do
         }
       end)
 
-    [production_plan_evt, plan_items_evt] |> List.flatten()
+    material_request_evts =
+      if length(cmd.material_request_items) > 0 do
+        material_request_uuid = Ecto.UUID.generate()
+
+        material_request_evt =
+          %MaterialRequestCreated{
+            production_plan_uuid: cmd.production_plan_uuid,
+            material_request_uuid: material_request_uuid
+          }
+
+        material_request_items_evt =
+          cmd.material_request_items
+          |> Enum.map(fn item ->
+            %MaterialRequestItemAdded{
+              material_request_item_uuid: item.material_request_item_uuid,
+              material_request_uuid: material_request_uuid,
+              item_uuid: item.item_uuid,
+              item_name: item.item_name,
+              stock_uom_uuid: item.stock_uom_uuid,
+              uom_name: item.uom_name,
+              actual_qty: item.actual_qty
+            }
+          end)
+
+        [material_request_evt, material_request_items_evt]
+      else
+        []
+      end
+
+    [production_plan_evt, plan_items_evt, material_request_evts] |> List.flatten()
   end
 
   def execute(_, %CreateProductionPlan{}), do: {:error, :not_allowed}
@@ -98,6 +131,24 @@ defmodule Handan.Production.Aggregates.ProductionPlan do
     %__MODULE__{
       state
       | plan_items: updated_plan_items
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %MaterialRequestCreated{} = evt) do
+    %__MODULE__{
+      state
+      | material_request_uuid: evt.material_request_uuid
+    }
+  end
+
+  def apply(%__MODULE__{} = state, %MaterialRequestItemAdded{} = evt) do
+    updated_material_request_items =
+      state.material_request_items
+      |> Map.put(evt.material_request_item_uuid, evt)
+
+    %__MODULE__{
+      state
+      | material_request_items: updated_material_request_items
     }
   end
 end
