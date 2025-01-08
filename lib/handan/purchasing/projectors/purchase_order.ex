@@ -73,39 +73,39 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     Ecto.Multi.insert(multi, :purchase_order_item_added, purchase_order_item)
   end)
 
-  # project(%ReceiptNoteCreated{} = evt, _meta, fn multi ->
-  #   receipt_note =
-  #     %ReceiptNote{
-  #       uuid: evt.receipt_note_uuid,
-  #       purchase_order_uuid: evt.purchase_order_uuid,
-  #       supplier_uuid: evt.supplier_uuid,
-  #       status: to_atom(evt.status),
-  #       total_qty: to_decimal(evt.total_qty),
-  #       total_amount: to_decimal(evt.total_amount),
-  #       supplier_name: evt.supplier_name
-  #     }
+  project(%ReceiptNoteCreated{} = evt, _meta, fn multi ->
+    receipt_note =
+      %ReceiptNote{
+        uuid: evt.receipt_note_uuid,
+        purchase_order_uuid: evt.purchase_order_uuid,
+        supplier_uuid: evt.supplier_uuid,
+        status: to_atom(evt.status),
+        total_qty: to_decimal(evt.total_qty),
+        total_amount: to_decimal(evt.total_amount),
+        supplier_name: evt.supplier_name
+      }
 
-  #   Ecto.Multi.insert(multi, :receipt_note_created, receipt_note)
-  # end)
+    Ecto.Multi.insert(multi, :receipt_note_created, receipt_note)
+  end)
 
-  # project(%ReceiptNoteItemAdded{} = evt, _meta, fn multi ->
-  #   receipt_note_item =
-  #     %ReceiptNoteItem{
-  #       uuid: evt.receipt_note_item_uuid,
-  #       receipt_note_uuid: evt.receipt_note_uuid,
-  #       purchase_order_item_uuid: evt.purchase_order_item_uuid,
-  #       purchase_order_uuid: evt.purchase_order_uuid,
-  #       item_uuid: evt.item_uuid,
-  #       actual_qty: to_decimal(evt.actual_qty),
-  #       amount: to_decimal(evt.amount),
-  #       stock_uom_uuid: evt.stock_uom_uuid,
-  #       uom_name: evt.uom_name,
-  #       unit_price: to_decimal(evt.unit_price),
-  #       item_name: evt.item_name
-  #     }
+  project(%ReceiptNoteItemAdded{} = evt, _meta, fn multi ->
+    receipt_note_item =
+      %ReceiptNoteItem{
+        uuid: evt.receipt_note_item_uuid,
+        receipt_note_uuid: evt.receipt_note_uuid,
+        purchase_order_item_uuid: evt.purchase_order_item_uuid,
+        purchase_order_uuid: evt.purchase_order_uuid,
+        item_uuid: evt.item_uuid,
+        actual_qty: to_decimal(evt.actual_qty),
+        amount: to_decimal(evt.amount),
+        stock_uom_uuid: evt.stock_uom_uuid,
+        uom_name: evt.uom_name,
+        unit_price: to_decimal(evt.unit_price),
+        item_name: evt.item_name
+      }
 
-  #   Ecto.Multi.insert(multi, :receipt_note_item_added, receipt_note_item)
-  # end)
+    Ecto.Multi.insert(multi, :receipt_note_item_added, receipt_note_item)
+  end)
 
   project(%PurchaseOrderConfirmed{} = evt, _meta, fn multi ->
     set_fields = [

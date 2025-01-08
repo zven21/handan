@@ -22,7 +22,6 @@ defmodule Handan.Purchasing.Commands.CreateReceiptNote do
     import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1, decimal_add: 2, decimal_mult: 2]
 
     alias Decimal, as: D
-    alias Handan.Purchasing
     alias Handan.Purchasing.Commands.CreateReceiptNote
 
     def enrich(%CreateReceiptNote{} = cmd, _) do
@@ -30,7 +29,7 @@ defmodule Handan.Purchasing.Commands.CreateReceiptNote do
         updated_receipt_items =
           cmd.receipt_items
           |> Enum.map(fn receipt_item ->
-            case Puchasing.get_purchase_order_item(receipt_item.purchase_order_item_uuid) do
+            case Handan.Purchasing.get_purchase_order_item(receipt_item.purchase_order_item_uuid) do
               {:ok, purchase_order_item} ->
                 if D.gte?(to_decimal(purchase_order_item.remaining_qty), to_decimal(receipt_item.actual_qty)) do
                   receipt_item

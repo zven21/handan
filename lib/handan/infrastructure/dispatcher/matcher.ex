@@ -208,5 +208,14 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_receipt_note) do
+    %__MODULE__{
+      command: Handan.Purchasing.Commands.CreateReceiptNote,
+      projection: Handan.Purchasing.Projections.ReceiptNote,
+      result_type: :receipt_note_uuid,
+      preload: []
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

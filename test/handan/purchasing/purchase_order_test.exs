@@ -78,38 +78,38 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
     end
   end
 
-  # describe "create receipt note" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order
-  #   ]
+  describe "create receipt note" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order
+    ]
 
-  #   test "should succeed with valid request", %{supplier: supplier, purchase_order: purchase_order} do
-  #     purchase_order_item = hd(purchase_order.items)
+    test "should succeed with valid request", %{supplier: supplier, purchase_order: purchase_order} do
+      purchase_order_item = hd(purchase_order.items)
 
-  #     request = %{
-  #       purchase_order_uuid: purchase_order.uuid,
-  #       supplier_uuid: supplier.uuid,
-  #       receipt_note_uuid: Ecto.UUID.generate(),
-  #       receipt_items: [
-  #         %{
-  #           purchase_order_item_uuid: purchase_order_item.uuid,
-  #           actual_qty: 1
-  #         }
-  #       ]
-  #     }
+      request = %{
+        purchase_order_uuid: purchase_order.uuid,
+        supplier_uuid: supplier.uuid,
+        receipt_note_uuid: Ecto.UUID.generate(),
+        receipt_items: [
+          %{
+            purchase_order_item_uuid: purchase_order_item.uuid,
+            actual_qty: 1
+          }
+        ]
+      }
 
-  #     assert {:ok, receipt_note} = Dispatcher.run(request, :create_receipt_note)
+      assert {:ok, receipt_note} = Dispatcher.run(request, :create_receipt_note)
 
-  #     assert receipt_note.uuid == request.receipt_note_uuid
-  #     assert receipt_note.purchase_order_uuid == purchase_order.uuid
-  #     assert receipt_note.supplier_uuid == supplier.uuid
-  #     assert receipt_note.status == :draft
-  #   end
-  # end
+      assert receipt_note.uuid == request.receipt_note_uuid
+      assert receipt_note.purchase_order_uuid == purchase_order.uuid
+      assert receipt_note.supplier_uuid == supplier.uuid
+      assert receipt_note.status == :draft
+    end
+  end
 
   # describe "confirm receipt note" do
   #   setup [

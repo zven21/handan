@@ -47,12 +47,22 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     ConfirmPurchaseOrder
   }
 
+  alias Handan.Purchasing.Commands.{
+    CreateReceiptNote,
+    ConfirmReceiptNote,
+    CompleteReceiptNote
+  }
+
   alias Handan.Purchasing.Events.{
     PurchaseOrderCreated,
     PurchaseOrderDeleted,
     PurchaseOrderConfirmed,
     PurchaseOrderItemAdded,
-    PurchaseOrderStatusChanged
+    PurchaseOrderStatusChanged,
+    ReceiptNoteCreated,
+    ReceiptNoteConfirmed,
+    ReceiptNoteCompleted,
+    ReceiptNoteItemAdded
   }
 
   @doc """
@@ -85,8 +95,8 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
       cmd.purchase_items
       |> Enum.map(fn purchase_item ->
         %PurchaseOrderItemAdded{
-          purchase_order_item_uuid: purchase_item.purchase_order_item_uuid,
           purchase_order_uuid: cmd.purchase_order_uuid,
+          purchase_order_item_uuid: purchase_item.purchase_order_item_uuid,
           item_uuid: purchase_item.item_uuid,
           item_name: purchase_item.item_name,
           ordered_qty: purchase_item.ordered_qty,
@@ -105,9 +115,9 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %CreatePurchaseOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{purchase_order_uuid: sales_order_uuid} = state, %DeletePurchaseOrder{purchase_order_uuid: sales_order_uuid} = cmd) do
+  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %DeletePurchaseOrder{purchase_order_uuid: purchase_order_uuid} = cmd) do
     purchase_order_evt = %PurchaseOrderDeleted{
-      purchase_order_uuid: cmd.purchase_order_uuid
+      purchase_order_uuid: purchase_order_uuid
     }
 
     [purchase_order_evt]
@@ -133,6 +143,46 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
     [purchase_order_evt, status_changed_evt]
   end
+
+  def execute(%__MODULE__{} = state, %CreateReceiptNote{} = cmd) do
+    if Map.has_key?(state.receipt_notes, cmd.receipt_note_uuid) do
+      {:error, :receipt_note_already_exists}
+    else
+      receipt_note_created_evt = %ReceiptNoteCreated{
+        receipt_note_uuid: cmd.receipt_note_uuid,
+        purchase_order_uuid: state.purchase_order_uuid,
+        supplier_uuid: state.supplier_uuid,
+        supplier_name: state.supplier_name,
+        supplier_address: state.supplier_address,
+        status: "draft",
+        total_qty: cmd.total_qty,
+        total_amount: cmd.total_amount
+      }
+
+      receipt_note_items_evt =
+        cmd.receipt_items
+        |> Enum.map(fn receipt_item ->
+          %ReceiptNoteItemAdded{
+            receipt_note_item_uuid: receipt_item.receipt_note_item_uuid,
+            receipt_note_uuid: cmd.receipt_note_uuid,
+            purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
+            purchase_order_uuid: state.purchase_order_uuid,
+            item_uuid: receipt_item.item_uuid,
+            stock_uom_uuid: receipt_item.stock_uom_uuid,
+            uom_name: receipt_item.uom_name,
+            actual_qty: receipt_item.actual_qty,
+            amount: receipt_item.amount,
+            unit_price: receipt_item.unit_price,
+            item_name: receipt_item.item_name
+          }
+        end)
+
+      [receipt_note_created_evt | receipt_note_items_evt]
+      |> List.flatten()
+    end
+  end
+
+  def execute(_, %CreateReceiptNote{}), do: {:error, :not_allowed}
 
   def apply(%__MODULE__{} = purchase_order, %PurchaseOrderCreated{} = event) do
     %__MODULE__{
@@ -171,5 +221,24 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def apply(%__MODULE__{} = state, %PurchaseOrderStatusChanged{} = evt) do
     %__MODULE__{state | status: evt.to_status, receipt_status: evt.to_receipt_status, billing_status: evt.to_billing_status}
+  end
+
+  def apply(%__MODULE__{} = state, %ReceiptNoteCreated{} = evt) do
+    new_receipt_notes = Map.put(state.receipt_notes, evt.receipt_note_uuid, Map.from_struct(evt))
+
+    %__MODULE__{state | receipt_notes: new_receipt_notes}
+  end
+
+  def apply(%__MODULE__{} = state, %ReceiptNoteConfirmed{} = evt) do
+    %__MODULE__{state | receipt_status: evt.status}
+  end
+
+  def apply(%__MODULE__{} = state, %ReceiptNoteItemAdded{} = evt) do
+    new_receipt_note_items = Map.put(state.receipt_note_items, evt.receipt_note_item_uuid, Map.from_struct(evt))
+
+    %__MODULE__{
+      state
+      | receipt_note_items: new_receipt_note_items
+    }
   end
 end

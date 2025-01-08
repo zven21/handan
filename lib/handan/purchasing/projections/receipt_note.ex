@@ -11,7 +11,7 @@ defmodule Handan.Purchasing.Projections.ReceiptNote do
     field :supplier_name, :string
     field :total_amount, :decimal
     field :total_qty, :decimal
-    field :status, :string
+    field :status, Ecto.Enum, values: [:draft, :confirmed, :completed]
 
     belongs_to :purchase_order, Handan.Purchasing.Projections.PurchaseOrder, foreign_key: :purchase_order_uuid, references: :uuid
     belongs_to :supplier, Handan.Purchasing.Projections.Supplier, foreign_key: :supplier_uuid, references: :uuid

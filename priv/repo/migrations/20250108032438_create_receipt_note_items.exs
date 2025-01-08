@@ -13,6 +13,7 @@ defmodule Handan.Repo.Migrations.CreateReceiptNoteItems do
       add :unit_price, :decimal
       add :actual_qty, :decimal, default: 0
       add :purchase_order_item_uuid, :binary_id
+      add :purchase_order_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
     end
@@ -21,5 +22,6 @@ defmodule Handan.Repo.Migrations.CreateReceiptNoteItems do
     create index(:receipt_note_items, [:item_uuid])
     create index(:receipt_note_items, [:stock_uom_uuid])
     create index(:receipt_note_items, [:purchase_order_item_uuid])
+    create index(:receipt_note_items, [:purchase_order_uuid])
   end
 end
