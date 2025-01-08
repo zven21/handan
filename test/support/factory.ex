@@ -111,4 +111,11 @@ defmodule Handan.Factory do
       name: sequence(:name, &"name-#{&1}")
     }
   end
+
+  def production_plan_factory() do
+    %{
+      production_plan_uuid: Ecto.UUID.generate(),
+      title: sequence(:title, &"title-#{&1}")
+    }
+  end
 end

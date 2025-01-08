@@ -11,7 +11,8 @@ defmodule Handan.Production.Supervisor do
     children = [
       Handan.Production.Projectors.BOM,
       Handan.Production.Projectors.Process,
-      Handan.Production.Projectors.Workstation
+      Handan.Production.Projectors.Workstation,
+      Handan.Production.Projectors.ProductionPlan
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

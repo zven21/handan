@@ -301,5 +301,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_production_plan) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateProductionPlan,
+      projection: Handan.Production.Projections.ProductionPlan,
+      result_type: :production_plan_uuid,
+      preload: [:items]
+    }
+  end
+
+  def match(:delete_production_plan) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteProductionPlan,
+      projection: Handan.Production.Projections.ProductionPlan
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end
