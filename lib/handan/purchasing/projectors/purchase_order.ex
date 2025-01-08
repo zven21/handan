@@ -19,7 +19,8 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
 
   alias Handan.Purchasing.Events.{
     ReceiptNoteCreated,
-    ReceiptNoteItemAdded
+    ReceiptNoteItemAdded,
+    ReceiptNoteConfirmed
   }
 
   alias Handan.Purchasing.Events.{
@@ -125,19 +126,19 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     Ecto.Multi.update_all(multi, :purchase_order_status_changed, purchase_order_query(evt.purchase_order_uuid), set: set_fields)
   end)
 
-  # project(%PurchaseOrderItemAdjusted{} = evt, _meta, fn multi ->
-  #   set_fields = [
-  #     received_qty: evt.received_qty,
-  #     remaining_qty: evt.remaining_qty
-  #   ]
+  project(%PurchaseOrderItemAdjusted{} = evt, _meta, fn multi ->
+    set_fields = [
+      received_qty: evt.received_qty,
+      remaining_qty: evt.remaining_qty
+    ]
 
-  #   Ecto.Multi.update_all(multi, :purchase_order_item_adjusted, purchase_order_item_query(evt.purchase_order_item_uuid), set: set_fields)
-  # end)
+    Ecto.Multi.update_all(multi, :purchase_order_item_adjusted, purchase_order_item_query(evt.purchase_order_item_uuid), set: set_fields)
+  end)
 
-  # project(%ReceiptNoteConfirmed{} = evt, _meta, fn multi ->
-  #   set_fields = [status: evt.status]
-  #   Ecto.Multi.update_all(multi, :receipt_note_confirmed, receipt_note_query(evt.receipt_note_uuid), set: set_fields)
-  # end)
+  project(%ReceiptNoteConfirmed{} = evt, _meta, fn multi ->
+    set_fields = [status: evt.status]
+    Ecto.Multi.update_all(multi, :receipt_note_confirmed, receipt_note_query(evt.receipt_note_uuid), set: set_fields)
+  end)
 
   # project(%PurchaseInvoiceCreated{} = evt, _meta, fn multi ->
   #   purchase_invoice =

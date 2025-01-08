@@ -75,6 +75,13 @@ defmodule Handan.Factory do
     }
   end
 
+  def receipt_note_factory() do
+    %{
+      receipt_note_uuid: Ecto.UUID.generate(),
+      purchase_order_uuid: Ecto.UUID.generate()
+    }
+  end
+
   def random_mobile() do
     "1" <> Integer.to_string(Enum.random(3..9)) <> Integer.to_string(Enum.random(100_000_000..999_999_999))
   end

@@ -111,35 +111,35 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
     end
   end
 
-  # describe "confirm receipt note" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_supplier,
-  #     :create_item,
-  #     :create_purchase_order,
-  #     :create_receipt_note
-  #   ]
+  describe "confirm receipt note" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_supplier,
+      :create_item,
+      :create_purchase_order,
+      :create_receipt_note
+    ]
 
-  #   test "should succeed with valid request", %{purchase_order: purchase_order, receipt_note: receipt_note} do
-  #     request = %{
-  #       purchase_order_uuid: purchase_order.uuid,
-  #       receipt_note_uuid: receipt_note.uuid
-  #     }
+    test "should succeed with valid request", %{purchase_order: purchase_order, receipt_note: receipt_note} do
+      request = %{
+        purchase_order_uuid: purchase_order.uuid,
+        receipt_note_uuid: receipt_note.uuid
+      }
 
-  #     assert {:ok, updated_receipt_note} = Dispatcher.run(request, :confirm_receipt_note)
-  #     {:ok, updated_purchase_order} = Turbo.get(PurchaseOrder, purchase_order.uuid)
+      assert {:ok, updated_receipt_note} = Dispatcher.run(request, :confirm_receipt_note)
+      {:ok, updated_purchase_order} = Turbo.get(PurchaseOrder, purchase_order.uuid)
 
-  #     assert updated_receipt_note.uuid == request.receipt_note_uuid
-  #     assert updated_receipt_note.purchase_order_uuid == purchase_order.uuid
-  #     assert updated_receipt_note.supplier_uuid == purchase_order.supplier_uuid
-  #     assert updated_receipt_note.status == :to_receive
+      assert updated_receipt_note.uuid == request.receipt_note_uuid
+      assert updated_receipt_note.purchase_order_uuid == purchase_order.uuid
+      assert updated_receipt_note.supplier_uuid == purchase_order.supplier_uuid
+      assert updated_receipt_note.status == :to_receive
 
-  #     assert updated_purchase_order.status == :to_receive_and_bill
-  #     assert updated_purchase_order.receipt_status == :partly_received
-  #     assert updated_purchase_order.billing_status == :not_billed
-  #   end
-  # end
+      assert updated_purchase_order.status == :to_bill
+      assert updated_purchase_order.receipt_status == :fully_received
+      assert updated_purchase_order.billing_status == :not_billed
+    end
+  end
 
   # describe "complete receipt note" do
   #   setup [
