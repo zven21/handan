@@ -4,12 +4,18 @@ defmodule Handan.Production.Router do
   use Commanded.Commands.Router
 
   alias Handan.Production.Aggregates.{
-    BOM
+    BOM,
+    Process
   }
 
   alias Handan.Production.Commands.{
     CreateBOM,
     DeleteBOM
+  }
+
+  alias Handan.Production.Commands.{
+    CreateProcess,
+    DeleteProcess
   }
 
   if Mix.env() == :dev do
@@ -19,6 +25,7 @@ defmodule Handan.Production.Router do
   middleware(Handan.EventSourcing.Middleware.Enrich)
 
   identify(BOM, by: :bom_uuid, prefix: "bom-")
+  identify(Process, by: :process_uuid, prefix: "process-")
 
   dispatch(
     [
@@ -27,5 +34,14 @@ defmodule Handan.Production.Router do
     ],
     to: BOM,
     lifespan: BOM
+  )
+
+  dispatch(
+    [
+      CreateProcess,
+      DeleteProcess
+    ],
+    to: Process,
+    lifespan: Process
   )
 end

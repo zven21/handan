@@ -97,6 +97,14 @@ defmodule Handan.Factory do
     }
   end
 
+  def process_factory() do
+    %{
+      process_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      description: sequence(:description, &"description-#{&1}")
+    }
+  end
+
   def random_mobile() do
     "1" <> Integer.to_string(Enum.random(3..9)) <> Integer.to_string(Enum.random(100_000_000..999_999_999))
   end

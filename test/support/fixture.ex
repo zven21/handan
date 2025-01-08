@@ -198,6 +198,14 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_process(_context) do
+    {:ok, process} = fixture(:process, name: "process-name", description: "process-description")
+
+    [
+      process: process
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -212,4 +220,5 @@ defmodule Handan.Fixture do
   def fixture(:confirm_receipt_note, attrs), do: Dispatcher.run(build(:receipt_note, attrs), :confirm_receipt_note)
   def fixture(:purchase_invoice, attrs), do: Dispatcher.run(build(:purchase_invoice, attrs), :create_purchase_invoice)
   def fixture(:bom, attrs), do: Dispatcher.run(build(:bom, attrs), :create_bom)
+  def fixture(:process, attrs), do: Dispatcher.run(build(:process, attrs), :create_process)
 end

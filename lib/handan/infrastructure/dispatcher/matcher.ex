@@ -269,5 +269,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_process) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateProcess,
+      projection: Handan.Production.Projections.Process,
+      result_type: :process_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_process) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteProcess,
+      projection: Handan.Production.Projections.Process
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end
