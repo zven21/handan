@@ -6,7 +6,7 @@ defmodule Handan.Enterprise.Events.StaffAdded do
   defevent do
     field :staff_uuid, Ecto.UUID
     field :name, :string
-    field :mobile, :string
+    field :email, :string
     field :user_uuid, Ecto.UUID
     field :company_uuid, Ecto.UUID
   end

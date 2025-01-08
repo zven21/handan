@@ -7,7 +7,7 @@ defmodule Handan.Enterprise.Projections.Staff do
   @foreign_key_type :binary_id
   schema "staff" do
     field :name, :string
-    field :mobile, :string
+    field :email, :string
 
     belongs_to :user, Handan.Accounts.Projections.User, references: :uuid, foreign_key: :user_uuid
     belongs_to :company, Handan.Enterprise.Projections.Company, references: :uuid, foreign_key: :company_uuid

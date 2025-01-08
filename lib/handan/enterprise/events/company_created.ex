@@ -9,6 +9,6 @@ defmodule Handan.Enterprise.Events.CompanyCreated do
     field :name, :string
     field :description, :string
     field :logo_url, :string
-    field :owner_mobile, :string
+    field :owner_email, :string
   end
 end

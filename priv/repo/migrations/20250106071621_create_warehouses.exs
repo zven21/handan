@@ -9,7 +9,7 @@ defmodule Handan.Repo.Migrations.CreateWarehouses do
       add :is_default, :boolean, default: false
       add :address, :string
       add :contact_name, :string
-      add :contact_mobile, :string
+      add :contact_email, :string
 
       timestamps(type: :utc_datetime)
     end

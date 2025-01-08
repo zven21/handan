@@ -12,7 +12,7 @@ defmodule Handan.Enterprise.Aggregates.Company do
     field :name, :string
     field :company_uuid, Ecto.UUID
     field :owner_uuid, Ecto.UUID
-    field :owner_mobile, :string
+    field :owner_email, :string
     field :description, :string
     field :uoms, :map, default: %{}
     field :warehouses, :map, default: %{}
@@ -53,14 +53,14 @@ defmodule Handan.Enterprise.Aggregates.Company do
       name: cmd.name,
       owner_uuid: cmd.user_uuid,
       description: cmd.description,
-      owner_mobile: cmd.user_mobile
+      owner_email: cmd.user_email
     }
 
     staff_evt = %StaffAdded{
       staff_uuid: Ecto.UUID.generate(),
       user_uuid: cmd.user_uuid,
       name: "管理员",
-      mobile: cmd.user_mobile,
+      email: cmd.user_email,
       company_uuid: cmd.company_uuid
     }
 
@@ -80,7 +80,7 @@ defmodule Handan.Enterprise.Aggregates.Company do
       is_default: true,
       address: "",
       contact_name: "",
-      contact_mobile: ""
+      contact_email: ""
     }
 
     [company_evt, uom_evts, warehouse_evt, staff_evt] |> List.flatten()
@@ -103,7 +103,7 @@ defmodule Handan.Enterprise.Aggregates.Company do
         name: evt.name,
         description: evt.description,
         owner_uuid: evt.owner_uuid,
-        owner_mobile: evt.owner_mobile
+        owner_email: evt.owner_email
     }
   end
 

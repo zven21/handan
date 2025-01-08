@@ -1,14 +1,14 @@
 defmodule Handan.Accounts.Commands.RegisterUser do
   @moduledoc false
 
-  @required_fields ~w(user_uuid mobile password)a
+  @required_fields ~w(user_uuid email password)a
 
   use Handan.EventSourcing.Command
 
   defcommand do
     field :user_uuid, Ecto.UUID
     field :nickname, :string
-    field :mobile, :string
+    field :email, :string
     field :password, :string
     field :avatar_url, :string
     field :hashed_password, :string
@@ -17,14 +17,14 @@ defmodule Handan.Accounts.Commands.RegisterUser do
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     alias Handan.Accounts.Commands.RegisterUser
 
-    def enrich(%RegisterUser{password: password, mobile: mobile} = cmd, _) do
-      case Handan.Accounts.get_user_by_mobile(mobile) do
+    def enrich(%RegisterUser{password: password, email: email} = cmd, _) do
+      case Handan.Accounts.get_user_by_email(email) do
         nil ->
           hashed_password = Bcrypt.hash_pwd_salt(password)
           {:ok, %RegisterUser{cmd | password: nil, hashed_password: hashed_password}}
 
         _user ->
-          {:error, %{mobile: "has already taken"}}
+          {:error, %{email: "has already taken"}}
       end
     end
   end
@@ -34,6 +34,6 @@ defmodule Handan.Accounts.Commands.RegisterUser do
     |> cast(attrs, fields())
     |> validate_required_fields(@required_fields)
     |> validate_length(:nickname, min: 1, max: 50)
-    |> validate_format(:mobile, ~r/^1[3-9]\d{9}$/, message: "must have the correct format")
+    |> validate_format(:email, ~r/\A[^\s@]+@[^\s@]+\.[^\s@]+\z/, message: "must have the correct format")
   end
 end

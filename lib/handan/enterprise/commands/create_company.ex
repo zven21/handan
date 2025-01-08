@@ -8,7 +8,7 @@ defmodule Handan.Enterprise.Commands.CreateCompany do
   defcommand do
     field :company_uuid, Ecto.UUID
     field :user_uuid, Ecto.UUID
-    field :user_mobile, :string
+    field :user_email, :string
     field :name, :string
     field :description, :string
     field :logo_url, :string
@@ -24,7 +24,7 @@ defmodule Handan.Enterprise.Commands.CreateCompany do
             %{cmd | user_uuid: nil}
 
           {:ok, user} ->
-            %{cmd | user_uuid: user_uuid, user_mobile: user.mobile}
+            %{cmd | user_uuid: user_uuid, user_email: user.email}
         end
       end
 

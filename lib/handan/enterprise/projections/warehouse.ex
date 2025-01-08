@@ -9,7 +9,7 @@ defmodule Handan.Enterprise.Projections.Warehouse do
     field :name, :string
     field :address, :string
     field :area, :string
-    field :contact_mobile, :string
+    field :contact_email, :string
     field :contact_name, :string
     field :is_default, :boolean, default: false
 

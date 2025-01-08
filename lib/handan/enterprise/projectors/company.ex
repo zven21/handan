@@ -39,7 +39,7 @@ defmodule Handan.Enterprise.Projectors.Store do
     staff = %Staff{
       uuid: evt.staff_uuid,
       name: evt.name,
-      mobile: evt.mobile,
+      email: evt.email,
       user_uuid: evt.user_uuid,
       company_uuid: evt.company_uuid
     }

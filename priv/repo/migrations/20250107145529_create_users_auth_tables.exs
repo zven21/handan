@@ -4,8 +4,7 @@ defmodule Handan.Repo.Migrations.CreateUsersAuthTables do
   def change do
     create table(:users, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
-      add :mobile, :string, null: false
-      add :email, :string
+      add :email, :string, null: false
       add :nickname, :string
       add :bio, :string
       add :avatar_url, :string
@@ -15,7 +14,7 @@ defmodule Handan.Repo.Migrations.CreateUsersAuthTables do
       timestamps(type: :utc_datetime)
     end
 
-    create unique_index(:users, [:mobile])
+    create unique_index(:users, [:email])
 
     create table(:users_tokens, primary_key: false) do
       add :uuid, :binary_id, primary_key: true

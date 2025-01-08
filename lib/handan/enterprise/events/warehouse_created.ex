@@ -8,7 +8,7 @@ defmodule Handan.Enterprise.Events.WarehouseCreated do
     field :name, :string
     field :address, :string
     field :contact_name, :string
-    field :contact_mobile, :string
+    field :contact_email, :string
     field :is_default, :boolean
   end
 end

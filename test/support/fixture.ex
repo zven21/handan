@@ -8,7 +8,7 @@ defmodule Handan.Fixture do
   alias Handan.Enterprise.Projections.{Warehouse, UOM}
 
   def register_user(_context) do
-    {:ok, %{user: user}} = fixture(:user, %{mobile: "18612312312"})
+    {:ok, %{user: user}} = fixture(:user, %{email: "test@example.com"})
 
     [
       user: user
