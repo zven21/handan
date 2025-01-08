@@ -3,9 +3,9 @@ defmodule Handan.Repo.Migrations.CreateBoms do
 
   def change do
     create table(:boms, primary_key: false) do
-      add :id, :binary_id, primary_key: true
+      add :uuid, :binary_id, primary_key: true
       add :name, :string
-      add :item_uuid, :string
+      add :item_uuid, :binary_id
       add :item_name, :string
 
       timestamps(type: :utc_datetime)

@@ -3,7 +3,7 @@ defmodule Handan.Repo.Migrations.CreateProcesses do
 
   def change do
     create table(:processes, primary_key: false) do
-      add :id, :binary_id, primary_key: true
+      add :uuid, :binary_id, primary_key: true
       add :name, :string
       add :code, :string
       add :description, :string

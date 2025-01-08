@@ -89,6 +89,14 @@ defmodule Handan.Factory do
     }
   end
 
+  def bom_factory() do
+    %{
+      bom_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}"),
+      item_uuid: Ecto.UUID.generate()
+    }
+  end
+
   def random_mobile() do
     "1" <> Integer.to_string(Enum.random(3..9)) <> Integer.to_string(Enum.random(100_000_000..999_999_999))
   end

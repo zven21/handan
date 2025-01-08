@@ -3,7 +3,7 @@ defmodule Handan.Repo.Migrations.CreateBomProcesses do
 
   def change do
     create table(:bom_processes, primary_key: false) do
-      add :id, :binary_id, primary_key: true
+      add :uuid, :binary_id, primary_key: true
       add :bom_uuid, :binary_id
       add :process_uuid, :binary_id
       add :process_name, :string
@@ -13,5 +13,7 @@ defmodule Handan.Repo.Migrations.CreateBomProcesses do
 
       timestamps(type: :utc_datetime)
     end
+
+    create index(:bom_processes, [:bom_uuid, :process_uuid])
   end
 end

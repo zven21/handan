@@ -253,5 +253,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_bom) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateBOM,
+      projection: Handan.Production.Projections.BOM,
+      result_type: :bom_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_bom) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteBOM,
+      projection: Handan.Production.Projections.BOM
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end
