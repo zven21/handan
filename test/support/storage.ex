@@ -44,6 +44,11 @@ defmodule Handan.Storage do
       users,
       users_tokens,
       suppliers,
+      purchase_orders,
+      purchase_order_items,
+      purchase_invoices,
+      receipt_notes,
+      receipt_note_items,
       projection_versions
     RESTART IDENTITY;
     """

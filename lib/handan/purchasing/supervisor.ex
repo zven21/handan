@@ -9,7 +9,8 @@ defmodule Handan.Purchasing.Supervisor do
 
   def init(_init_arg) do
     children = [
-      Handan.Purchasing.Projectors.Supplier
+      Handan.Purchasing.Projectors.Supplier,
+      Handan.Purchasing.Projectors.PurchaseOrder
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

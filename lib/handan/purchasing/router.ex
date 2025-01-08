@@ -4,18 +4,23 @@ defmodule Handan.Purchasing.Router do
   use Commanded.Commands.Router
 
   alias Handan.Purchasing.Aggregates.{
-    # PurchaseOrder,
+    PurchaseOrder,
     Supplier
   }
 
   alias Handan.Purchasing.Commands.{
-    # CreatePurchaseOrder,
-    # DeletePurchaseOrder,
     CreateSupplier,
     DeleteSupplier
-    # CreatePurchaseInvoice,
-    # ConfirmPurchaseInvoice,
-    # CompletePurchaseOrder
+  }
+
+  alias Handan.Purchasing.Commands.{
+    CreatePurchaseOrder,
+    DeletePurchaseOrder,
+    CreateReceiptNote,
+    CreatePurchaseInvoice,
+    ConfirmPurchaseInvoice,
+    ConfirmReceiptNote,
+    ConfirmPurchaseOrder
   }
 
   if Mix.env() == :dev do
@@ -25,6 +30,7 @@ defmodule Handan.Purchasing.Router do
   middleware(Handan.EventSourcing.Middleware.Enrich)
 
   identify(Supplier, by: :supplier_uuid, prefix: "supplier-")
+  identify(PurchaseOrder, by: :purchase_order_uuid, prefix: "purchase-order-")
 
   dispatch(
     [
@@ -33,5 +39,19 @@ defmodule Handan.Purchasing.Router do
     ],
     to: Supplier,
     lifespan: Supplier
+  )
+
+  dispatch(
+    [
+      CreatePurchaseOrder,
+      CreateReceiptNote,
+      CreatePurchaseInvoice,
+      ConfirmPurchaseInvoice,
+      ConfirmReceiptNote,
+      ConfirmPurchaseOrder,
+      DeletePurchaseOrder
+    ],
+    to: PurchaseOrder,
+    lifespan: PurchaseOrder
   )
 end
