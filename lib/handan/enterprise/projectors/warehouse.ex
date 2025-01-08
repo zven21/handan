@@ -19,7 +19,7 @@ defmodule Handan.Enterprise.Projectors.Warehouse do
         address: evt.address,
         is_default: evt.is_default,
         contact_name: evt.contact_name,
-        contact_mobile: evt.contact_mobile
+        contact_email: evt.contact_email
       }
 
       Ecto.Multi.insert(multi, :warehouse_created, warehouse)

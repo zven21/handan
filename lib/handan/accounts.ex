@@ -28,13 +28,6 @@ defmodule Handan.Accounts do
     Repo.get_by(User, email: email)
   end
 
-  @doc """
-  Gets a user by mobile.
-  """
-  def get_user_by_mobile(mobile) when is_binary(mobile) do
-    Repo.get_by(User, mobile: mobile)
-  end
-
   def get_user(uuid), do: Turbo.get(User, uuid)
 
   @doc """
@@ -58,13 +51,13 @@ defmodule Handan.Accounts do
   ## Session
 
   @doc "login"
-  def login(%{mobile: mobile, password: password}) when is_binary(mobile) and is_binary(password) do
-    with {:ok, user} <- Turbo.get_by(User, %{mobile: mobile}),
+  def login(%{email: email, password: password}) when is_binary(email) and is_binary(password) do
+    with {:ok, user} <- Turbo.get_by(User, %{email: email}),
          true <- User.valid_password?(user, password) do
       token = generate_user_session_token(user)
       {:ok, %{user: user, token: token}}
     else
-      _ -> {:error, :invalid_mobile_or_password}
+      _ -> {:error, :invalid_email_or_password}
     end
   end
 

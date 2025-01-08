@@ -8,7 +8,7 @@ defmodule Handan.Accounts.Aggregates.User do
   deftype do
     field :user_uuid, Ecto.UUID
     field :nickname, :string
-    field :mobile, :string
+    field :email, :string
     field :avatar_url, :string
     field :is_admin, :boolean, default: false
     field :hashed_password, :string
@@ -34,7 +34,7 @@ defmodule Handan.Accounts.Aggregates.User do
     %UserRegistered{
       user_uuid: cmd.user_uuid,
       nickname: cmd.nickname,
-      mobile: cmd.mobile,
+      email: cmd.email,
       avatar_url: cmd.avatar_url,
       hashed_password: cmd.hashed_password
     }
@@ -46,7 +46,7 @@ defmodule Handan.Accounts.Aggregates.User do
       user
       | user_uuid: evt.user_uuid,
         nickname: evt.nickname,
-        mobile: evt.mobile,
+        email: evt.email,
         hashed_password: evt.hashed_password
     }
   end

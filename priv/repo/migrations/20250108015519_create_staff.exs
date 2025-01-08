@@ -5,7 +5,7 @@ defmodule Handan.Repo.Migrations.CreateStaff do
     create table(:staff, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
       add :name, :string
-      add :mobile, :string
+      add :email, :string
 
       add :user_uuid, :binary_id
       add :company_uuid, :binary_id

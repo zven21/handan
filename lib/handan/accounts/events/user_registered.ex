@@ -6,7 +6,7 @@ defmodule Handan.Accounts.Events.UserRegistered do
   defevent do
     field :user_uuid, Ecto.UUID
     field :nickname, :string
-    field :mobile, :string
+    field :email, :string
     field :avatar_url, :string
     field :bio, :string
     field :hashed_password, :string

@@ -21,7 +21,7 @@ defmodule Handan.Accounts.Projectors.User do
     fn multi ->
       user = %User{
         uuid: evt.user_uuid,
-        mobile: evt.mobile,
+        email: evt.email,
         nickname: evt.nickname,
         hashed_password: evt.hashed_password,
         avatar_url: evt.avatar_url,

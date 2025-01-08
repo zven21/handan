@@ -5,10 +5,9 @@ defmodule Handan.Accounts.Projections.User do
   @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :mobile, :string
+    field :email, :string
     field :nickname, :string
     field :avatar_url, :string
-    field :email, :string
     field :bio, :string
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime

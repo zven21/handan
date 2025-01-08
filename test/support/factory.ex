@@ -6,7 +6,7 @@ defmodule Handan.Factory do
   def user_factory() do
     %{
       user_uuid: Ecto.UUID.generate(),
-      mobile: random_mobile(),
+      email: sequence(:email, &"user-#{&1}@example.com"),
       nickname: sequence(:nickname, &"user-#{&1}"),
       password: "123"
     }
@@ -103,9 +103,5 @@ defmodule Handan.Factory do
       name: sequence(:name, &"name-#{&1}"),
       description: sequence(:description, &"description-#{&1}")
     }
-  end
-
-  def random_mobile() do
-    "1" <> Integer.to_string(Enum.random(3..9)) <> Integer.to_string(Enum.random(100_000_000..999_999_999))
   end
 end

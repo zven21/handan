@@ -8,57 +8,57 @@ defmodule Handan.Accounts.UserTest do
 
   describe "register user" do
     test "should succeed with valid request" do
-      request = build(:user, mobile: "18612312312", nickname: "test")
+      request = build(:user, email: "test@example.com", nickname: "test")
 
       {:ok, %{user: user}} = Dispatcher.run(request, :register_user)
 
-      assert user.mobile == request.mobile
+      assert user.email == request.email
       assert user.nickname == request.nickname
     end
 
-    test "with invalid mobile data" do
-      request = build(:user, mobile: "invalid-mobile")
-      assert {:error, %{mobile: ["must have the correct format"]}} = Dispatcher.run(request, :register_user)
+    test "with invalid email data" do
+      request = build(:user, email: "invalid-email")
+      assert {:error, %{email: ["must have the correct format"]}} = Dispatcher.run(request, :register_user)
     end
 
-    test "with mobile == nil data" do
-      request = build(:user, mobile: nil)
-      assert {:error, %{mobile: ["can't be blank"]}} = Dispatcher.run(request, :register_user)
+    test "with email == nil data" do
+      request = build(:user, email: nil)
+      assert {:error, %{email: ["can't be blank"]}} = Dispatcher.run(request, :register_user)
     end
 
     test "with unique" do
-      request_1 = build(:user, mobile: "18612312312")
-      request_2 = build(:user, mobile: "18612312312")
+      request_1 = build(:user, email: "test@example.com")
+      request_2 = build(:user, email: "test@example.com")
 
       _ = Dispatcher.run(request_1, :register_user)
 
-      assert {:error, %{mobile: "has already taken"}} = Dispatcher.run(request_2, :register_user)
+      assert {:error, %{email: "has already taken"}} = Dispatcher.run(request_2, :register_user)
     end
   end
 
   describe "login" do
     setup do
-      user = fixture(:user, %{mobile: "18612312312", password: "123123123"})
+      user = fixture(:user, %{email: "test@example.com", password: "123123123"})
       [user: user]
     end
 
     test "should succeed with valid request" do
       request = %{
-        mobile: "18612312312",
+        email: "test@example.com",
         password: "123123123"
       }
 
       {:ok, %{user: user, token: _token}} = Handan.Accounts.login(request)
-      assert user.mobile == request.mobile
+      assert user.email == request.email
     end
 
     test "should fail with invalid request" do
       request = %{
-        mobile: "18612312312",
+        email: "test@example.com",
         password: "error"
       }
 
-      assert {:error, :invalid_mobile_or_password} = Handan.Accounts.login(request)
+      assert {:error, :invalid_email_or_password} = Handan.Accounts.login(request)
     end
   end
 end
