@@ -217,6 +217,14 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_payment_method(_context) do
+    {:ok, payment_method} = fixture(:payment_method, name: "payment-method-name")
+
+    [
+      payment_method: payment_method
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -233,4 +241,5 @@ defmodule Handan.Fixture do
   def fixture(:bom, attrs), do: Dispatcher.run(build(:bom, attrs), :create_bom)
   def fixture(:process, attrs), do: Dispatcher.run(build(:process, attrs), :create_process)
   def fixture(:workstation, attrs), do: Dispatcher.run(build(:workstation, attrs), :create_workstation)
+  def fixture(:payment_method, attrs), do: Dispatcher.run(build(:payment_method, attrs), :create_payment_method)
 end

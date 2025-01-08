@@ -301,5 +301,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.CreatePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod,
+      result_type: :payment_method_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.DeletePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

@@ -111,4 +111,11 @@ defmodule Handan.Factory do
       name: sequence(:name, &"name-#{&1}")
     }
   end
+
+  def payment_method_factory() do
+    %{
+      payment_method_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}")
+    }
+  end
 end

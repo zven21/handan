@@ -54,6 +54,8 @@ defmodule Handan.Storage do
       processes,
       bom_processes,
       workstations,
+      payment_methods,
+      payment_entries,
       projection_versions
     RESTART IDENTITY;
     """
