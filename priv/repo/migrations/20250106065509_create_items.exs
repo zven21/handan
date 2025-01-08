@@ -10,6 +10,8 @@ defmodule Handan.Repo.Migrations.CreateItems do
 
       add :selling_price, :decimal, precision: 10, scale: 2
 
+      add :default_bom_uuid, :binary_id
+
       add :default_stock_uom_uuid, :binary_id
       add :default_stock_uom_name, :string
 
@@ -17,5 +19,6 @@ defmodule Handan.Repo.Migrations.CreateItems do
     end
 
     create index(:items, [:default_stock_uom_uuid])
+    create index(:items, [:default_bom_uuid])
   end
 end
