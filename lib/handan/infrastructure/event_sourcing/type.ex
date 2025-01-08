@@ -64,20 +64,6 @@ defmodule Handan.EventSourcing.Type do
         end
       end
 
-      @doc "new and return changeset"
-      def web_new(params) do
-        case changeset(struct(__MODULE__), params) do
-          %{valid?: true} = changes ->
-            {:ok, apply_changes(changes)}
-
-          changes ->
-            changes
-        end
-      end
-
-      @doc "valid && changeset"
-      def valid(params), do: changeset(struct(__MODULE__), params)
-
       @doc """
       Returns new struct(s) if the params are valid, otherwise raises a `RuntimeError`.
       """
@@ -153,6 +139,9 @@ defmodule Handan.EventSourcing.Type do
       end
 
       defp embedded_fields, do: __MODULE__.__schema__(:embeds)
+
+      defoverridable new: 1
+      defoverridable changeset: 2
     end
   end
 end

@@ -19,6 +19,7 @@ defmodule Handan.Application do
       # Start to serve requests, typically the last entry
       Handan.EventApp,
       Handan.Enterprise.Supervisor,
+      Handan.Accounts.Supervisor,
       Handan.Stock.Supervisor,
       Handan.Selling.Supervisor,
       HandanWeb.Endpoint

@@ -3,6 +3,15 @@ defmodule Handan.Factory do
 
   use ExMachina
 
+  def user_factory() do
+    %{
+      user_uuid: Ecto.UUID.generate(),
+      mobile: random_mobile(),
+      nickname: sequence(:nickname, &"user-#{&1}"),
+      password: "123"
+    }
+  end
+
   def company_factory() do
     %{
       company_uuid: Ecto.UUID.generate(),
@@ -48,5 +57,9 @@ defmodule Handan.Factory do
       sales_invoice_uuid: Ecto.UUID.generate(),
       sales_order_uuid: Ecto.UUID.generate()
     }
+  end
+
+  def random_mobile() do
+    "1" <> Integer.to_string(Enum.random(3..9)) <> Integer.to_string(Enum.random(100_000_000..999_999_999))
   end
 end
