@@ -22,6 +22,13 @@ defmodule Handan.Accounts.Aggregates.User do
     UserRegistered
   }
 
+  # @doc """
+  # Stop the comment aggregate after it has been deleted
+  # """
+  def after_event(_), do: :timer.hours(1)
+  def after_command(_), do: :timer.hours(1)
+  def after_error(_), do: :timer.hours(1)
+
   # register
   def execute(%__MODULE__{}, %RegisterUser{} = cmd) do
     %UserRegistered{

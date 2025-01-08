@@ -16,10 +16,8 @@ defmodule Handan.Accounts.Commands.RegisterUser do
 
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     alias Handan.Accounts.Commands.RegisterUser
-
-    @spec enrich(RegisterUser.t(), any()) :: {:ok, RegisterUser.t()} | {:error, any()}
     def enrich(%RegisterUser{password: password, mobile: mobile} = cmd, _) do
-      case Handan.Accounts.user_by_mobile(mobile) do
+      case Handan.Accounts.get_user_by_mobile(mobile) do
         nil ->
           hashed_password = Bcrypt.hash_pwd_salt(password)
           {:ok, %RegisterUser{cmd | password: nil, hashed_password: hashed_password}}

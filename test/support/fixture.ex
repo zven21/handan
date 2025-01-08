@@ -7,6 +7,14 @@ defmodule Handan.Fixture do
   alias Handan.Dispatcher
   alias Handan.Enterprise.Projections.{Warehouse, UOM}
 
+  def register_user(_context) do
+    {:ok, %{user: user}} = fixture(:user, %{mobile: "18612312312"})
+
+    [
+      user: user
+    ]
+  end
+
   def create_company(_context) do
     {:ok, company} = fixture(:company, name: "company-name")
 
@@ -122,6 +130,7 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)

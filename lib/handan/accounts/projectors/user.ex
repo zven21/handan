@@ -36,7 +36,7 @@ defmodule Handan.Accounts.Projectors.User do
     :ok
   end
 
-  defp user_query(uuid) do
-    from(c in User, where: c.uuid == ^uuid)
-  end
+  # defp user_query(uuid) do
+  #   from(c in User, where: c.uuid == ^uuid)
+  # end
 end

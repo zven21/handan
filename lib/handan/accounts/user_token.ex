@@ -49,7 +49,7 @@ defmodule Handan.Accounts.Projections.UserToken do
   """
   def build_session_token(user) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %UserToken{token: token, context: "session", user_uuid: user.id}}
+    {token, %UserToken{token: token, context: "session", user_uuid: user.uuid}}
   end
 
   @doc """
@@ -96,7 +96,7 @@ defmodule Handan.Accounts.Projections.UserToken do
        token: hashed_token,
        context: context,
        sent_to: sent_to,
-       user_uuid: user.id
+       user_uuid: user.uuid
      }}
   end
 
@@ -176,10 +176,10 @@ defmodule Handan.Accounts.Projections.UserToken do
   Gets all tokens for the given user for the given contexts.
   """
   def by_user_and_contexts_query(user, :all) do
-    from t in UserToken, where: t.user_uuid == ^user.id
+    from t in UserToken, where: t.user_uuid == ^user.uuid
   end
 
   def by_user_and_contexts_query(user, [_ | _] = contexts) do
-    from t in UserToken, where: t.user_uuid == ^user.id and t.context in ^contexts
+    from t in UserToken, where: t.user_uuid == ^user.uuid and t.context in ^contexts
   end
 end
