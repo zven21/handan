@@ -7,10 +7,40 @@ defmodule Handan.Enterprise.Commands.CreateCompany do
 
   defcommand do
     field :company_uuid, Ecto.UUID
-    # TODO add owner && creator
-    # field :user_uuid, Ecto.UUID
+    field :user_uuid, Ecto.UUID
+    field :user_mobile, :string
     field :name, :string
     field :description, :string
     field :logo_url, :string
+  end
+
+  defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
+    alias Handan.Enterprise.Commands.CreateCompany
+
+    def enrich(%CreateCompany{user_uuid: user_uuid} = cmd, _) do
+      handle_user_fn = fn cmd ->
+        case Handan.Accounts.get_user(user_uuid) do
+          {:error, _} ->
+            %{cmd | user_uuid: nil}
+
+          {:ok, user} ->
+            %{cmd | user_uuid: user_uuid, user_mobile: user.mobile}
+        end
+      end
+
+      cmd
+      |> handle_user_fn.()
+      |> validator()
+    end
+
+    defp validator(cmd) do
+      case cmd do
+        %{user_uuid: nil} ->
+          {:error, %{user: "not found"}}
+
+        _ ->
+          {:ok, cmd}
+      end
+    end
   end
 end

@@ -11,6 +11,9 @@ defmodule Handan.Enterprise.Projections.Company do
   schema "companies" do
     field :name, :string
     field :description, :string
+    field :owner_uuid, Ecto.UUID
+
+    has_many :staff, Handan.Enterprise.Projections.Staff, foreign_key: :company_uuid
 
     timestamps(type: :utc_datetime)
   end

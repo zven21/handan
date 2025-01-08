@@ -9,12 +9,16 @@ defmodule Handan.Enterprise.Aggregates.Company do
   use Handan.EventSourcing.Type
 
   deftype do
-    field :company_uuid, Ecto.UUID
     field :name, :string
+    field :company_uuid, Ecto.UUID
+    field :owner_uuid, Ecto.UUID
+    field :owner_mobile, :string
     field :description, :string
-    field :deleted?, :boolean, default: false
     field :uoms, :map, default: %{}
     field :warehouses, :map, default: %{}
+    field :staff, :map, default: %{}
+
+    field :deleted?, :boolean, default: false
   end
 
   alias Handan.Enterprise.Commands.{
@@ -24,7 +28,8 @@ defmodule Handan.Enterprise.Aggregates.Company do
 
   alias Handan.Enterprise.Events.{
     CompanyCreated,
-    CompanyDeleted
+    CompanyDeleted,
+    StaffAdded
   }
 
   alias Handan.Enterprise.Events.UOMCreated
@@ -46,7 +51,17 @@ defmodule Handan.Enterprise.Aggregates.Company do
     company_evt = %CompanyCreated{
       company_uuid: cmd.company_uuid,
       name: cmd.name,
-      description: cmd.description
+      owner_uuid: cmd.user_uuid,
+      description: cmd.description,
+      owner_mobile: cmd.user_mobile
+    }
+
+    staff_evt = %StaffAdded{
+      staff_uuid: Ecto.UUID.generate(),
+      user_uuid: cmd.user_uuid,
+      name: "管理员",
+      mobile: cmd.user_mobile,
+      company_uuid: cmd.company_uuid
     }
 
     uom_evts =
@@ -68,7 +83,7 @@ defmodule Handan.Enterprise.Aggregates.Company do
       contact_mobile: ""
     }
 
-    [company_evt, uom_evts, warehouse_evt] |> List.flatten()
+    [company_evt, uom_evts, warehouse_evt, staff_evt] |> List.flatten()
   end
 
   def execute(_, %CreateCompany{}), do: {:error, :not_allowed}
@@ -86,7 +101,9 @@ defmodule Handan.Enterprise.Aggregates.Company do
       state
       | company_uuid: evt.company_uuid,
         name: evt.name,
-        description: evt.description
+        description: evt.description,
+        owner_uuid: evt.owner_uuid,
+        owner_mobile: evt.owner_mobile
     }
   end
 
@@ -107,5 +124,11 @@ defmodule Handan.Enterprise.Aggregates.Company do
     warehouses = Map.put(state.warehouses, evt.warehouse_uuid, Map.from_struct(evt))
 
     %{state | warehouses: warehouses}
+  end
+
+  def apply(%__MODULE__{} = state, %StaffAdded{} = evt) do
+    staff = Map.put(state.staff, evt.staff_uuid, Map.from_struct(evt))
+
+    %{state | staff: staff}
   end
 end

@@ -35,6 +35,8 @@ defmodule Handan.Accounts do
     Repo.get_by(User, mobile: mobile)
   end
 
+  def get_user(uuid), do: Turbo.get(User, uuid)
+
   @doc """
   Gets a user by email and password.
 

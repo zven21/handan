@@ -5,8 +5,10 @@ defmodule Handan.Enterprise.Events.CompanyCreated do
 
   defevent do
     field :company_uuid, Ecto.UUID
+    field :owner_uuid, Ecto.UUID
     field :name, :string
     field :description, :string
     field :logo_url, :string
+    field :owner_mobile, :string
   end
 end

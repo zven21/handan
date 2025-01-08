@@ -8,10 +8,14 @@ defmodule Handan.Enterprise.Projectors.Store do
 
   alias Handan.Enterprise.Events.{
     CompanyCreated,
-    CompanyDeleted
+    CompanyDeleted,
+    StaffAdded
   }
 
-  alias Handan.Enterprise.Projections.Company
+  alias Handan.Enterprise.Projections.{
+    Company,
+    Staff
+  }
 
   project(
     %CompanyCreated{} = evt,
@@ -29,6 +33,18 @@ defmodule Handan.Enterprise.Projectors.Store do
 
   project(%CompanyDeleted{company_uuid: uuid}, _meta, fn multi ->
     Ecto.Multi.delete_all(multi, :company_deleted, company_query(uuid))
+  end)
+
+  project(%StaffAdded{} = evt, _meta, fn multi ->
+    staff = %Staff{
+      uuid: evt.staff_uuid,
+      name: evt.name,
+      mobile: evt.mobile,
+      user_uuid: evt.user_uuid,
+      company_uuid: evt.company_uuid
+    }
+
+    Ecto.Multi.insert(multi, :staff_added, staff)
   end)
 
   def after_update(_event, _metadata, _changes) do

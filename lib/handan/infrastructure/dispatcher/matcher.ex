@@ -31,7 +31,6 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
-
   def match(:create_company) do
     %__MODULE__{
       command: Handan.Enterprise.Commands.CreateCompany,

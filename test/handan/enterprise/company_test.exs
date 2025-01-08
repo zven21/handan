@@ -10,8 +10,10 @@ defmodule Handan.Enterprise.CompanyTest do
   alias Handan.Enterprise.Projections.Company
 
   describe "create store" do
-    test "should succeed with valid request" do
-      request = build(:company, name: "company-name")
+    setup :register_user
+
+    test "should succeed with valid request", %{user: user} do
+      request = build(:company, name: "company-name", user_uuid: user.uuid)
 
       assert {:ok, %Company{} = company} = Dispatcher.run(request, :create_company)
       assert company.name == request.name
@@ -20,6 +22,7 @@ defmodule Handan.Enterprise.CompanyTest do
 
   describe "delete store" do
     setup [
+      :register_user,
       :create_company
     ]
 
