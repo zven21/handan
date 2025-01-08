@@ -49,6 +49,10 @@ defmodule Handan.Storage do
       purchase_invoices,
       receipt_notes,
       receipt_note_items,
+      boms,
+      bom_items,
+      processes,
+      bom_processes,
       projection_versions
     RESTART IDENTITY;
     """
