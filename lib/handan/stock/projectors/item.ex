@@ -13,7 +13,8 @@ defmodule Handan.Stock.Projectors.Item do
   alias Handan.Stock.Events.{
     ItemCreated,
     ItemDeleted,
-    StockUOMCreated
+    StockUOMCreated,
+    ItemBOMBinded
   }
 
   alias Handan.Stock.Projections.{Item, StockUOM}
@@ -32,6 +33,18 @@ defmodule Handan.Stock.Projectors.Item do
       }
 
       Ecto.Multi.insert(multi, :item_created, item)
+    end
+  )
+
+  project(
+    %ItemBOMBinded{default_bom_uuid: default_bom_uuid} = evt,
+    _meta,
+    fn multi ->
+      set_fields = [
+        default_bom_uuid: default_bom_uuid
+      ]
+
+      Ecto.Multi.update_all(multi, :item_bom_binded, item_query(evt.item_uuid), set: set_fields)
     end
   )
 

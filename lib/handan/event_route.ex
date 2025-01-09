@@ -9,4 +9,5 @@ defmodule Handan.EventRouter do
   router(Handan.Accounts.Router)
   router(Handan.Purchasing.Router)
   router(Handan.Production.Router)
+  router(Handan.Finance.Router)
 end

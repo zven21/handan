@@ -9,6 +9,9 @@ defmodule Handan.Repo.Migrations.CreateBomItems do
       add :item_name, :string
       add :qty, :integer, default: 0
 
+      add :uom_name, :string
+      add :stock_uom_uuid, :binary_id
+
       timestamps(type: :utc_datetime)
     end
 

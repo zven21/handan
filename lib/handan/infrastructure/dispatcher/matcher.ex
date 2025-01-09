@@ -301,5 +301,70 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_production_plan) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateProductionPlan,
+      projection: Handan.Production.Projections.ProductionPlan,
+      result_type: :production_plan_uuid,
+      preload: [:items, [material_request: :items]]
+    }
+  end
+
+  def match(:delete_production_plan) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteProductionPlan,
+      projection: Handan.Production.Projections.ProductionPlan
+    }
+  end
+
+  def match(:create_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.CreatePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod,
+      result_type: :payment_method_uuid,
+      preload: []
+    }
+  end
+
+  def match(:delete_payment_method) do
+    %__MODULE__{
+      command: Handan.Finance.Commands.DeletePaymentMethod,
+      projection: Handan.Finance.Projections.PaymentMethod
+    }
+  end
+
+  def match(:create_work_order) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateWorkOrder,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid,
+      preload: [:items, :material_requests]
+    }
+  end
+
+  def match(:delete_work_order) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteWorkOrder,
+      projection: Handan.Production.Projections.WorkOrder
+    }
+  end
+
+  def match(:report_job_card) do
+    %__MODULE__{
+      command: Handan.Production.Commands.ReportJobCard,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid,
+      preload: [:items]
+    }
+  end
+
+  def match(:store_finish_item) do
+    %__MODULE__{
+      command: Handan.Production.Commands.StoreFinishItem,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

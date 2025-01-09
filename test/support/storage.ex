@@ -54,6 +54,12 @@ defmodule Handan.Storage do
       processes,
       bom_processes,
       workstations,
+      work_orders,
+      work_order_items,
+      job_cards,
+      payment_methods,
+      payment_entries,
+      work_order_material_requests,
       projection_versions
     RESTART IDENTITY;
     """

@@ -111,4 +111,37 @@ defmodule Handan.Factory do
       name: sequence(:name, &"name-#{&1}")
     }
   end
+
+  def production_plan_factory() do
+    %{
+      production_plan_uuid: Ecto.UUID.generate(),
+      title: sequence(:title, &"title-#{&1}")
+    }
+  end
+
+  def payment_method_factory() do
+    %{
+      payment_method_uuid: Ecto.UUID.generate(),
+      name: sequence(:name, &"name-#{&1}")
+    }
+  end
+
+  def work_order_factory() do
+    %{
+      work_order_uuid: Ecto.UUID.generate()
+    }
+  end
+
+  def report_job_card_factory() do
+    %{
+      job_card_uuid: Ecto.UUID.generate(),
+      work_order_uuid: Ecto.UUID.generate(),
+      work_order_item_uuid: Ecto.UUID.generate(),
+      operator_staff_uuid: Ecto.UUID.generate(),
+      start_time: DateTime.utc_now(),
+      end_time: DateTime.utc_now() |> DateTime.add(86400),
+      produced_qty: 10,
+      defective_qty: 1
+    }
+  end
 end

@@ -1,4 +1,4 @@
-defmodule Handan.Production.Supervisor do
+defmodule Handan.Finance.Supervisor do
   @moduledoc false
 
   use Supervisor
@@ -9,10 +9,7 @@ defmodule Handan.Production.Supervisor do
 
   def init(_init_arg) do
     children = [
-      Handan.Production.Projectors.BOM,
-      Handan.Production.Projectors.Process,
-      Handan.Production.Projectors.Workstation,
-      Handan.Production.Projectors.WorkOrder
+      Handan.Finance.Projectors.PaymentMethod
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

@@ -5,6 +5,7 @@ defmodule Handan.Fixture do
 
   alias Handan.Repo
   alias Handan.Dispatcher
+  alias Handan.Stock
   alias Handan.Enterprise.Projections.{Warehouse, UOM, Staff}
 
   def register_user(_context) do
@@ -193,11 +194,37 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_bom(%{item: item}) do
-    {:ok, bom} = fixture(:bom, name: "bom-name", item_uuid: item.uuid)
+  def create_bom(%{item: item, uom: uom}) do
+    stock_uoms = [
+      %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1}
+    ]
+
+    {:ok, sub_item} = fixture(:item, name: "sub-bom-name", stock_uoms: stock_uoms)
+    {:ok, process} = fixture(:process, name: "process-name")
+
+    {:ok, bom} =
+      fixture(:bom,
+        name: "bom-name",
+        item_uuid: item.uuid,
+        bom_items: [
+          %{
+            item_uuid: sub_item.uuid,
+            qty: 10
+          }
+        ],
+        bom_processes: [
+          %{
+            process_uuid: process.uuid,
+            position: 1
+          }
+        ]
+      )
+
+    {:ok, updated_item} = Stock.get_item(item.uuid)
 
     [
-      bom: bom
+      bom: bom,
+      has_bom_item: updated_item
     ]
   end
 
@@ -217,6 +244,68 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_production_plan(%{item: item}) do
+    {:ok, production_plan} =
+      fixture(:production_plan,
+        title: "production-plan-name",
+        start_date: Date.utc_today(),
+        end_date: Date.utc_today() |> Date.add(1),
+        plan_items: [%{item_uuid: item.uuid, planned_qty: 100}]
+      )
+
+    [
+      production_plan: production_plan
+    ]
+  end
+
+  def create_payment_method(_context) do
+    {:ok, payment_method} = fixture(:payment_method, name: "payment-method-name")
+
+    [
+      payment_method: payment_method
+    ]
+  end
+
+  def create_work_order(%{has_bom_item: item, warehouse: warehouse}) do
+    {:ok, work_order} =
+      fixture(:work_order,
+        item_uuid: item.uuid,
+        item_name: item.name,
+        bom_uuid: item.default_bom_uuid,
+        stock_uom_uuid: item.default_stock_uom_uuid,
+        warehouse_uuid: warehouse.uuid,
+        planned_qty: 100,
+        start_time: DateTime.utc_now(),
+        end_time: DateTime.utc_now() |> DateTime.add(86400)
+      )
+
+    [
+      work_order: work_order
+    ]
+  end
+
+  def report_job_card(%{work_order: work_order}) do
+    work_order_item = hd(work_order.items)
+
+    {:ok, job_card} =
+      fixture(:report_job_card,
+        work_order_uuid: work_order.uuid,
+        work_order_item_uuid: work_order_item.uuid,
+        operator_staff_uuid: Ecto.UUID.generate(),
+        start_time: DateTime.utc_now(),
+        end_time: DateTime.utc_now() |> DateTime.add(86400),
+        produced_qty: 10,
+        defective_qty: 1
+      )
+
+    {:ok, updated_work_order} = Handan.Production.get_work_order(work_order.uuid)
+
+    [
+      job_card: job_card,
+      work_order: updated_work_order
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -233,4 +322,8 @@ defmodule Handan.Fixture do
   def fixture(:bom, attrs), do: Dispatcher.run(build(:bom, attrs), :create_bom)
   def fixture(:process, attrs), do: Dispatcher.run(build(:process, attrs), :create_process)
   def fixture(:workstation, attrs), do: Dispatcher.run(build(:workstation, attrs), :create_workstation)
+  def fixture(:production_plan, attrs), do: Dispatcher.run(build(:production_plan, attrs), :create_production_plan)
+  def fixture(:payment_method, attrs), do: Dispatcher.run(build(:payment_method, attrs), :create_payment_method)
+  def fixture(:work_order, attrs), do: Dispatcher.run(build(:work_order, attrs), :create_work_order)
+  def fixture(:report_job_card, attrs), do: Dispatcher.run(build(:report_job_card, attrs), :report_job_card)
 end

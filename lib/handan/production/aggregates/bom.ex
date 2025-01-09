@@ -29,6 +29,8 @@ defmodule Handan.Production.Aggregates.BOM do
     BOMProcessAdded
   }
 
+  alias Handan.Stock.Events.ItemBOMBinded
+
   def after_event(%BOMDeleted{}), do: :stop
   def after_event(_), do: :timer.hours(1)
   def after_command(_), do: :timer.hours(1)
@@ -43,6 +45,11 @@ defmodule Handan.Production.Aggregates.BOM do
       name: cmd.name
     }
 
+    item_bom_binded_evt = %ItemBOMBinded{
+      item_uuid: cmd.item_uuid,
+      default_bom_uuid: cmd.bom_uuid
+    }
+
     bom_items_evt =
       cmd.bom_items
       |> Enum.map(fn item ->
@@ -51,7 +58,9 @@ defmodule Handan.Production.Aggregates.BOM do
           bom_uuid: cmd.bom_uuid,
           item_uuid: item.item_uuid,
           qty: item.qty,
-          item_name: item.item_name
+          item_name: item.item_name,
+          uom_name: item.uom_name,
+          stock_uom_uuid: item.stock_uom_uuid
         }
       end)
 
@@ -67,7 +76,7 @@ defmodule Handan.Production.Aggregates.BOM do
         }
       end)
 
-    [bom_evt, bom_items_evt, bom_processes_evt] |> List.flatten()
+    [bom_evt, bom_items_evt, bom_processes_evt, item_bom_binded_evt] |> List.flatten()
   end
 
   def execute(_, %CreateBOM{}), do: {:error, :not_allowed}
@@ -102,6 +111,10 @@ defmodule Handan.Production.Aggregates.BOM do
       state
       | bom_items: Map.put(state.bom_items, evt.bom_item_uuid, evt)
     }
+  end
+
+  def apply(%__MODULE__{} = state, %ItemBOMBinded{} = _evt) do
+    state
   end
 
   def apply(%__MODULE__{} = state, %BOMProcessAdded{} = evt) do

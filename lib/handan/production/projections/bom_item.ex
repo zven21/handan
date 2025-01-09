@@ -8,6 +8,8 @@ defmodule Handan.Production.Projections.BOMItem do
   schema "bom_items" do
     field :item_name, :string
     field :qty, :integer, default: 0
+    field :uom_name, :string
+    field :stock_uom_uuid, :binary_id
 
     belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid
     belongs_to :item, Handan.Stock.Projections.Item, foreign_key: :item_uuid, references: :uuid
