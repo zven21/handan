@@ -39,15 +39,11 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     MaterialRequestItemAdded
   }
 
-  @doc """
-  停止已删除的聚合
-  """
   def after_event(%WorkOrderDeleted{}), do: :stop
   def after_event(_), do: :timer.hours(1)
   def after_command(_), do: :timer.hours(1)
   def after_error(_), do: :timer.hours(1)
 
-  # 创建工作订单
   def execute(%__MODULE__{work_order_uuid: nil}, %CreateWorkOrder{} = cmd) do
     work_order_evt = %WorkOrderCreated{
       work_order_uuid: cmd.work_order_uuid,
@@ -95,7 +91,6 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   def execute(_, %CreateWorkOrder{}), do: {:error, :not_allowed}
 
-  # 删除工作订单
   def execute(%__MODULE__{work_order_uuid: work_order_uuid} = _state, %DeleteWorkOrder{work_order_uuid: work_order_uuid} = _cmd) do
     work_order_deleted_evt = %WorkOrderDeleted{
       work_order_uuid: work_order_uuid
@@ -126,9 +121,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   end
 
   def apply(%__MODULE__{} = state, %WorkOrderItemAdded{} = evt) do
-    updated_items =
-      state.items
-      |> Map.put(evt.work_order_item_uuid, evt)
+    updated_items = state.items |> Map.put(evt.work_order_item_uuid, evt)
 
     %__MODULE__{
       state
@@ -137,9 +130,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   end
 
   def apply(%__MODULE__{} = state, %MaterialRequestItemAdded{} = evt) do
-    updated_material_request_items =
-      state.material_request_items
-      |> Map.put(evt.material_request_item_uuid, evt)
+    updated_material_request_items = state.material_request_items |> Map.put(evt.material_request_item_uuid, evt)
 
     %__MODULE__{
       state

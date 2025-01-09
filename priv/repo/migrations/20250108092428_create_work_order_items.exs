@@ -10,7 +10,8 @@ defmodule Handan.Repo.Migrations.CreateWorkOrderItems do
       add :item_name, :string
       add :process_name, :string
       add :required_qty, :decimal
-      add :returned_qty, :decimal
+      add :produced_qty, :decimal
+      add :defective_qty, :decimal
       add :work_order_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
