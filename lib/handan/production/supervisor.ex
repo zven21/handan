@@ -12,7 +12,7 @@ defmodule Handan.Production.Supervisor do
       Handan.Production.Projectors.BOM,
       Handan.Production.Projectors.Process,
       Handan.Production.Projectors.Workstation,
-      Handan.Production.Projectors.ProductionPlan
+      Handan.Production.Projectors.WorkOrder
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

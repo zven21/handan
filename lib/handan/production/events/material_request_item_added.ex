@@ -5,7 +5,7 @@ defmodule Handan.Production.Events.MaterialRequestItemAdded do
 
   defevent do
     field :material_request_item_uuid, Ecto.UUID
-    field :material_request_uuid, Ecto.UUID
+    field :work_order_uuid, Ecto.UUID
     field :item_uuid, Ecto.UUID
     field :stock_uom_uuid, Ecto.UUID
     field :actual_qty, :decimal

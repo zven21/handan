@@ -27,6 +27,7 @@ defmodule Handan.Production.Projections.WorkOrder do
     field :bom_uuid, Ecto.UUID
 
     has_one :material_request, Handan.Production.Projections.MaterialRequest, foreign_key: :work_order_uuid
+
     has_many :items, Handan.Production.Projections.WorkOrderItem, foreign_key: :work_order_uuid
 
     timestamps(type: :utc_datetime)

@@ -1,9 +1,9 @@
-defmodule Handan.Production.WorkOrderItem do
+defmodule Handan.Production.Projections.WorkOrderItem do
   @moduledoc false
 
   use Ecto.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "work_order_items" do
     field :item_name, :string
