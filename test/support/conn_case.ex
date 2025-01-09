@@ -28,11 +28,34 @@ defmodule HandanWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import HandanWeb.ConnCase
+
+      # local imports
+      import Handan.Factory
+      import Handan.Fixture
     end
   end
 
   setup tags do
-    Handan.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    Handan.Storage.reset!()
+
+    case tags do
+      %{company_owner: true} ->
+        {:ok, %{user: user}} = Handan.Dispatcher.run(%{email: "test@test.com", password: "123123123", user_uuid: Ecto.UUID.generate()}, :register_user)
+
+        {:ok, %{staff: company_staff} = company} =
+          Handan.Dispatcher.run(%{company_uuid: Ecto.UUID.generate(), name: "test company", user_uuid: user.uuid}, :create_company)
+
+        token = Handan.Accounts.generate_user_session_token(user)
+
+        conn =
+          Phoenix.ConnTest.build_conn()
+          |> Plug.Conn.put_req_header("authorization", "Bearer " <> token)
+          |> Plug.Conn.put_req_header("company", company.uuid)
+
+        {:ok, conn: conn, user: user, company: company, staff: hd(company_staff)}
+
+      _ ->
+        {:ok, conn: Phoenix.ConnTest.build_conn()}
+    end
   end
 end

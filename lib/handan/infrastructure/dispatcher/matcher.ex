@@ -36,7 +36,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Enterprise.Commands.CreateCompany,
       projection: Handan.Enterprise.Projections.Company,
       result_type: :company_uuid,
-      preload: []
+      preload: [:staff]
     }
   end
 
