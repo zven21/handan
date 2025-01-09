@@ -69,6 +69,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
           work_order_uuid: cmd.work_order_uuid,
           item_uuid: item.item_uuid,
           item_name: item.item_name,
+          position: item.position,
           process_uuid: item.process_uuid,
           process_name: item.process_name,
           required_qty: item.required_qty

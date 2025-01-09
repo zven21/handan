@@ -54,8 +54,6 @@ defmodule Handan.Storage do
       processes,
       bom_processes,
       workstations,
-      production_plans,
-      production_plan_items,
       work_orders,
       work_order_items,
       job_cards,

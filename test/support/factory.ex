@@ -125,4 +125,10 @@ defmodule Handan.Factory do
       name: sequence(:name, &"name-#{&1}")
     }
   end
+
+  def work_order_factory() do
+    %{
+      work_order_uuid: Ecto.UUID.generate()
+    }
+  end
 end

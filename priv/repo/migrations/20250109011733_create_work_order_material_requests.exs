@@ -4,17 +4,17 @@ defmodule Handan.Repo.Migrations.CreateWorkOrderMaterialRequests do
   def change do
     create table(:work_order_material_requests, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
-      add :work_order_uuid, :binary_id
-
+      add :item_name, :string
       add :actual_qty, :decimal, default: 0.0
       add :remaining_qty, :decimal, default: 0.0
       add :received_qty, :decimal, default: 0.0
+      add :uom_name, :string
+
+      add :work_order_uuid, :binary_id
       add :item_uuid, :binary_id
-      add :item_name, :string
       add :bom_uuid, :binary_id
       add :stock_uom_uuid, :binary_id
       add :warehouse_uuid, :binary_id
-      add :uom_name, :string
 
       timestamps(type: :utc_datetime)
     end

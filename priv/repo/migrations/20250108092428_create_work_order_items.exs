@@ -5,6 +5,7 @@ defmodule Handan.Repo.Migrations.CreateWorkOrderItems do
     create table(:work_order_items, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
       add :process_uuid, :binary_id
+      add :position, :integer, default: 0
       add :item_uuid, :binary_id
       add :item_name, :string
       add :process_name, :string

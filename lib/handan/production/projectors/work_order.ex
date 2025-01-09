@@ -14,21 +14,24 @@ defmodule Handan.Production.Projectors.WorkOrder do
     MaterialRequestItemAdded
   }
 
-  alias Handan.Production.Projections.{WorkOrder, WorkOrderItem, MaterialRequest, MaterialRequestItem}
+  alias Handan.Production.Projections.{WorkOrder, WorkOrderItem, WorkOrderMaterialRequest}
 
   project(
     %WorkOrderCreated{} = evt,
     _meta,
     fn multi ->
-      {:ok, parsed_start_time} = DateTime.from_iso8601(evt.start_time)
-      {:ok, parsed_end_time} = DateTime.from_iso8601(evt.end_time)
+      {:ok, parsed_start_time} = Timex.parse(evt.start_time, "{ISO:Extended:Z}")
+      {:ok, parsed_end_time} = Timex.parse(evt.end_time, "{ISO:Extended:Z}")
 
       work_order = %WorkOrder{
         uuid: evt.work_order_uuid,
         item_uuid: evt.item_uuid,
         stock_uom_uuid: evt.stock_uom_uuid,
         warehouse_uuid: evt.warehouse_uuid,
-        planned_qty: evt.planned_qty,
+        planned_qty: to_decimal(evt.planned_qty),
+        stored_qty: to_decimal(0),
+        produced_qty: to_decimal(0),
+        scraped_qty: to_decimal(0),
         start_time: parsed_start_time,
         end_time: parsed_end_time,
         type: evt.type,
@@ -51,16 +54,17 @@ defmodule Handan.Production.Projectors.WorkOrder do
       item_name: evt.item_name,
       process_uuid: evt.process_uuid,
       process_name: evt.process_name,
-      required_qty: evt.required_qty
+      position: evt.position,
+      required_qty: to_decimal(evt.required_qty)
     }
 
     Ecto.Multi.insert(multi, :work_order_item_added, work_order_item)
   end)
 
   project(%MaterialRequestItemAdded{} = evt, _meta, fn multi ->
-    material_request_item = %MaterialRequestItem{
+    work_order_material_request = %WorkOrderMaterialRequest{
       uuid: evt.material_request_item_uuid,
-      material_request_uuid: evt.material_request_uuid,
+      work_order_uuid: evt.work_order_uuid,
       item_uuid: evt.item_uuid,
       item_name: evt.item_name,
       actual_qty: to_decimal(evt.actual_qty),
@@ -68,7 +72,7 @@ defmodule Handan.Production.Projectors.WorkOrder do
       uom_name: evt.uom_name
     }
 
-    Ecto.Multi.insert(multi, :material_request_item_added, material_request_item)
+    Ecto.Multi.insert(multi, :work_order_material_request_added, work_order_material_request)
   end)
 
   def after_update(_event, _metadata, _changes) do

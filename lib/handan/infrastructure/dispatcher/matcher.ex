@@ -333,5 +333,21 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:create_work_order) do
+    %__MODULE__{
+      command: Handan.Production.Commands.CreateWorkOrder,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid,
+      preload: [:items, :material_requests]
+    }
+  end
+
+  def match(:delete_work_order) do
+    %__MODULE__{
+      command: Handan.Production.Commands.DeleteWorkOrder,
+      projection: Handan.Production.Projections.WorkOrder
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

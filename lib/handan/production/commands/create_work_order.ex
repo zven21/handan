@@ -8,11 +8,14 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
   defcommand do
     field :work_order_uuid, Ecto.UUID
     field :item_uuid, Ecto.UUID
+    field :bom_uuid, Ecto.UUID
+    field :item_name, :string
     field :stock_uom_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
     field :planned_qty, :decimal
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
+
     field :type, :string
     field :items, {:array, :map}, default: []
     field :material_request_items, {:array, :map}, default: []
@@ -21,9 +24,9 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     import Ecto.Query, warn: false
     import Handan.Infrastructure.DecimalHelper, only: [decimal_mult: 2]
-    alias Handan.Stock
-    alias Handan.Production.Projections.BOM
+
     alias Handan.Production.Commands.CreateWorkOrder
+    alias Handan.Production.Projections.BOM
 
     def enrich(%CreateWorkOrder{work_order_uuid: _work_order_uuid} = cmd, _) do
       handle_bom_fn = fn cmd ->
@@ -36,14 +39,15 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
 
             updated_items =
               bom.bom_processes
-              |> Enum.map(fn process ->
+              |> Enum.map(fn bom_process ->
                 %{
                   work_order_item_uuid: Ecto.UUID.generate(),
                   item_name: cmd.item_name,
                   item_uuid: cmd.item_uuid,
                   work_order_uuid: cmd.work_order_uuid,
-                  process_name: process.name,
-                  process_uuid: process.uuid,
+                  process_name: bom_process.process_name,
+                  process_uuid: bom_process.process_uuid,
+                  position: bom_process.position,
                   required_qty: cmd.planned_qty
                 }
               end)
@@ -57,7 +61,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
                   item_uuid: item.item_uuid,
                   stock_uom_uuid: item.stock_uom_uuid,
                   uom_name: item.uom_name,
-                  actual_qty: decimal_mult(item.planned_qty, item.qty)
+                  actual_qty: decimal_mult(cmd.planned_qty, item.qty)
                 }
               end)
 
