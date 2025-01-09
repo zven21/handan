@@ -16,8 +16,12 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :planned_qty, :decimal
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
+    field :title, :string
+    field :supplier_uuid, Ecto.UUID
+    field :supplier_name, :string
+    field :sales_order_uuid, Ecto.UUID
 
-    field :type, :string
+    field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
     field :items, {:array, :map}, default: []
     field :material_request_items, {:array, :map}, default: []
   end

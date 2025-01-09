@@ -6,22 +6,28 @@ defmodule Handan.Production.Projections.WorkOrder do
   @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "work_orders" do
+    field :title, :string
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
-    field :type, :string
-    field :status, :string
+
+    field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
+    field :status, Ecto.Enum, values: ~w(draft scheduling completed cancelled)a, default: :draft
 
     field :planned_qty, :decimal, default: 0
-    # 已入库数量
+    # Quantity stored
     field :stored_qty, :decimal, default: 0
-    # 已生产数量
+    # Quantity produced
     field :produced_qty, :decimal, default: 0
-    # 已报废数量
+    # Quantity scrapped
     field :scraped_qty, :decimal, default: 0
 
     field :item_name, :string
     field :stock_uom_uuid, :binary_id
     field :uom_name, :string
+
+    field :supplier_uuid, :binary_id
+    field :supplier_name, :string
+    field :sales_order_uuid, :binary_id
 
     belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid

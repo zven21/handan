@@ -15,5 +15,10 @@ defmodule Handan.Production.Events.WorkOrderCreated do
     field :end_time, :utc_datetime
     field :type, :string
     field :status, :string
+
+    field :title, :string
+    field :supplier_uuid, Ecto.UUID
+    field :supplier_name, :string
+    field :sales_order_uuid, Ecto.UUID
   end
 end
