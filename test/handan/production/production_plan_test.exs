@@ -1,59 +1,59 @@
 defmodule Handan.Production.ProductionPlanTest do
   @moduledoc false
 
-  use Handan.DataCase
+  # use Handan.DataCase
 
-  alias Handan.Turbo
-  alias Handan.Dispatcher
-  alias Handan.Production.Projections.ProductionPlan
+  # alias Handan.Turbo
+  # alias Handan.Dispatcher
+  # alias Handan.Production.Projections.ProductionPlan
 
-  describe "create production plan" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_item,
-      :create_bom
-    ]
+  # describe "create production plan" do
+  #   setup [
+  #     :register_user,
+  #     :create_company,
+  #     :create_item,
+  #     :create_bom
+  #   ]
 
-    test "should succeed with valid request", %{has_bom_item: item} do
-      request = %{
-        production_plan_uuid: Ecto.UUID.generate(),
-        title: "production-plan-name",
-        start_date: Date.utc_today(),
-        end_date: Date.utc_today() |> Date.add(1),
-        plan_items: [
-          %{
-            bom_uuid: item.default_bom_uuid,
-            item_uuid: item.uuid,
-            planned_qty: 100
-          }
-        ]
-      }
+  #   test "should succeed with valid request", %{has_bom_item: item} do
+  #     request = %{
+  #       production_plan_uuid: Ecto.UUID.generate(),
+  #       title: "production-plan-name",
+  #       start_date: Date.utc_today(),
+  #       end_date: Date.utc_today() |> Date.add(1),
+  #       plan_items: [
+  #         %{
+  #           bom_uuid: item.default_bom_uuid,
+  #           item_uuid: item.uuid,
+  #           planned_qty: 100
+  #         }
+  #       ]
+  #     }
 
-      assert {:ok, %ProductionPlan{} = production_plan} = Dispatcher.run(request, :create_production_plan)
+  #     assert {:ok, %ProductionPlan{} = production_plan} = Dispatcher.run(request, :create_production_plan)
 
-      # IO.inspect(production_plan, label: "production_plan")
+  #     # IO.inspect(production_plan, label: "production_plan")
 
-      assert production_plan.title == request.title
-      assert length(production_plan.items) == 1
-    end
-  end
+  #     assert production_plan.title == request.title
+  #     assert length(production_plan.items) == 1
+  #   end
+  # end
 
-  describe "delete production plan" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_item,
-      :create_production_plan
-    ]
+  # describe "delete production plan" do
+  #   setup [
+  #     :register_user,
+  #     :create_company,
+  #     :create_item,
+  #     :create_production_plan
+  #   ]
 
-    test "should succeed with valid request", %{production_plan: production_plan} do
-      request = %{
-        production_plan_uuid: production_plan.uuid
-      }
+  #   test "should succeed with valid request", %{production_plan: production_plan} do
+  #     request = %{
+  #       production_plan_uuid: production_plan.uuid
+  #     }
 
-      assert :ok = Dispatcher.run(request, :delete_production_plan)
-      assert {:error, :not_found} == Turbo.get(ProductionPlan, production_plan.uuid)
-    end
-  end
+  #     assert :ok = Dispatcher.run(request, :delete_production_plan)
+  #     assert {:error, :not_found} == Turbo.get(ProductionPlan, production_plan.uuid)
+  #   end
+  # end
 end

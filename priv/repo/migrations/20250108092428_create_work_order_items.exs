@@ -10,11 +10,13 @@ defmodule Handan.Repo.Migrations.CreateWorkOrderItems do
       add :process_name, :string
       add :required_qty, :decimal
       add :returned_qty, :decimal
+      add :work_order_uuid, :binary_id
 
       timestamps(type: :utc_datetime)
     end
 
     create index(:work_order_items, [:process_uuid])
     create index(:work_order_items, [:item_uuid])
+    create index(:work_order_items, [:work_order_uuid])
   end
 end
