@@ -8,7 +8,7 @@ defmodule Handan.Repo.Migrations.CreateJobCards do
       add :status, :string
       add :start_time, :utc_datetime
       add :end_time, :utc_datetime
-      add :production_qty, :decimal, default: 0
+      add :produced_qty, :decimal, default: 0
       add :defective_qty, :decimal, default: 0
       add :operator_staff_uuid, :binary_id
 

@@ -11,10 +11,13 @@ defmodule Handan.Production.Projectors.WorkOrder do
     WorkOrderCreated,
     WorkOrderDeleted,
     WorkOrderItemAdded,
-    MaterialRequestItemAdded
+    MaterialRequestItemAdded,
+    JobCardReported,
+    WorkOrderQtyChanged,
+    WorkOrderItemQtyChanged
   }
 
-  alias Handan.Production.Projections.{WorkOrder, WorkOrderItem, WorkOrderMaterialRequest}
+  alias Handan.Production.Projections.{WorkOrder, WorkOrderItem, WorkOrderMaterialRequest, JobCard}
 
   project(
     %WorkOrderCreated{} = evt,
@@ -26,6 +29,8 @@ defmodule Handan.Production.Projectors.WorkOrder do
       work_order = %WorkOrder{
         uuid: evt.work_order_uuid,
         item_uuid: evt.item_uuid,
+        item_name: evt.item_name,
+        uom_name: evt.uom_name,
         stock_uom_uuid: evt.stock_uom_uuid,
         warehouse_uuid: evt.warehouse_uuid,
         planned_qty: to_decimal(evt.planned_qty),
@@ -55,7 +60,9 @@ defmodule Handan.Production.Projectors.WorkOrder do
       process_uuid: evt.process_uuid,
       process_name: evt.process_name,
       position: evt.position,
-      required_qty: to_decimal(evt.required_qty)
+      required_qty: to_decimal(evt.required_qty),
+      produced_qty: to_decimal(evt.produced_qty),
+      defective_qty: to_decimal(evt.defective_qty)
     }
 
     Ecto.Multi.insert(multi, :work_order_item_added, work_order_item)
@@ -75,11 +82,51 @@ defmodule Handan.Production.Projectors.WorkOrder do
     Ecto.Multi.insert(multi, :work_order_material_request_added, work_order_material_request)
   end)
 
+  project(%JobCardReported{} = evt, _meta, fn multi ->
+    {:ok, parsed_start_time} = Timex.parse(evt.start_time, "{ISO:Extended:Z}")
+    {:ok, parsed_end_time} = Timex.parse(evt.end_time, "{ISO:Extended:Z}")
+
+    job_card = %JobCard{
+      uuid: evt.job_card_uuid,
+      work_order_item_uuid: evt.work_order_item_uuid,
+      operator_staff_uuid: evt.operator_staff_uuid,
+      start_time: parsed_start_time,
+      end_time: parsed_end_time,
+      produced_qty: to_decimal(evt.produced_qty),
+      defective_qty: to_decimal(evt.defective_qty)
+    }
+
+    Ecto.Multi.insert(multi, :job_card_reported, job_card)
+  end)
+
+  project(%WorkOrderQtyChanged{} = evt, _meta, fn multi ->
+    set_fields = [
+      stored_qty: evt.stored_qty,
+      produced_qty: evt.produced_qty,
+      scraped_qty: evt.scraped_qty
+    ]
+
+    Ecto.Multi.update_all(multi, :work_order_qty_changed, work_order_query(evt.work_order_uuid), set: set_fields)
+  end)
+
+  project(%WorkOrderItemQtyChanged{} = evt, _meta, fn multi ->
+    set_fields = [
+      produced_qty: evt.produced_qty,
+      defective_qty: evt.defective_qty
+    ]
+
+    Ecto.Multi.update_all(multi, :work_order_item_qty_changed, work_order_item_query(evt.work_order_item_uuid), set: set_fields)
+  end)
+
   def after_update(_event, _metadata, _changes) do
     :ok
   end
 
   defp work_order_query(uuid) do
     from(w in WorkOrder, where: w.uuid == ^uuid)
+  end
+
+  defp work_order_item_query(uuid) do
+    from(w in WorkOrderItem, where: w.uuid == ^uuid)
   end
 end

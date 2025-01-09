@@ -51,4 +51,34 @@ defmodule Handan.Production.WorkOrderTest do
       assert :ok = Dispatcher.run(request, :delete_work_order)
     end
   end
+
+  describe "report job card" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order
+    ]
+
+    test "should succeed with valid request", %{work_order: work_order} do
+      work_order_item = hd(work_order.items)
+
+      request = %{
+        work_order_uuid: work_order.uuid,
+        job_card_uuid: Ecto.UUID.generate(),
+        work_order_item_uuid: work_order_item.uuid,
+        operator_staff_uuid: Ecto.UUID.generate(),
+        start_time: DateTime.utc_now(),
+        end_time: DateTime.utc_now() |> DateTime.add(86400),
+        produced_qty: 10,
+        defective_qty: 1
+      }
+
+      assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :report_job_card)
+
+      assert update_work_order.produced_qty == Decimal.new(request.produced_qty)
+      assert update_work_order.scraped_qty == Decimal.new(request.defective_qty)
+    end
+  end
 end

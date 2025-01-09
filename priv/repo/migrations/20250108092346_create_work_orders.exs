@@ -15,7 +15,7 @@ defmodule Handan.Repo.Migrations.CreateWorkOrders do
       add :item_name, :string
       add :item_uuid, :binary_id
       add :stock_uom_uuid, :binary_id
-      add :stock_uom_name, :string
+      add :uom_name, :string
       add :warehouse_uuid, :binary_id
       add :bom_uuid, :binary_id
 

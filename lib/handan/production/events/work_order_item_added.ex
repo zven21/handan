@@ -11,6 +11,8 @@ defmodule Handan.Production.Events.WorkOrderItemAdded do
     field :process_uuid, Ecto.UUID
     field :process_name, :string
     field :position, :integer
-    field :required_qty, :decimal
+    field :required_qty, :decimal, default: 0
+    field :produced_qty, :decimal, default: 0
+    field :defective_qty, :decimal, default: 0
   end
 end

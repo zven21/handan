@@ -266,7 +266,7 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_work_order(%{item: item, warehouse: warehouse}) do
+  def create_work_order(%{has_bom_item: item, warehouse: warehouse}) do
     {:ok, work_order} =
       fixture(:work_order,
         item_uuid: item.uuid,

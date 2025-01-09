@@ -349,5 +349,14 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:report_job_card) do
+    %__MODULE__{
+      command: Handan.Production.Commands.ReportJobCard,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid,
+      preload: [:items]
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

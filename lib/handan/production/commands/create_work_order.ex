@@ -10,6 +10,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :item_uuid, Ecto.UUID
     field :bom_uuid, Ecto.UUID
     field :item_name, :string
+    field :uom_name, :string
     field :stock_uom_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
     field :planned_qty, :decimal
