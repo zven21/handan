@@ -1,7 +1,7 @@
 defmodule Handan.Production.Commands.ReportJobCard do
   @moduledoc false
 
-  @required_fields ~w(job_card_uuid work_order_item_uuid produced_qty)a
+  @required_fields ~w(job_card_uuid work_order_item_uuid produced_qty start_time end_time)a
 
   use Handan.EventSourcing.Command
 
