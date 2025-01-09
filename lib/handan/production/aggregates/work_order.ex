@@ -21,8 +21,13 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
-    field :type, :string
-    field :status, :string
+    field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
+    field :status, Ecto.Enum, values: ~w(draft scheduling completed cancelled)a, default: :draft
+
+    field :title, :string
+    field :supplier_uuid, Ecto.UUID
+    field :supplier_name, :string
+    field :sales_order_uuid, Ecto.UUID
 
     field :items, :map, default: %{}
     field :material_request_items, :map, default: %{}
@@ -67,7 +72,11 @@ defmodule Handan.Production.Aggregates.WorkOrder do
       start_time: cmd.start_time,
       end_time: cmd.end_time,
       type: cmd.type,
-      status: :draft
+      status: :draft,
+      title: cmd.title,
+      supplier_uuid: cmd.supplier_uuid,
+      supplier_name: cmd.supplier_name,
+      sales_order_uuid: cmd.sales_order_uuid
     }
 
     items_evt =

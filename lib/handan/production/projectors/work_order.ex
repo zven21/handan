@@ -6,6 +6,7 @@ defmodule Handan.Production.Projectors.WorkOrder do
 
   import Ecto.Query, warn: false
   import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
+  import Handan.Infrastructure.Helper, only: [to_atom: 1]
 
   alias Handan.Production.Events.{
     WorkOrderCreated,
@@ -39,8 +40,12 @@ defmodule Handan.Production.Projectors.WorkOrder do
         scraped_qty: to_decimal(0),
         start_time: parsed_start_time,
         end_time: parsed_end_time,
-        type: evt.type,
-        status: evt.status
+        type: to_atom(evt.type),
+        status: to_atom(evt.status),
+        title: evt.title,
+        supplier_uuid: evt.supplier_uuid,
+        supplier_name: evt.supplier_name,
+        sales_order_uuid: evt.sales_order_uuid
       }
 
       Ecto.Multi.insert(multi, :work_order_created, work_order)
