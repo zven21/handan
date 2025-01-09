@@ -4,12 +4,18 @@ defmodule Handan.Finance.Router do
   use Commanded.Commands.Router
 
   alias Handan.Finance.Aggregates.{
-    PaymentMethod
+    PaymentMethod,
+    PaymentEntry
   }
 
   alias Handan.Finance.Commands.{
     CreatePaymentMethod,
     DeletePaymentMethod
+  }
+
+  alias Handan.Finance.Commands.{
+    CreatePaymentEntry,
+    DeletePaymentEntry
   }
 
   if Mix.env() == :dev do
@@ -19,6 +25,7 @@ defmodule Handan.Finance.Router do
   middleware(Handan.EventSourcing.Middleware.Enrich)
 
   identify(PaymentMethod, by: :payment_method_uuid, prefix: "payment-method-")
+  identify(PaymentEntry, by: :payment_entry_uuid, prefix: "payment-entry-")
 
   dispatch(
     [
@@ -27,5 +34,14 @@ defmodule Handan.Finance.Router do
     ],
     to: PaymentMethod,
     lifespan: PaymentMethod
+  )
+
+  dispatch(
+    [
+      CreatePaymentEntry,
+      DeletePaymentEntry
+    ],
+    to: PaymentEntry,
+    lifespan: PaymentEntry
   )
 end

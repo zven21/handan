@@ -9,7 +9,8 @@ defmodule Handan.Finance.Supervisor do
 
   def init(_init_arg) do
     children = [
-      Handan.Finance.Projectors.PaymentMethod
+      Handan.Finance.Projectors.PaymentMethod,
+      Handan.Finance.Projectors.PaymentEntry
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

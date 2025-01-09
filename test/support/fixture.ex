@@ -306,6 +306,21 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def create_payment_entry(%{payment_method: payment_method, sales_invoice: sales_invoice}) do
+    {:ok, payment_entry} =
+      fixture(:payment_entry,
+        payment_method_uuid: payment_method.uuid,
+        party_type: "customer",
+        party_uuid: sales_invoice.customer_uuid,
+        memo: "memo",
+        sales_invoice_ids: [sales_invoice.uuid]
+      )
+
+    [
+      payment_entry: payment_entry
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -326,4 +341,5 @@ defmodule Handan.Fixture do
   def fixture(:payment_method, attrs), do: Dispatcher.run(build(:payment_method, attrs), :create_payment_method)
   def fixture(:work_order, attrs), do: Dispatcher.run(build(:work_order, attrs), :create_work_order)
   def fixture(:report_job_card, attrs), do: Dispatcher.run(build(:report_job_card, attrs), :report_job_card)
+  def fixture(:payment_entry, attrs), do: Dispatcher.run(build(:payment_entry, attrs), :create_payment_entry)
 end

@@ -20,7 +20,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   alias Handan.Selling.Events.{
     SalesInvoiceCreated,
-    SalesInvoiceConfirmed
+    SalesInvoiceConfirmed,
+    SalesInvoicePaid
   }
 
   alias Handan.Selling.Events.{
@@ -173,6 +174,12 @@ defmodule Handan.Selling.Projectors.SalesOrder do
   project(%SalesInvoiceConfirmed{} = evt, _meta, fn multi ->
     set_fields = [status: evt.status]
     Ecto.Multi.update_all(multi, :sales_invoice_confirmed, sales_invoice_query(evt.sales_invoice_uuid), set: set_fields)
+  end)
+
+  project(%SalesInvoicePaid{} = evt, _meta, fn multi ->
+    # set_fields = [status: :paid, paid_at: evt.paid_at]
+    set_fields = [status: :paid]
+    Ecto.Multi.update_all(multi, :sales_invoice_paid, sales_invoice_query(evt.sales_invoice_uuid), set: set_fields)
   end)
 
   def after_update(_event, _metadata, _changes) do

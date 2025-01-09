@@ -144,4 +144,10 @@ defmodule Handan.Factory do
       defective_qty: 1
     }
   end
+
+  def payment_entry_factory() do
+    %{
+      payment_entry_uuid: Ecto.UUID.generate()
+    }
+  end
 end

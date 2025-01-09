@@ -7,7 +7,7 @@ defmodule Handan.Finance.Projections.PaymentEntry do
   @foreign_key_type :binary_id
   schema "payment_entries" do
     field :memo, :string
-    field :attachments, :string
+    field :attachments, {:array, :string}, default: []
     field :party_name, :string
     field :party_type, :string
     field :party_uuid, :binary_id

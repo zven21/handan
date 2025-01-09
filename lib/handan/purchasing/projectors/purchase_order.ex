@@ -27,7 +27,8 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
 
   alias Handan.Purchasing.Events.{
     PurchaseInvoiceCreated,
-    PurchaseInvoiceConfirmed
+    PurchaseInvoiceConfirmed,
+    PurchaseInvoicePaid
   }
 
   alias Handan.Purchasing.Projections.{PurchaseOrder, PurchaseOrderItem, ReceiptNote, ReceiptNoteItem, PurchaseInvoice}
@@ -174,6 +175,11 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
   project(%PurchaseInvoiceConfirmed{} = evt, _meta, fn multi ->
     set_fields = [status: evt.status]
     Ecto.Multi.update_all(multi, :purchase_invoice_confirmed, purchase_invoice_query(evt.purchase_invoice_uuid), set: set_fields)
+  end)
+
+  project(%PurchaseInvoicePaid{} = evt, _meta, fn multi ->
+    set_fields = [status: :paid]
+    Ecto.Multi.update_all(multi, :purchase_invoice_paid, purchase_invoice_query(evt.purchase_invoice_uuid), set: set_fields)
   end)
 
   def after_update(_event, _metadata, _changes) do
