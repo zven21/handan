@@ -37,6 +37,7 @@ This project utilizes the following technologies:
 - [x] Production
 - [x] Finance
 - [x] Subcontracting
+- [ ] GraphQL API
 
 ## **Contributing**
 
