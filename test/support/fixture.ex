@@ -287,15 +287,16 @@ defmodule Handan.Fixture do
   def report_job_card(%{work_order: work_order}) do
     work_order_item = hd(work_order.items)
 
-    {:ok, job_card} = fixture(:report_job_card,
-      work_order_uuid: work_order.uuid,
-      work_order_item_uuid: work_order_item.uuid,
-      operator_staff_uuid: Ecto.UUID.generate(),
-      start_time: DateTime.utc_now(),
-      end_time: DateTime.utc_now() |> DateTime.add(86400),
-      produced_qty: 10,
-      defective_qty: 1
-    )
+    {:ok, job_card} =
+      fixture(:report_job_card,
+        work_order_uuid: work_order.uuid,
+        work_order_item_uuid: work_order_item.uuid,
+        operator_staff_uuid: Ecto.UUID.generate(),
+        start_time: DateTime.utc_now(),
+        end_time: DateTime.utc_now() |> DateTime.add(86400),
+        produced_qty: 10,
+        defective_qty: 1
+      )
 
     {:ok, updated_work_order} = Handan.Production.get_work_order(work_order.uuid)
 

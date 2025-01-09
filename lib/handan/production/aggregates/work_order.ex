@@ -45,7 +45,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     MaterialRequestItemAdded,
     JobCardReported,
     WorkOrderQtyChanged,
-    WorkOrderItemQtyChanged,
+    WorkOrderItemQtyChanged
   }
 
   alias Handan.Stock.Events.InventoryUnitInbound
@@ -178,7 +178,6 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   def execute(%__MODULE__{work_order_uuid: work_order_uuid} = state, %StoreFinishItem{work_order_uuid: work_order_uuid} = cmd) do
     if D.gt?(state.produced_qty, state.stored_qty) do
-
       finish_item_stored_evt = %InventoryUnitInbound{
         item_uuid: state.item_uuid,
         warehouse_uuid: state.warehouse_uuid,
