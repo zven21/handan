@@ -35,7 +35,7 @@ This project utilizes the following technologies:
 - [x] Selling
 - [x] Purchasing
 - [x] Production
-- [ ] Finance
+- [x] Finance
 - [ ] Subcontracting
 
 ## **Contributing**

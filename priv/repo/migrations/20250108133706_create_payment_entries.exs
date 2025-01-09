@@ -12,7 +12,7 @@ defmodule Handan.Repo.Migrations.CreatePaymentEntries do
       add :total_amount, :decimal
       add :payment_method_uuid, :binary_id
       add :memo, :string
-      add :attachments, :string
+      add :attachments, {:array, :string}, default: []
 
       timestamps(type: :utc_datetime)
     end

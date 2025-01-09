@@ -46,4 +46,10 @@ defmodule Handan.Infrastructure.DecimalHelper do
   def decimal_div(number1, number2) do
     D.div(to_decimal(number1), to_decimal(number2))
   end
+
+  def decimal_sum(numbers) do
+    Enum.reduce(numbers, D.new(0), fn number, acc ->
+      D.add(acc, to_decimal(number))
+    end)
+  end
 end

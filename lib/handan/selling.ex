@@ -4,7 +4,7 @@ defmodule Handan.Selling do
   """
 
   alias Handan.Turbo
-  alias Handan.Selling.Projections.{Customer, SalesOrderItem}
+  alias Handan.Selling.Projections.{Customer, SalesOrderItem, SalesInvoice}
 
   @doc """
   Get customer by uuid.
@@ -15,4 +15,9 @@ defmodule Handan.Selling do
   Get sales order item by uuid.
   """
   def get_sales_order_item(sales_order_item_uuid), do: Turbo.get(SalesOrderItem, sales_order_item_uuid)
+
+  @doc """
+  Get sales invoice by uuid.
+  """
+  def get_sales_invoice(sales_invoice_uuid), do: Turbo.get(SalesInvoice, sales_invoice_uuid)
 end
