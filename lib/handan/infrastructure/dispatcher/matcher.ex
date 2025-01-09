@@ -358,5 +358,13 @@ defmodule Handan.Dispatcher.Matcher do
     }
   end
 
+  def match(:store_finish_item) do
+    %__MODULE__{
+      command: Handan.Production.Commands.StoreFinishItem,
+      projection: Handan.Production.Projections.WorkOrder,
+      result_type: :work_order_uuid
+    }
+  end
+
   def match(_), do: {:error, :not_match}
 end

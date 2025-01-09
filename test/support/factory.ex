@@ -131,4 +131,17 @@ defmodule Handan.Factory do
       work_order_uuid: Ecto.UUID.generate()
     }
   end
+
+  def report_job_card_factory() do
+    %{
+      job_card_uuid: Ecto.UUID.generate(),
+      work_order_uuid: Ecto.UUID.generate(),
+      work_order_item_uuid: Ecto.UUID.generate(),
+      operator_staff_uuid: Ecto.UUID.generate(),
+      start_time: DateTime.utc_now(),
+      end_time: DateTime.utc_now() |> DateTime.add(86400),
+      produced_qty: 10,
+      defective_qty: 1
+    }
+  end
 end

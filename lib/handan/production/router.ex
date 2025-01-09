@@ -28,7 +28,8 @@ defmodule Handan.Production.Router do
   alias Handan.Production.Commands.{
     CreateWorkOrder,
     DeleteWorkOrder,
-    ReportJobCard
+    ReportJobCard,
+    StoreFinishItem
   }
 
   if Mix.env() == :dev do
@@ -73,7 +74,8 @@ defmodule Handan.Production.Router do
     [
       CreateWorkOrder,
       DeleteWorkOrder,
-      ReportJobCard
+      ReportJobCard,
+      StoreFinishItem
     ],
     to: WorkOrder,
     lifespan: WorkOrder

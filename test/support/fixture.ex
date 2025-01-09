@@ -284,6 +284,27 @@ defmodule Handan.Fixture do
     ]
   end
 
+  def report_job_card(%{work_order: work_order}) do
+    work_order_item = hd(work_order.items)
+
+    {:ok, job_card} = fixture(:report_job_card,
+      work_order_uuid: work_order.uuid,
+      work_order_item_uuid: work_order_item.uuid,
+      operator_staff_uuid: Ecto.UUID.generate(),
+      start_time: DateTime.utc_now(),
+      end_time: DateTime.utc_now() |> DateTime.add(86400),
+      produced_qty: 10,
+      defective_qty: 1
+    )
+
+    {:ok, updated_work_order} = Handan.Production.get_work_order(work_order.uuid)
+
+    [
+      job_card: job_card,
+      work_order: updated_work_order
+    ]
+  end
+
   def fixture(:user, attrs), do: Dispatcher.run(build(:user, attrs), :register_user)
   def fixture(:company, attrs), do: Dispatcher.run(build(:company, attrs), :create_company)
   def fixture(:item, attrs), do: Dispatcher.run(build(:item, attrs), :create_item)
@@ -303,4 +324,5 @@ defmodule Handan.Fixture do
   def fixture(:production_plan, attrs), do: Dispatcher.run(build(:production_plan, attrs), :create_production_plan)
   def fixture(:payment_method, attrs), do: Dispatcher.run(build(:payment_method, attrs), :create_payment_method)
   def fixture(:work_order, attrs), do: Dispatcher.run(build(:work_order, attrs), :create_work_order)
+  def fixture(:report_job_card, attrs), do: Dispatcher.run(build(:report_job_card, attrs), :report_job_card)
 end

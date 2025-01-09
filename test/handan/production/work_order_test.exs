@@ -2,8 +2,12 @@ defmodule Handan.Production.WorkOrderTest do
   use Handan.DataCase
   @moduledoc false
 
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
+
   alias Handan.Dispatcher
+  alias Handan.Turbo
   alias Handan.Production.Projections.WorkOrder
+  alias Handan.Stock.Projections.StockItem
 
   describe "create work order" do
     setup [
@@ -79,6 +83,50 @@ defmodule Handan.Production.WorkOrderTest do
 
       assert update_work_order.produced_qty == Decimal.new(request.produced_qty)
       assert update_work_order.scraped_qty == Decimal.new(request.defective_qty)
+    end
+  end
+
+  describe "store finish item" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order
+    ]
+
+    test "should fail with invalid request", %{work_order: work_order} do
+      request = %{
+        work_order_uuid: work_order.uuid,
+        stored_qty: 10
+      }
+
+      assert {:error, :no_enough_stock} = Dispatcher.run(request, :store_finish_item)
+    end
+  end
+
+  describe "store finish item with enough stock" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order,
+      :report_job_card
+    ]
+
+    test "should fail with invalid request", %{work_order: work_order} do
+      request = %{
+        work_order_uuid: work_order.uuid,
+        stored_qty: 10
+      }
+
+      assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: work_order.warehouse_uuid, item_uuid: work_order.item_uuid})
+      assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :store_finish_item)
+      assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: work_order.warehouse_uuid, item_uuid: work_order.item_uuid})
+
+      assert update_work_order.stored_qty == Decimal.new(request.stored_qty)
+      assert after_stock_item.total_on_hand == decimal_add(before_stock_item.total_on_hand, request.stored_qty)
     end
   end
 end

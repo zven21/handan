@@ -5,7 +5,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   use Handan.EventSourcing.Type
 
-  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2]
   alias Decimal, as: D
 
   deftype do
@@ -34,7 +34,8 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   alias Handan.Production.Commands.{
     CreateWorkOrder,
     DeleteWorkOrder,
-    ReportJobCard
+    ReportJobCard,
+    StoreFinishItem
   }
 
   alias Handan.Production.Events.{
@@ -44,8 +45,10 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     MaterialRequestItemAdded,
     JobCardReported,
     WorkOrderQtyChanged,
-    WorkOrderItemQtyChanged
+    WorkOrderItemQtyChanged,
   }
+
+  alias Handan.Stock.Events.InventoryUnitInbound
 
   def after_event(%WorkOrderDeleted{}), do: :stop
   def after_event(_), do: :timer.hours(1)
@@ -171,6 +174,33 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     end
   end
 
+  def execute(_, %ReportJobCard{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{work_order_uuid: work_order_uuid} = state, %StoreFinishItem{work_order_uuid: work_order_uuid} = cmd) do
+    if D.gt?(state.produced_qty, state.stored_qty) do
+
+      finish_item_stored_evt = %InventoryUnitInbound{
+        item_uuid: state.item_uuid,
+        warehouse_uuid: state.warehouse_uuid,
+        stock_uom_uuid: state.stock_uom_uuid,
+        actual_qty: cmd.stored_qty,
+        type: :finish_item
+      }
+
+      work_order_qty_changed_evt = %WorkOrderQtyChanged{
+        work_order_uuid: cmd.work_order_uuid,
+        produced_qty: decimal_sub(state.produced_qty, cmd.stored_qty),
+        stored_qty: decimal_add(state.stored_qty, cmd.stored_qty)
+      }
+
+      [finish_item_stored_evt, work_order_qty_changed_evt]
+    else
+      {:error, :no_enough_stock}
+    end
+  end
+
+  def execute(_, %StoreFinishItem{}), do: {:error, :not_allowed}
+
   def apply(%__MODULE__{} = state, %WorkOrderCreated{} = evt) do
     %__MODULE__{
       state
@@ -226,5 +256,9 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   def apply(%__MODULE__{} = state, %WorkOrderQtyChanged{} = evt) do
     %__MODULE__{state | produced_qty: evt.produced_qty, scraped_qty: evt.scraped_qty}
+  end
+
+  def apply(%__MODULE__{} = state, %InventoryUnitInbound{} = _evt) do
+    state
   end
 end
