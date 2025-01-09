@@ -61,6 +61,7 @@ defmodule Handan.Storage do
       job_cards,
       payment_methods,
       payment_entries,
+      work_order_material_requests,
       projection_versions
     RESTART IDENTITY;
     """
