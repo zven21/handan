@@ -17,6 +17,8 @@ defmodule Handan.Purchasing.Projections.ReceiptNote do
     belongs_to :supplier, Handan.Purchasing.Projections.Supplier, foreign_key: :supplier_uuid, references: :uuid
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
 
+    has_many :items, Handan.Purchasing.Projections.ReceiptNoteItem, foreign_key: :receipt_note_uuid, references: :uuid
+
     timestamps(type: :utc_datetime)
   end
 end

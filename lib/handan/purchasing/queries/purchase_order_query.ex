@@ -4,6 +4,12 @@ defmodule Handan.Purchasing.Queries.PurchaseOrderQuery do
   alias Handan.Turbo
   alias Handan.Purchasing.Projections.{PurchaseOrder, PurchaseOrderItem, PurchaseInvoice}
 
+  @doc "get purchase order"
+  def get_purchase_order(purchase_order_uuid), do: Turbo.get(PurchaseOrder, purchase_order_uuid)
+
+  @doc "list purchase orders"
+  def list_purchase_orders, do: Turbo.list(PurchaseOrder)
+
   @doc """
   Get purchase order item by id
   """
