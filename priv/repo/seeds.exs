@@ -9,3 +9,10 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+defmodule Seeds do
+  def server_initital_data() do
+  end
+
+  {:ok, %{user: %{uuid: admin_uuid}}} = Handan.Accounts.Seed.register_user(:admin)
+end
