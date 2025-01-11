@@ -9,11 +9,17 @@ defmodule HandanWeb.Schema do
   # types
   import_types(Absinthe.Type.Custom)
 
-  import_types(HandanWeb.GraphQL.Schemas.Company)
+  import_types(HandanWeb.GraphQL.Schemas.Accounts)
+  import_types(HandanWeb.GraphQL.Schemas.Enterprise)
+  import_types(HandanWeb.GraphQL.Schemas.Selling)
+  import_types(HandanWeb.GraphQL.Schemas.Purchasing)
+  import_types(HandanWeb.GraphQL.Schemas.Stock)
+  import_types(HandanWeb.GraphQL.Schemas.Production)
+  import_types(HandanWeb.GraphQL.Schemas.Finance)
 
   @desc "the root of query."
   query do
-    import_fields(:company_queries)
+    import_fields(:enterprise_queries)
   end
 
   # @desc "the root of mutaion."
