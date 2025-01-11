@@ -19,12 +19,13 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :produced_qty, :decimal
     field :scraped_qty, :decimal
     field :item_name, :string
-    field :stock_uom_uuid, :id
     field :uom_name, :string
-    field :supplier_uuid, :id
     field :supplier_name, :string
+    field :supplier_uuid, :id
     field :sales_order_uuid, :id
+    field :stock_uom_uuid, :id
 
+    # field :supplier, :supplier, resolve: dataloader(Production, :supplier)
     field :bom, :bom, resolve: dataloader(Production, :bom)
     field :warehouse, :warehouse, resolve: dataloader(Production, :warehouse)
     field :item, :item, resolve: dataloader(Production, :item)
@@ -52,12 +53,14 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   object :bom_item do
+    field :uuid, :id
     field :item_name, :string
     field :qty, :integer
     field :uom_name, :string
     field :stock_uom_uuid, :id
     field :bom, :bom, resolve: dataloader(Production, :bom)
     field :item, :item, resolve: dataloader(Production, :item)
+    field :stock_uom, :stock_uom, resolve: dataloader(Production, :stock_uom)
   end
 
   object :bom_process do
@@ -102,11 +105,99 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :warehouse_uuid, :id
     field :item_uuid, :id
     field :work_order_uuid, :id
+
+    field :work_order, :work_order, resolve: dataloader(Production, :work_order)
+    field :item, :item, resolve: dataloader(Production, :item)
+    field :warehouse, :warehouse, resolve: dataloader(Production, :warehouse)
+    field :stock_uom, :stock_uom, resolve: dataloader(Production, :stock_uom)
   end
 
-  # object :production_mutations do
-  # end
+  object :production_queries do
+    @desc "process list"
+    field :processes, list_of(:process) do
+      resolve(fn _, _ -> {:ok, []} end)
+    end
 
-  # object :production_queries do
-  # end
+    @desc "get process"
+    field :process, :process do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "get bom"
+    field :bom, :bom do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list boms"
+    field :boms, list_of(:bom) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+
+    @desc "get work order"
+    field :work_order, :work_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list work orders"
+    field :work_orders, list_of(:work_order) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+
+    @desc "get workstation"
+    field :workstation, :workstation do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list workstations"
+    field :workstations, list_of(:workstation) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+  end
+
+  object :production_mutations do
+    @desc "create process"
+    field :create_process, :process do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "delete process"
+    field :delete_process, :process do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create bom"
+    field :create_bom, :bom do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "update bom"
+    field :update_bom, :bom do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "delete bom"
+    field :delete_bom, :bom do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create work order"
+    field :create_work_order, :work_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "delete work order"
+    field :delete_work_order, :work_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "report job card"
+    field :report_job_card, :job_card do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create :workstation"
+    field :create_workstation, :workstation do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 end

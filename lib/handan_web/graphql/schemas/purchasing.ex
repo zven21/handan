@@ -84,9 +84,57 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :actual_qty, :decimal
   end
 
-  # object :purchase_queries do
-  # end
+  object :purchasing_queries do
+    @desc "get supplier"
+    field :supplier, :supplier do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
 
-  # object :purchase_mutations do
-  # end
+    @desc "list suppliers"
+    field :suppliers, list_of(:supplier) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+
+    @desc "get purchase order"
+    field :purchase_order, :purchase_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list purchase orders"
+    field :purchase_orders, list_of(:purchase_order) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+  end
+
+  object :purchasing_mutations do
+    @desc "create purchase order"
+    field :create_purchase_order, :purchase_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "submit purchase order"
+    field :submit_purchase_order, :purchase_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create purchase invoice"
+    field :create_purchase_invoice, :purchase_invoice do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "submit purchase invoice"
+    field :submit_purchase_invoice, :purchase_invoice do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create receipt note"
+    field :create_receipt_note, :receipt_note do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "submit receipt note"
+    field :submit_receipt_note, :receipt_note do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 end

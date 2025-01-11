@@ -11,9 +11,23 @@ defmodule HandanWeb.GraphQL.Schemas.Accounts do
     field :bio, :string
   end
 
-  # object :account_queries do
-  # end
+  object :accounts_queries do
+    field :current_user, :user do
+      middleware(M.Authorize, :user)
 
-  # object :account_mutations do
-  # end
+      resolve(fn _, _, _ -> {:ok, %{}} end)
+    end
+  end
+
+  object :accounts_mutations do
+    @desc "login"
+    field :login, :user do
+      resolve(fn _, _, _ -> {:ok, %{}} end)
+    end
+
+    @desc "register"
+    field :register, :user do
+      resolve(fn _, _, _ -> {:ok, %{}} end)
+    end
+  end
 end

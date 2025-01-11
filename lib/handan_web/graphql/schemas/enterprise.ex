@@ -39,15 +39,18 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
     field :company, :company, resolve: dataloader(HandanWeb.GraphQL.Schemas.Enterprise, :company)
   end
 
-  # object :enterprise_mutations do
-  # end
-
   object :enterprise_queries do
     @desc "get current company"
     field :current_company, :company do
       middleware(M.Authorize, :user)
 
       resolve(&R.Enterprise.get_company/2)
+    end
+  end
+
+  object :enterprise_mutations do
+    field :create_company, :company do
+      resolve(fn _, _, _ -> {:ok, %{}} end)
     end
   end
 end

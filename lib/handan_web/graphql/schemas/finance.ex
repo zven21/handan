@@ -26,9 +26,37 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :name, :string
   end
 
-  # object :finance_queries do
-  # end
+  object :finance_queries do
+    @desc "list payment entries"
+    field :payment_entries, list_of(:payment_entry) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
 
-  # object :finance_mutations do
-  # end
+    @desc "get payment entry"
+    field :payment_entry, :payment_entry do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list payment methods"
+    field :payment_methods, list_of(:payment_method) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+
+    @desc "get payment method"
+    field :payment_method, :payment_method do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
+
+  object :finance_mutations do
+    @desc "create payment entry"
+    field :create_payment_entry, :payment_entry do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create payment method"
+    field :create_payment_method, :payment_method do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 end

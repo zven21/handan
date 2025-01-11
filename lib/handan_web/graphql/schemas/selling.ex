@@ -81,9 +81,57 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :balance, :decimal
   end
 
-  # object :selling_queries do
-  # end
+  object :selling_queries do
+    @desc "get customer"
+    field :customer, :customer do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
 
-  # object :selling_mutations do
-  # end
+    @desc "list customers"
+    field :customers, list_of(:customer) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+
+    @desc "get sales order"
+    field :sales_order, :sales_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "list sales orders"
+    field :sales_orders, list_of(:sales_order) do
+      resolve(fn args, _ -> {:ok, []} end)
+    end
+  end
+
+  object :selling_mutations do
+    @desc "create sales order"
+    field :create_sales_order, :sales_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "submit sales order"
+    field :submit_sales_order, :sales_order do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create sales invoice"
+    field :create_sales_invoice, :sales_invoice do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "submit sales invoice"
+    field :submit_sales_invoice, :sales_invoice do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create delivery note"
+    field :create_delivery_note, :delivery_note do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "confirm delivery note"
+    field :confirm_delivery_note, :delivery_note do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 end

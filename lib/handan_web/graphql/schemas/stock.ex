@@ -48,9 +48,32 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :stock_uom, :stock_uom, resolve: dataloader(Stock, :stock_uom)
   end
 
-  # object :stock_queries do
-  # end
+  object :stock_queries do
+    @desc "get item by uuid"
+    field :item, :item do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 
-  # object :stock_mutations do
-  # end
+  object :stock_mutations do
+    @desc "create item"
+    field :create_item, :item do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "delete item"
+    field :delete_item, :item do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create stock uom"
+    field :create_stock_uom, :stock_uom do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+
+    @desc "create inventory entry"
+    field :create_inventory_entry, :inventory_entry do
+      resolve(fn args, _ -> {:ok, %{}} end)
+    end
+  end
 end
