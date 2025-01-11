@@ -15,12 +15,28 @@ defmodule HandanWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_current_user
+    plug :fetch_company
+    plug :fetch_company_staff
   end
 
   scope "/", HandanWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: HandanWeb.Schema,
+      socket: HandanWeb.UserSocket,
+      json_codec: Jason,
+      interface: :playground
+
+    forward "/", Absinthe.Plug, schema: HandanWeb.Schema
   end
 
   # Other scopes may use custom stacks.

@@ -93,20 +93,81 @@ defmodule HandanWeb.UserAuth do
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
-    assign(conn, :current_user, user)
+
+    conn
+    |> assign(:current_user, user)
+    |> put_session(:current_user, user)
+    |> put_absinthe_ctx(%{current_user: user})
+  end
+
+  def fetch_company(conn, _opts) do
+    company = ensure_company(conn)
+
+    if company do
+      conn
+      |> assign(:current_company, company)
+      # |> put_session(:current_company, company)
+      |> put_absinthe_ctx(%{current_company: company})
+    else
+      conn
+    end
+  end
+
+  def fetch_company_staff(conn, _) do
+    company = ensure_company(conn)
+    current_user = conn.assigns[:current_user]
+
+    if current_user && company do
+      staff = Handan.Enterprise.get_staff(current_user.uuid, company.uuid)
+
+      conn
+      |> assign(:current_staff, staff)
+      |> put_absinthe_ctx(%{current_staff: staff})
+    else
+      conn
+    end
   end
 
   defp ensure_user_token(conn) do
     if token = get_session(conn, :user_token) do
       {token, conn}
     else
-      conn = fetch_cookies(conn, signed: [@remember_me_cookie])
-
-      if token = conn.cookies[@remember_me_cookie] do
-        {token, put_token_in_session(conn, token)}
+      with ["Bearer " <> user_token] <- get_req_header(conn, "authorization") do
+        {user_token, conn}
       else
-        {nil, conn}
+        _ ->
+          conn = fetch_cookies(conn, signed: [@remember_me_cookie])
+
+          if token = conn.cookies[@remember_me_cookie] do
+            {token, put_token_in_session(conn, token)}
+          else
+            {nil, conn}
+          end
       end
+    end
+  end
+
+  defp put_absinthe_ctx(conn, map) do
+    new_ctx =
+      case conn.private[:absinthe] do
+        nil ->
+          map
+
+        value ->
+          Map.merge(value[:context], map)
+      end
+
+    conn
+    |> put_private(:absinthe, %{context: new_ctx})
+  end
+
+  defp ensure_company(conn) do
+    with [company_uuid] <- get_req_header(conn, "company"),
+         {:ok, uuid} <- Ecto.UUID.cast(company_uuid),
+         {:ok, company} <- Handan.Enterprise.get_company(uuid) do
+      company
+    else
+      _ -> nil
     end
   end
 
