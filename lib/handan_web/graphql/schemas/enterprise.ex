@@ -60,7 +60,7 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
     end
   end
 
-  object :create_company_request do
+  input_object :create_company_request do
     field :name, :string
     field :description, :string
   end

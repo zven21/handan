@@ -4,52 +4,53 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   alias Handan.Dispatcher
 
   @doc "get customer"
-  def get_customer(%{request: %{uuid: uuid}}, _) do
-    {:ok, Selling.get_customer(uuid)}
-  end
+  def get_customer(%{request: %{uuid: uuid}}, _), do: Selling.get_customer(uuid)
 
   @doc "list customers"
-  def get_customers(_, _) do
-    {:ok, Selling.list_customers()}
-  end
+  def get_customers(_, _), do: Selling.list_customers()
 
   @doc "get sales order"
-  def get_sales_order(%{request: %{uuid: uuid}}, _) do
-    {:ok, Selling.get_sales_order(uuid)}
-  end
+  def get_sales_order(%{request: %{sales_order_uuid: uuid}}, _), do: Selling.get_sales_order(uuid)
 
   @doc "list sales orders"
-  def get_sales_orders(_, _) do
-    {:ok, Selling.list_sales_orders()}
-  end
+  def get_sales_orders(_, _), do: Selling.list_sales_orders()
 
   @doc "create sales order"
-  def create_sales_order(%{request: request}, _) do
-    Dispatcher.run(request, :create_sales_order)
+  def create_sales_order(_, %{request: request}, _) do
+    request
+    |> Map.put(:sales_order_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_sales_order)
   end
 
-  @doc "submit sales order"
-  def submit_sales_order(%{request: request}, _) do
-    Dispatcher.run(request, :submit_sales_order)
+  @doc "confirm sales order"
+  def confirm_sales_order(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:confirm_sales_order)
   end
 
   @doc "create sales invoice"
-  def create_sales_invoice(%{request: request}, _) do
-    Dispatcher.run(request, :create_sales_invoice)
+  def create_sales_invoice(_, %{request: request}, _) do
+    request
+    |> Map.put(:sales_invoice_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_sales_invoice)
   end
 
-  @doc "submit sales invoice"
-  def submit_sales_invoice(%{request: request}, _) do
-    Dispatcher.run(request, :submit_sales_invoice)
+  @doc "confirm sales invoice"
+  def confirm_sales_invoice(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:confirm_sales_invoice)
   end
 
   @doc "create delivery note"
-  def create_delivery_note(%{request: request}, _) do
-    Dispatcher.run(request, :create_delivery_note)
+  def create_delivery_note(_, %{request: request}, _) do
+    request
+    |> Map.put(:delivery_note_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_delivery_note)
   end
 
-  @doc "submit delivery note"
-  def submit_delivery_note(%{request: request}, _) do
-    Dispatcher.run(request, :submit_delivery_note)
+  @doc "confirm delivery note"
+  def confirm_delivery_note(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:confirm_delivery_note)
   end
 end

@@ -11,7 +11,7 @@ defmodule Handan.Turbo do
   def list(queryable) do
     queryable
     |> Repo.all()
-    |> done(queryable)
+    |> done()
   end
 
   @doc """

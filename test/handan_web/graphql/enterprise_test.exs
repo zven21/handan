@@ -1,4 +1,4 @@
-defmodule HandanWeb.GraphQL.StoreTest do
+defmodule HandanWeb.GraphQL.EnterpriseTest do
   @moduledoc false
 
   use HandanWeb.ConnCase
