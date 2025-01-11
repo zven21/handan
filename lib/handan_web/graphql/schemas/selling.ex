@@ -84,22 +84,28 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
   object :selling_queries do
     @desc "get customer"
     field :customer, :customer do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.get_customer/2)
     end
 
     @desc "list customers"
     field :customers, list_of(:customer) do
-      resolve(fn args, _ -> {:ok, []} end)
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.get_customers/2)
     end
 
     @desc "get sales order"
     field :sales_order, :sales_order do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      middleware(M.Authorize, :user)
+      resolve(&R.Selling.get_sales_order/2)
     end
 
     @desc "list sales orders"
     field :sales_orders, list_of(:sales_order) do
-      resolve(fn args, _ -> {:ok, []} end)
+      middleware(M.Authorize, :user)
+      resolve(&R.Selling.get_sales_orders/2)
     end
   end
 

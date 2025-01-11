@@ -7,6 +7,13 @@ defmodule Handan.Turbo do
 
   alias Handan.Repo
 
+  @doc "list all"
+  def list(queryable) do
+    queryable
+    |> Repo.all()
+    |> done(queryable)
+  end
+
   @doc """
   Finds a object by it's uuid.
   """
