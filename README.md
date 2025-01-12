@@ -4,6 +4,9 @@
 
 Handan is a project under construction, it is one of the ERP (MES) solutions for small and medium-sized enterprises.
 
+The frontend page is based on `NextJS` framework, [click here](https://github.com/zven21/handan_web).
+
+
 ## **Getting Started**
 
 To start your Phoenix server and run tests:
