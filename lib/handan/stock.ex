@@ -1,11 +1,8 @@
 defmodule Handan.Stock do
   @moduledoc false
 
-  alias Handan.Turbo
-  alias Handan.Stock.Projections.Item
+  alias Handan.Stock.Queries.ItemQuery
 
-  @doc """
-  Get item by uuid.
-  """
-  def get_item(item_uuid), do: Turbo.get(Item, item_uuid)
+  defdelegate get_item(item_uuid), to: ItemQuery
+  defdelegate list_items, to: ItemQuery
 end

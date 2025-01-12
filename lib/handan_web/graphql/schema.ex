@@ -19,12 +19,25 @@ defmodule HandanWeb.Schema do
 
   @desc "the root of query."
   query do
+    import_fields(:accounts_queries)
     import_fields(:enterprise_queries)
+    import_fields(:selling_queries)
+    import_fields(:purchasing_queries)
+    import_fields(:production_queries)
+    import_fields(:stock_queries)
+    import_fields(:finance_queries)
   end
 
-  # @desc "the root of mutaion."
-  # mutation do
-  # end
+  @desc "the root of mutaion."
+  mutation do
+    import_fields(:accounts_mutations)
+    import_fields(:enterprise_mutations)
+    import_fields(:selling_mutations)
+    import_fields(:purchasing_mutations)
+    import_fields(:production_mutations)
+    import_fields(:stock_mutations)
+    import_fields(:finance_mutations)
+  end
 
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()

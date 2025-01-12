@@ -1,21 +1,17 @@
 defmodule Handan.Production do
   @moduledoc false
 
-  alias Handan.Turbo
-  alias Handan.Production.Projections.{Process, BOM, WorkOrder}
+  alias Handan.Production.Queries.{ProcessQuery, BOMQuery, WorkOrderQuery, WorkstationQuery}
 
-  @doc """
-  Get process by uuid
-  """
-  def get_process(process_uuid), do: Turbo.get(Process, process_uuid)
+  defdelegate get_process(process_uuid), to: ProcessQuery
+  defdelegate list_processes, to: ProcessQuery
 
-  @doc """
-  Get bom by uuid
-  """
-  def get_bom(bom_uuid), do: Turbo.get(BOM, bom_uuid, preload: [:bom_items, :bom_processes])
+  defdelegate get_bom(bom_uuid), to: BOMQuery
+  defdelegate list_boms, to: BOMQuery
 
-  @doc """
-  Get work order by uuid
-  """
-  def get_work_order(work_order_uuid), do: Turbo.get(WorkOrder, work_order_uuid, preload: [:items])
+  defdelegate get_work_order(work_order_uuid), to: WorkOrderQuery
+  defdelegate list_work_orders, to: WorkOrderQuery
+
+  defdelegate get_workstation(workstation_uuid), to: WorkstationQuery
+  defdelegate list_workstations, to: WorkstationQuery
 end

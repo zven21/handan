@@ -6,6 +6,8 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
   import HandanWeb.GraphQL.Helpers.Fields
 
+  alias Handan.Enterprise
+
   # types
   object :company do
     field :uuid, :id
@@ -35,19 +37,31 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
     field :uuid, :id
     field :name, :string
     field :email, :string
-    field :user, :user, resolve: dataloader(HandanWeb.GraphQL.Schemas.Accounts, :user)
-    field :company, :company, resolve: dataloader(HandanWeb.GraphQL.Schemas.Enterprise, :company)
+    field :user, :user, resolve: dataloader(Enterprise, :user)
+    field :company, :company, resolve: dataloader(Enterprise, :company)
   end
-
-  # object :enterprise_mutations do
-  # end
 
   object :enterprise_queries do
     @desc "get current company"
-    field :current_company, :company do
+    field :company, :company do
       middleware(M.Authorize, :user)
 
       resolve(&R.Enterprise.get_company/2)
     end
+  end
+
+  object :enterprise_mutations do
+    field :create_company, :company do
+      arg(:request, non_null(:create_company_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Enterprise.create_company/3)
+    end
+  end
+
+  input_object :create_company_request do
+    field :name, :string
+    field :description, :string
   end
 end

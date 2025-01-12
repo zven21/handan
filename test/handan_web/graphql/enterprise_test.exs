@@ -1,4 +1,4 @@
-defmodule HandanWeb.GraphQL.StoreTest do
+defmodule HandanWeb.GraphQL.EnterpriseTest do
   @moduledoc false
 
   use HandanWeb.ConnCase
@@ -6,7 +6,7 @@ defmodule HandanWeb.GraphQL.StoreTest do
   describe "get store" do
     @query """
     query {
-      currentCompany {
+      company {
         uuid
         name
       }
@@ -21,7 +21,7 @@ defmodule HandanWeb.GraphQL.StoreTest do
 
       assert result == %{
                "data" => %{
-                 "currentCompany" => %{
+                 "company" => %{
                    "uuid" => company.uuid,
                    "name" => company.name
                  }

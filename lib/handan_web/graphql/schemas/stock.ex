@@ -48,9 +48,53 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :stock_uom, :stock_uom, resolve: dataloader(Stock, :stock_uom)
   end
 
-  # object :stock_queries do
-  # end
+  object :stock_queries do
+    @desc "get item by uuid"
+    field :item, :item do
+      arg(:request, non_null(:id_request))
 
-  # object :stock_mutations do
-  # end
+      middleware(M.Authorize, :user)
+      resolve(&R.Stock.get_item/2)
+    end
+
+    @desc "list items"
+    field :items, list_of(:item) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.list_items/2)
+    end
+  end
+
+  object :stock_mutations do
+    @desc "create item"
+    field :create_item, :item do
+      arg(:request, non_null(:create_item_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.create_item/3)
+    end
+  end
+
+  input_object :create_item_request do
+    field :name, :string
+    field :description, :string
+    field :spec, :string
+    field :selling_price, :decimal
+    field :default_stock_uom_uuid, :id
+    field :opening_stocks, list_of(:opening_stock_arg)
+    field :stock_uoms, list_of(:stock_uom_arg)
+  end
+
+  input_object :opening_stock_arg do
+    field :warehouse_uuid, :id
+    field :qty, :decimal
+  end
+
+  input_object :stock_uom_arg do
+    field :uom_name, :string
+    field :conversion_factor, :integer
+    field :uom_uuid, :id
+    field :sequence, :integer
+  end
 end
