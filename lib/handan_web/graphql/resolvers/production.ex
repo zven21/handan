@@ -16,11 +16,24 @@ defmodule HandanWeb.GraphQL.Resolvers.Production do
   @doc "list work orders"
   def get_work_orders(_, _), do: Production.list_work_orders()
 
+  @doc "get bom"
+  def get_bom(%{request: %{uuid: uuid}}, _), do: Production.get_bom(uuid)
+
+  @doc "list boms"
+  def get_boms(_, _), do: Production.list_boms()
+
   @doc "create process"
   def create_process(_, %{request: request}, _) do
     request
     |> Map.put(:process_uuid, Ecto.UUID.generate())
     |> Dispatcher.run(:create_process)
+  end
+
+  @doc "create bom"
+  def create_bom(_, %{request: request}, _) do
+    request
+    |> Map.put(:bom_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_bom)
   end
 
   @doc "create work order"

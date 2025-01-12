@@ -6,5 +6,5 @@ defmodule Handan.Production.Queries.BOMQuery do
 
   def get_bom(bom_uuid), do: Turbo.get(BOM, bom_uuid)
 
-  def list_boms, do: Turbo.all(BOM)
+  def list_boms, do: Turbo.list(BOM)
 end

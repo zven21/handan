@@ -125,19 +125,20 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
       resolve(fn args, _ -> {:ok, %{}} end)
     end
 
-    # @desc "get bom"
-    # field :bom, :bom do
-    #   arg(:request, non_null(:id_request))
+    @desc "get bom"
+    field :bom, :bom do
+      arg(:request, non_null(:id_request))
 
-    #   middleware(M.Authorize, :user)
-    #   resolve(&R.Production.get_bom/2)
-    # end
+      middleware(M.Authorize, :user)
 
-    # @desc "list boms"
-    # field :boms, list_of(:bom) do
-    #   middleware(M.Authorize, :user)
-    #   resolve(&R.Production.get_boms/2)
-    # end
+      resolve(&R.Production.get_bom/2)
+    end
+
+    @desc "list boms"
+    field :boms, list_of(:bom) do
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.get_boms/2)
+    end
 
     # @desc "get work order"
     # field :work_order, :work_order do
@@ -255,6 +256,9 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
   input_object :create_bom_request do
     field :name, :string
+    field :item_uuid, :id
+    field :bom_items, list_of(:bom_item_arg)
+    field :bom_processes, list_of(:bom_process_arg)
   end
 
   input_object :bom_request do
@@ -263,5 +267,15 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
   input_object :work_order_request do
     field :uuid, :id
+  end
+
+  input_object :bom_item_arg do
+    field :item_uuid, :id
+    field :qty, :integer
+  end
+
+  input_object :bom_process_arg do
+    field :process_uuid, :id
+    field :position, :integer
   end
 end
