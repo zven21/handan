@@ -14,13 +14,19 @@ defmodule HandanWeb.GraphQL.Resolvers.Production do
   def get_work_order(%{request: %{uuid: uuid}}, _), do: Production.get_work_order(uuid)
 
   @doc "list work orders"
-  def get_work_orders(_, _), do: Production.list_work_orders()
+  def list_work_orders(_, _), do: Production.list_work_orders()
 
   @doc "get bom"
   def get_bom(%{request: %{uuid: uuid}}, _), do: Production.get_bom(uuid)
 
   @doc "list boms"
-  def get_boms(_, _), do: Production.list_boms()
+  def list_boms(_, _), do: Production.list_boms()
+
+  @doc "get workstation"
+  def get_workstation(%{request: %{uuid: uuid}}, _), do: Production.get_workstation(uuid)
+
+  @doc "list workstations"
+  def list_workstations(_, _), do: Production.list_workstations()
 
   @doc "create process"
   def create_process(_, %{request: request}, _) do
