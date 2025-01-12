@@ -3,8 +3,8 @@
 简体中文 | [English](./README.EN.md)
 
 项目正在建设中，它是面向中小企业的企业资源计划（制造执行系统）解决方案之一。
-前端页面基于 NextJS 框架，[点击此处](https://github.com/zven21/handan_web)。
 
+前端页面基于 NextJS 框架，[点击此处](https://github.com/zven21/handan_web)。
 
 ## **快速上手**
 
@@ -42,15 +42,15 @@
 
 ## **贡献**
 
-欢迎提交 Bug 报告或拉取请求。
+欢迎提交 Bug 报告或提交 Pull Request。
 
-## **提交拉取请求**
+## **提交 Pull Request**
 
 * fork 本项目
 * 创建你的特性分支（`git checkout -b my-new-feature`）
 * 提交你的更改（`git commit -am 'Add some feature'`）
 * 推送至该分支（`git push origin my-new-feature`）
-* 创建新的拉取请求
+* 创建新的 Pull Request
 
 如有必要，请为你的代码编写单元测试。
 
