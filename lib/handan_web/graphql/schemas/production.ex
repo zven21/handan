@@ -80,12 +80,16 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   object :job_card do
+    field :uuid, :id
     field :start_time, :datetime
     field :end_time, :datetime
     field :status, :string
     field :operator_staff_uuid, :id
     field :defective_qty, :decimal
     field :produced_qty, :decimal
+
+    field :work_order_item_uuid, :id
+    field :work_order_uuid, :id
   end
 
   object :workstation do
@@ -207,12 +211,20 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     end
 
     @desc "report job card"
-    field :report_job_card, :job_card do
+    field :report_job_card, :work_order do
       arg(:request, non_null(:report_job_card_request))
 
       middleware(M.Authorize, :user)
 
       resolve(&R.Production.report_job_card/3)
+    end
+
+    @desc "store finish item"
+    field :store_finish_item, :work_order do
+      arg(:request, non_null(:store_finish_item_request))
+
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.store_finish_item/3)
     end
 
     @desc "create :workstation"
@@ -235,6 +247,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
   input_object :report_job_card_request do
     field :work_order_uuid, :id
+    field :work_order_item_uuid, :id
+    field :operator_staff_uuid, :id
     field :start_time, :datetime
     field :end_time, :datetime
     field :defective_qty, :decimal
@@ -265,6 +279,11 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
   input_object :work_order_request do
     field :work_order_uuid, :id
+  end
+
+  input_object :store_finish_item_request do
+    field :work_order_uuid, :id
+    field :stored_qty, :decimal
   end
 
   input_object :bom_item_arg do

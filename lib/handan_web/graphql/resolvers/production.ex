@@ -64,7 +64,14 @@ defmodule HandanWeb.GraphQL.Resolvers.Production do
   @doc "report job card"
   def report_job_card(_, %{request: request}, _) do
     request
+    |> Map.put(:job_card_uuid, Ecto.UUID.generate())
     |> Dispatcher.run(:report_job_card)
+  end
+
+  @doc "store finish item"
+  def store_finish_item(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:store_finish_item)
   end
 
   @doc "create workstation"

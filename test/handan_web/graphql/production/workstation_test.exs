@@ -83,7 +83,7 @@ defmodule HandanWeb.Graphql.WorkstationTest do
       assert result == %{
                "data" => %{
                  "CreateWorkstation" => %{
-                   "name" => "Workstation 1",
+                   "name" => "Workstation 1"
                  }
                }
              }

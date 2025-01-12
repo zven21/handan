@@ -108,44 +108,88 @@ defmodule HandanWeb.GraphQL.WorkOrderTest do
     end
   end
 
-  # describe "report job card" do
-  #   setup [
-  #     :register_user,
-  #     :create_company,
-  #     :create_item,
-  #     :create_warehouse,
-  #     :create_work_order
-  #   ]
+  describe "report job card" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_workstation,
+      :create_bom,
+      :create_work_order
+    ]
 
-  #   @query """
-  #   mutation ($request: ReportJobCardRequest!) {
-  #     ReportJobCard(request: $request) {
-  #       status
-  #       uuid
-  #     }
-  #   }
-  #   """
+    @query """
+    mutation ($request: ReportJobCardRequest!) {
+      ReportJobCard(request: $request) {
+        status
+        uuid
+      }
+    }
+    """
 
-  #   @tag :company_owner
-  #   test "should report job card", %{conn: conn, work_order: work_order} do
-  #     request = %{
-  #       work_order_uuid: work_order.uuid,
-  #       start_time: "2022-01-01T00:00:00Z",
-  #       end_time: "2022-01-01T08:00:00Z",
-  #       defective_qty: 0,
-  #       produced_qty: 100
-  #     }
+    @tag :company_owner
+    test "should report job card", %{conn: conn, work_order: work_order} do
+      work_order_item = hd(work_order.items)
 
-  #     result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+      request = %{
+        work_order_uuid: work_order.uuid,
+        work_order_item_uuid: work_order_item.uuid,
+        operator_staff_uuid: Ecto.UUID.generate(),
+        start_time: "2022-01-01T00:00:00Z",
+        end_time: "2022-01-01T08:00:00Z",
+        defective_qty: 0,
+        produced_qty: 100
+      }
 
-  #     assert result == %{
-  #              "data" => %{
-  #                "ReportJobCard" => %{
-  #                  "status" => "done",
-  #                  "uuid" => work_order.uuid
-  #                }
-  #              }
-  #            }
-  #   end
-  # end
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "ReportJobCard" => %{
+                   "status" => "draft",
+                   "uuid" => work_order.uuid
+                 }
+               }
+             }
+    end
+  end
+
+  describe "store finish item" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order,
+      :report_job_card
+    ]
+
+    @query """
+    mutation ($request: StoreFinishItemRequest!) {
+      StoreFinishItem(request: $request) {
+        status
+        uuid
+      }
+    }
+    """
+
+    @tag :company_owner
+    test "should store finish item", %{conn: conn, work_order: work_order} do
+      request = %{
+        work_order_uuid: work_order.uuid,
+        stored_qty: 10
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "StoreFinishItem" => %{
+                   "status" => "draft",
+                   "uuid" => work_order.uuid
+                 }
+               }
+             }
+    end
+  end
 end
