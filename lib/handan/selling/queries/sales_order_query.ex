@@ -2,7 +2,7 @@ defmodule Handan.Selling.Queries.SalesOrderQuery do
   @moduledoc false
 
   alias Handan.Turbo
-  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, SalesInvoice, DeliveryNote}
+  alias Handan.Selling.Projections.{SalesOrder, SalesOrderItem, SalesInvoice}
 
   @doc "get sales order"
   def get_sales_order(uuid), do: Turbo.get(SalesOrder, uuid)

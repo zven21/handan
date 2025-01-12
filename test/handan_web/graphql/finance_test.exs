@@ -138,7 +138,7 @@ defmodule HandanWeb.GraphQL.FinanceTest do
       :create_item,
       :create_sales_order,
       :create_sales_invoice,
-      :create_payment_method,
+      :create_payment_method
     ]
 
     @query """

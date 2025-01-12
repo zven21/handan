@@ -182,12 +182,12 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
       resolve(&R.Production.create_process/3)
     end
 
-    @desc "delete process"
-    field :delete_process, :process do
-      arg(:request, non_null(:id_request))
-      middleware(M.Authorize, :user)
-      resolve(&R.Production.delete_process/3)
-    end
+    # @desc "delete process"
+    # field :delete_process, :process do
+    #   arg(:request, non_null(:id_request))
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.delete_process/3)
+    # end
 
     @desc "create bom"
     field :create_bom, :bom do
@@ -196,12 +196,12 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
       resolve(&R.Production.create_bom/3)
     end
 
-    @desc "delete bom"
-    field :delete_bom, :bom do
-      arg(:request, non_null(:bom_request))
-      middleware(M.Authorize, :user)
-      resolve(&R.Production.delete_bom/3)
-    end
+    # @desc "delete bom"
+    # field :delete_bom, :bom do
+    #   arg(:request, non_null(:bom_request))
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.delete_bom/3)
+    # end
 
     @desc "create work order"
     field :create_work_order, :work_order do

@@ -19,8 +19,9 @@ defmodule HandanWeb.GraphQL.ProcessTest do
     """
 
     @tag :company_owner
-    test "should succeed with valid request", %{conn: conn} do
+    test "should succeed with valid request", %{conn: conn, process: process} do
       result = conn |> post("/api", query: @query) |> json_response(200)
+      assert result == %{"data" => %{"processes" => [%{"uuid" => process.uuid}]}}
     end
   end
 
@@ -32,7 +33,7 @@ defmodule HandanWeb.GraphQL.ProcessTest do
     ]
 
     @query """
-    query ($request: ID!) {
+    query ($request: IdRequest!) {
       process(request: $request) {
         uuid
       }
@@ -46,6 +47,7 @@ defmodule HandanWeb.GraphQL.ProcessTest do
       }
 
       result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+      assert result == %{"data" => %{"process" => %{"uuid" => process.uuid}}}
     end
   end
 

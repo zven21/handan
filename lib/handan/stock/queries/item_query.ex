@@ -1,7 +1,7 @@
 defmodule Handan.Stock.Queries.ItemQuery do
   @moduledoc false
 
-  alias Handan.{Repo, Turbo}
+  alias Handan.Turbo
   alias Handan.Stock.Projections.Item
 
   @doc "get item"
