@@ -5,4 +5,6 @@ defmodule Handan.Production.Queries.BOMQuery do
   alias Handan.Production.Projections.BOM
 
   def get_bom(bom_uuid), do: Turbo.get(BOM, bom_uuid)
+
+  def list_boms, do: Turbo.all(BOM)
 end

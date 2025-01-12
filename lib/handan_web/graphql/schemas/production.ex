@@ -113,91 +113,155 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   object :production_queries do
-    @desc "process list"
+    @desc "list processes"
     field :processes, list_of(:process) do
-      resolve(fn _, _ -> {:ok, []} end)
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.list_processes/2)
     end
 
     @desc "get process"
     field :process, :process do
+      arg(:request, non_null(:id_request))
       resolve(fn args, _ -> {:ok, %{}} end)
     end
 
-    @desc "get bom"
-    field :bom, :bom do
-      resolve(fn args, _ -> {:ok, %{}} end)
-    end
+    # @desc "get bom"
+    # field :bom, :bom do
+    #   arg(:request, non_null(:id_request))
 
-    @desc "list boms"
-    field :boms, list_of(:bom) do
-      resolve(fn args, _ -> {:ok, []} end)
-    end
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_bom/2)
+    # end
 
-    @desc "get work order"
-    field :work_order, :work_order do
-      resolve(fn args, _ -> {:ok, %{}} end)
-    end
+    # @desc "list boms"
+    # field :boms, list_of(:bom) do
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_boms/2)
+    # end
 
-    @desc "list work orders"
-    field :work_orders, list_of(:work_order) do
-      resolve(fn args, _ -> {:ok, []} end)
-    end
+    # @desc "get work order"
+    # field :work_order, :work_order do
+    #   arg(:request, non_null(:id_request))
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_work_order/2)
+    # end
 
-    @desc "get workstation"
-    field :workstation, :workstation do
-      resolve(fn args, _ -> {:ok, %{}} end)
-    end
+    # @desc "list work orders"
+    # field :work_orders, list_of(:work_order) do
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_work_orders/2)
+    # end
 
-    @desc "list workstations"
-    field :workstations, list_of(:workstation) do
-      resolve(fn args, _ -> {:ok, []} end)
-    end
+    # @desc "get workstation"
+    # field :workstation, :workstation do
+    #   arg(:request, non_null(:id_request))
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_workstation/2)
+    # end
+
+    # @desc "list workstations"
+    # field :workstations, list_of(:workstation) do
+    #   middleware(M.Authorize, :user)
+    #   resolve(&R.Production.get_workstations/2)
+    # end
   end
 
   object :production_mutations do
     @desc "create process"
     field :create_process, :process do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:create_process_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.create_process/3)
     end
 
     @desc "delete process"
     field :delete_process, :process do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:id_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.delete_process/3)
     end
 
     @desc "create bom"
     field :create_bom, :bom do
-      resolve(fn args, _ -> {:ok, %{}} end)
-    end
-
-    @desc "update bom"
-    field :update_bom, :bom do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:create_bom_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.create_bom/3)
     end
 
     @desc "delete bom"
     field :delete_bom, :bom do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:bom_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.delete_bom/3)
     end
 
     @desc "create work order"
     field :create_work_order, :work_order do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:create_work_order_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.create_work_order/3)
     end
 
     @desc "delete work order"
     field :delete_work_order, :work_order do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:work_order_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.delete_work_order/3)
     end
 
     @desc "report job card"
     field :report_job_card, :job_card do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:report_job_card_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Production.report_job_card/3)
     end
 
     @desc "create :workstation"
     field :create_workstation, :workstation do
-      resolve(fn args, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:create_workstation_request))
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.create_workstation/3)
     end
+  end
+
+  input_object :create_work_order_request do
+    field :item_uuid, :id
+    field :warehouse_uuid, :id
+    field :planned_qty, :decimal
+    field :start_time, :datetime
+    field :end_time, :datetime
+  end
+
+  input_object :report_job_card_request do
+    field :work_order_uuid, :id
+    field :start_time, :datetime
+    field :end_time, :datetime
+    field :defective_qty, :decimal
+    field :produced_qty, :decimal
+  end
+
+  input_object :create_workstation_request do
+    field :name, :string
+    field :description, :string
+  end
+
+  input_object :create_process_request do
+    field :code, :string
+    field :name, :string
+    field :description, :string
+  end
+
+  input_object :create_bom_request do
+    field :name, :string
+  end
+
+  input_object :bom_request do
+    field :bom_uuid, :id
+  end
+
+  input_object :work_order_request do
+    field :uuid, :id
   end
 end
