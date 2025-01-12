@@ -25,6 +25,7 @@ defmodule HandanWeb.Schema do
     import_fields(:purchasing_queries)
     import_fields(:production_queries)
     import_fields(:stock_queries)
+    import_fields(:finance_queries)
   end
 
   @desc "the root of mutaion."
