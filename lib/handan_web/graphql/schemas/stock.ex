@@ -77,22 +77,20 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
   end
 
   input_object :create_item_request do
-    field :name, :string
-    field :description, :string
+    field :name, non_null(:string)
     field :spec, :string
-    field :selling_price, :decimal
-    field :default_stock_uom_uuid, :id
+    field :stock_uoms, non_null(list_of(:stock_uom_arg))
+    field :selling_price, non_null(:decimal)
+    field :description, :string
     field :opening_stocks, list_of(:opening_stock_arg)
-    field :stock_uoms, list_of(:stock_uom_arg)
   end
 
   input_object :opening_stock_arg do
     field :warehouse_uuid, :id
-    field :qty, :decimal
+    field :qty, :float
   end
 
   input_object :stock_uom_arg do
-    field :uom_name, :string
     field :conversion_factor, :integer
     field :uom_uuid, :id
     field :sequence, :integer

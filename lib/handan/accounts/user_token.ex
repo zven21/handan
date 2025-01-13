@@ -48,7 +48,7 @@ defmodule Handan.Accounts.Projections.UserToken do
   session they deem invalid.
   """
   def build_session_token(user) do
-    token = :crypto.strong_rand_bytes(@rand_size)
+    token = :crypto.strong_rand_bytes(@rand_size) |> Base.url_encode64(padding: false)
     {token, %UserToken{token: token, context: "session", user_uuid: user.uuid}}
   end
 

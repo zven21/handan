@@ -8,6 +8,7 @@ defmodule Handan.Stock.Commands.CreateItem do
   defcommand do
     field :item_uuid, Ecto.UUID
     field :name, :string
+    field :spec, :string
     field :description, :string
     field :selling_price, :decimal
 
@@ -61,6 +62,7 @@ defmodule Handan.Stock.Commands.CreateItem do
       cmd
       |> handle_stock_uoms_fn.()
       |> then(&{:ok, &1})
+      |> IO.inspect(label: "cmd")
     end
 
     defp get_uom(uuid) do

@@ -9,6 +9,7 @@ defmodule HandanWeb.GraphQL.Schemas.Accounts do
     field :nickname, :string
     field :avatar_url, :string
     field :bio, :string
+    field :access_token, :string
   end
 
   object :accounts_queries do

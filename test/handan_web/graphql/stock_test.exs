@@ -91,7 +91,6 @@ defmodule HandanWeb.GraphQL.StockTest do
         ],
         stock_uoms: [
           %{
-            uom_name: uom.name,
             conversion_factor: 1,
             uom_uuid: uom.uuid,
             sequence: 1

@@ -23,6 +23,8 @@ defmodule Handan.Stock.Projectors.Item do
     %ItemCreated{} = evt,
     _meta,
     fn multi ->
+      IO.inspect(evt, label: "evt")
+
       item = %Item{
         uuid: evt.item_uuid,
         name: evt.name,

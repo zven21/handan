@@ -8,7 +8,6 @@ defmodule HandanWeb.Schema do
 
   # types
   import_types(Absinthe.Type.Custom)
-
   import_types(HandanWeb.GraphQL.Schemas.Accounts)
   import_types(HandanWeb.GraphQL.Schemas.Enterprise)
   import_types(HandanWeb.GraphQL.Schemas.Selling)

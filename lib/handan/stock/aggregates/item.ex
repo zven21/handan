@@ -9,6 +9,7 @@ defmodule Handan.Stock.Aggregates.Item do
   deftype do
     field :item_uuid, Ecto.UUID
     field :name, :string
+    field :spec, :string
     field :selling_price, :decimal
     field :description, :string
     field :stock_uoms, :map, default: %{}
@@ -171,7 +172,8 @@ defmodule Handan.Stock.Aggregates.Item do
       state
       | item_uuid: evt.item_uuid,
         name: evt.name,
-        selling_price: evt.selling_price
+        description: evt.description,
+        selling_price: to_decimal(evt.selling_price)
     }
   end
 

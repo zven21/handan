@@ -49,5 +49,17 @@ defmodule HandanWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  # CORS
+  plug(
+    Corsica,
+    log: [rejected: :debug],
+    origins: "*",
+    allow_methods: :all,
+    allow_headers: :all,
+    allow_credentials: true,
+    max_age: 10_000
+  )
+
   plug HandanWeb.Router
 end

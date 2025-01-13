@@ -66,11 +66,15 @@ defmodule Handan.MixProject do
 
       # time
       {:timex, "~> 3.7"},
+
       # absinthe(graphql)
       {:absinthe, "~> 1.6"},
       {:absinthe_phoenix, "~> 2.0"},
       {:dataloader, "~> 1.0"},
-      {:absinthe_plug, "~> 1.5"}
+      {:absinthe_plug, "~> 1.5"},
+
+      # cros
+      {:corsica, "~> 1.1"}
     ]
   end
 

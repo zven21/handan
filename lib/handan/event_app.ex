@@ -16,6 +16,12 @@ defmodule Handan.EventApp do
     end
   end
 
+  defimpl Jason.Encoder, for: Decimal do
+    def encode(struct, opts) do
+      Jason.Encode.string(to_string(struct), opts)
+    end
+  end
+
   defimpl Jason.Encoder, for: Function do
     def encode(data, options) when is_function(data) do
       {:arity, arity} = Function.info(data, :arity)

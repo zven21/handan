@@ -85,7 +85,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :payment_method_uuid, :id
     field :purchase_invoice_ids, list_of(:string)
     field :sales_invoice_ids, list_of(:string)
-    field :total_amount, :decimal
+    field :total_amount, :float
   end
 
   input_object :create_payment_method_request do

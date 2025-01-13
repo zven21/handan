@@ -48,6 +48,20 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
 
       resolve(&R.Enterprise.get_company/2)
     end
+
+    @desc "list warehouses"
+    field :warehouses, list_of(:warehouse) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Enterprise.list_warehouses/2)
+    end
+
+    @desc "list uoms"
+    field :uoms, list_of(:uom) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Enterprise.list_uoms/2)
+    end
   end
 
   object :enterprise_mutations do

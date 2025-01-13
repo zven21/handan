@@ -12,6 +12,9 @@
 
 defmodule Seeds do
   def server_initital_data() do
-    {:ok, %{user: %{uuid: _admin_uuid}}} = Handan.Accounts.Seed.register_user(:admin)
+    {:ok, %{user: %{uuid: admin_uuid}}} = Handan.Accounts.Seed.register_user(:admin)
+    {:ok, company} = Handan.Enterprise.Seed.create_company(admin_uuid)
   end
 end
+
+Seeds.server_initital_data()
