@@ -4,6 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Purchasing
 
@@ -11,6 +12,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :uuid, :id
     field :name, :string
     field :address, :string
+
+    timestamp_fields()
   end
 
   object :purchase_order do
@@ -30,6 +33,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
     field :supplier, :supplier, resolve: dataloader(Purchasing, :supplier)
     field :items, list_of(:purchase_order_item), resolve: dataloader(Purchasing, :items)
+
+    timestamp_fields()
   end
 
   object :purchase_order_item do
@@ -42,6 +47,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :ordered_qty, :decimal
     field :received_qty, :decimal
     field :remaining_qty, :decimal
+
+    timestamp_fields()
   end
 
   object :purchase_invoice do
@@ -56,19 +63,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :ordered_qty, :decimal
     field :received_qty, :decimal
     field :remaining_qty, :decimal
-  end
 
-  object :purchase_invoice_item do
-    field :uuid, :id
-    field :purchase_order_uuid, :id
-    field :item_name, :string
-    field :stock_uom_uuid, :id
-    field :unit_price, :decimal
-    field :amount, :decimal
-    field :uom_name, :string
-    field :ordered_qty, :decimal
-    field :received_qty, :decimal
-    field :remaining_qty, :decimal
+    timestamp_fields()
   end
 
   object :receipt_note do
@@ -80,6 +76,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :status, :string
 
     field :items, list_of(:receipt_note_item), resolve: dataloader(Purchasing, :items)
+
+    timestamp_fields()
   end
 
   object :receipt_note_item do
@@ -90,6 +88,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :unit_price, :decimal
     field :amount, :decimal
     field :actual_qty, :decimal
+
+    timestamp_fields()
   end
 
   object :purchasing_queries do
@@ -125,6 +125,15 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
   end
 
   object :purchasing_mutations do
+    @desc "create supplier"
+    field :create_supplier, :supplier do
+      arg(:request, non_null(:create_supplier_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.create_supplier/3)
+    end
+
     @desc "create purchase order"
     field :create_purchase_order, :purchase_order do
       arg(:request, non_null(:create_purchase_order_request))
@@ -212,5 +221,10 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :ordered_qty, :decimal
     field :stock_uom_uuid, :id
     field :uom_name, :string
+  end
+
+  input_object :create_supplier_request do
+    field :name, non_null(:string)
+    field :address, non_null(:string)
   end
 end

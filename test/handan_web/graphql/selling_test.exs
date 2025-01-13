@@ -63,6 +63,33 @@ defmodule HandanWeb.GraphQL.SellingTest do
     end
   end
 
+  describe "create customer" do
+    @query """
+    mutation ($request: CreateCustomerRequest!) {
+      CreateCustomer(request: $request) {
+        name
+        address
+      }
+    }
+    """
+
+    @tag :company_owner
+    test "should create customer ok", %{conn: conn} do
+      request = %{
+        name: "new-customer",
+        address: "address-1"
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "CreateCustomer" => %{"address" => request.address, "name" => request.name}
+               }
+             }
+    end
+  end
+
   describe "get sales order" do
     setup [
       :register_user,

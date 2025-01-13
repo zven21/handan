@@ -4,6 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Production
 
@@ -32,6 +33,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :item, :item, resolve: dataloader(Production, :item)
     field :items, list_of(:work_order_item), resolve: dataloader(Production, :items)
     field :material_requests, list_of(:work_order_material_request), resolve: dataloader(Production, :material_requests)
+
+    timestamp_fields()
   end
 
   object :work_order_item do
@@ -42,6 +45,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :required_qty, :decimal
     field :defective_qty, :decimal
     field :produced_qty, :decimal
+    timestamp_fields()
   end
 
   object :bom do
@@ -51,6 +55,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :item, :item, resolve: dataloader(Production, :item)
     field :bom_items, list_of(:bom_item), resolve: dataloader(Production, :bom_items)
     field :bom_processes, list_of(:bom_process), resolve: dataloader(Production, :bom_processes)
+
+    timestamp_fields()
   end
 
   object :bom_item do
@@ -62,6 +68,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :bom, :bom, resolve: dataloader(Production, :bom)
     field :item, :item, resolve: dataloader(Production, :item)
     field :stock_uom, :stock_uom, resolve: dataloader(Production, :stock_uom)
+
+    timestamp_fields()
   end
 
   object :bom_process do
@@ -77,6 +85,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :code, :string
     field :description, :string
     field :name, :string
+
+    timestamp_fields()
   end
 
   object :job_card do
@@ -90,6 +100,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
     field :work_order_item_uuid, :id
     field :work_order_uuid, :id
+
+    timestamp_fields()
   end
 
   object :workstation do
@@ -97,6 +109,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :name, :string
     field :admin_uuid, :string
     field :members, list_of(:staff), resolve: dataloader(Production, :members)
+
+    timestamp_fields()
   end
 
   object :work_order_material_request do
@@ -115,6 +129,8 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :item, :item, resolve: dataloader(Production, :item)
     field :warehouse, :warehouse, resolve: dataloader(Production, :warehouse)
     field :stock_uom, :stock_uom, resolve: dataloader(Production, :stock_uom)
+
+    timestamp_fields()
   end
 
   object :production_queries do

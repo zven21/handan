@@ -4,7 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
-  import HandanWeb.GraphQL.Helpers.Fields
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Enterprise
 
@@ -25,12 +25,16 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
     field :contact_email, :string
     field :contact_name, :string
     field :is_default, :boolean
+
+    timestamp_fields()
   end
 
   object :uom do
     field :uuid, :id
     field :name, :string
     field :description, :string
+
+    timestamp_fields()
   end
 
   object :staff do
@@ -39,6 +43,8 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
     field :email, :string
     field :user, :user, resolve: dataloader(Enterprise, :user)
     field :company, :company, resolve: dataloader(Enterprise, :company)
+
+    timestamp_fields()
   end
 
   object :enterprise_queries do

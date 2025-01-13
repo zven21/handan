@@ -15,6 +15,13 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   @doc "list sales orders"
   def get_sales_orders(_, _), do: Selling.list_sales_orders()
 
+  @doc "create customer"
+  def create_customer(_, %{request: request}, _) do
+    request
+    |> Map.put(:customer_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_customer)
+  end
+
   @doc "create sales order"
   def create_sales_order(_, %{request: request}, _) do
     request

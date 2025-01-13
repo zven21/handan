@@ -62,7 +62,6 @@ defmodule Handan.Stock.Commands.CreateItem do
       cmd
       |> handle_stock_uoms_fn.()
       |> then(&{:ok, &1})
-      |> IO.inspect(label: "cmd")
     end
 
     defp get_uom(uuid) do

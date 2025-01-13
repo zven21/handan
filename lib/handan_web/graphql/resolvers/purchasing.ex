@@ -19,6 +19,12 @@ defmodule HandanWeb.GraphQL.Resolvers.Purchasing do
   @doc "list purchase orders"
   def list_purchase_orders(_, _), do: Purchasing.list_purchase_orders()
 
+  def create_supplier(_, %{request: request}, _) do
+    request
+    |> Map.put(:supplier_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_supplier)
+  end
+
   @doc "create purchase order"
   def create_purchase_order(_, %{request: request}, _) do
     request

@@ -2,6 +2,7 @@ defmodule HandanWeb.GraphQL.Schemas.Accounts do
   @moduledoc false
 
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   object :user do
     field :uuid, :id
@@ -10,6 +11,8 @@ defmodule HandanWeb.GraphQL.Schemas.Accounts do
     field :avatar_url, :string
     field :bio, :string
     field :access_token, :string
+
+    timestamp_fields()
   end
 
   object :accounts_queries do

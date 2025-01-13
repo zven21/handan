@@ -4,6 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Selling
 
@@ -23,6 +24,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :warehouse, :warehouse, resolve: dataloader(Selling, :warehouse)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
     field :items, list_of(:sales_order_item), resolve: dataloader(Selling, :items)
+
+    timestamp_fields()
   end
 
   object :sales_order_item do
@@ -38,6 +41,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :remaining_qty, :decimal
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :item, :item, resolve: dataloader(Selling, :item)
+
+    timestamp_fields()
   end
 
   object :sales_invoice do
@@ -48,6 +53,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :status, :string
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
+
+    timestamp_fields()
   end
 
   object :delivery_note do
@@ -60,6 +67,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
     field :items, list_of(:delivery_note_item), resolve: dataloader(Selling, :items)
+
+    timestamp_fields()
   end
 
   object :delivery_note_item do
@@ -75,6 +84,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :sales_order_item, :sales_order_item, resolve: dataloader(Selling, :sales_order_item)
     field :item, :item, resolve: dataloader(Selling, :item)
+
+    timestamp_fields()
   end
 
   object :customer do
@@ -82,6 +93,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :name, :string
     field :address, :string
     field :balance, :decimal
+
+    timestamp_fields()
   end
 
   object :selling_queries do
@@ -119,6 +132,15 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
   end
 
   object :selling_mutations do
+    @desc "create customer"
+    field :create_customer, :customer do
+      arg(:request, non_null(:create_customer_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.create_customer/3)
+    end
+
     @desc "create sales order"
     field :create_sales_order, :sales_order do
       arg(:request, non_null(:create_sales_order_request))
@@ -219,5 +241,10 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
   input_object :delivery_note_item_arg do
     field :actual_qty, :decimal
     field :sales_order_item_uuid, :id
+  end
+
+  input_object :create_customer_request do
+    field :name, non_null(:string)
+    field :address, non_null(:string)
   end
 end
