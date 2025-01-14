@@ -126,7 +126,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %CreateSalesOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid, status: :draft} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = _cmd) do
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = _cmd) do
     sales_order_confirmed_evt = %SalesOrderConfirmed{
       sales_order_uuid: sales_order_uuid,
       status: :to_deliver_and_bill

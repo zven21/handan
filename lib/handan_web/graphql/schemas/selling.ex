@@ -127,7 +127,39 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :sales_orders, list_of(:sales_order) do
       middleware(M.Authorize, :user)
 
-      resolve(&R.Selling.get_sales_orders/2)
+      resolve(&R.Selling.list_sales_orders/2)
+    end
+
+    @desc "get delivery note"
+    field :delivery_note, :delivery_note do
+      arg(:request, non_null(:delivery_note_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.get_delivery_note/2)
+    end
+
+    @desc "delivery notes"
+    field :delivery_notes, list_of(:delivery_note) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.list_delivery_notes/2)
+    end
+
+    @desc "get sales invoice"
+    field :sales_invoice, :sales_invoice do
+      arg(:request, non_null(:sales_invoice_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.get_sales_invoice/2)
+    end
+
+    @desc "sales invoices"
+    field :sales_invoices, list_of(:sales_invoice) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.list_sales_invoices/2)
     end
   end
 
@@ -216,6 +248,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   input_object :create_sales_order_request do
     field :customer_uuid, :id
+    field :customer_address, :string
     field :warehouse_uuid, :id
     field :sales_items, list_of(:sales_order_item_arg)
   end
@@ -232,8 +265,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   input_object :sales_order_item_arg do
     field :item_uuid, :id
-    field :unit_price, :decimal
-    field :ordered_qty, :decimal
+    field :unit_price, :float
+    field :ordered_qty, :float
     field :stock_uom_uuid, :id
     field :uom_name, :string
   end

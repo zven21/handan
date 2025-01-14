@@ -26,6 +26,7 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
 
   object :stock_uom do
     field :uuid, :id
+    field :uom_name, :string
     field :conversion_factor, :integer
     field :sequence, :integer
     field :item, :item, resolve: dataloader(Stock, :item)

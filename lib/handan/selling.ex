@@ -15,4 +15,7 @@ defmodule Handan.Selling do
 
   defdelegate get_sales_invoice(sales_invoice_uuid), to: SalesOrderQuery
   defdelegate list_sales_invoices, to: SalesOrderQuery
+
+  defdelegate get_delivery_note(delivery_note_uuid), to: SalesOrderQuery
+  defdelegate list_delivery_notes, to: SalesOrderQuery
 end
