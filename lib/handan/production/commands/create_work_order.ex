@@ -47,8 +47,8 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
               |> Enum.map(fn bom_process ->
                 %{
                   work_order_item_uuid: Ecto.UUID.generate(),
-                  item_name: cmd.item_name,
-                  item_uuid: cmd.item_uuid,
+                  item_name: bom.item_name,
+                  item_uuid: bom.item_uuid,
                   work_order_uuid: cmd.work_order_uuid,
                   process_name: bom_process.process_name,
                   process_uuid: bom_process.process_uuid,

@@ -119,6 +119,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   object :work_order_material_request do
+    field :uuid, :id
     field :item_name, :string
     field :actual_qty, :decimal
     field :remaining_qty, :decimal
