@@ -61,7 +61,7 @@ defmodule Handan.Stock.Aggregates.Item do
       cmd.stock_uoms
       |> Enum.map(fn stock_uom ->
         %StockUOMCreated{
-          stock_uom_uuid: Ecto.UUID.generate(),
+          stock_uom_uuid: stock_uom.uuid,
           item_uuid: cmd.item_uuid,
           uom_uuid: stock_uom.uom_uuid,
           uom_name: stock_uom.uom_name,
@@ -140,28 +140,29 @@ defmodule Handan.Stock.Aggregates.Item do
     if Map.has_key?(state.stock_items, warehouse_uuid) do
       stock_item = Map.get(state.stock_items, warehouse_uuid)
 
-      if D.gte?(to_decimal(stock_item.total_on_hand), to_decimal(cmd.qty)) do
-        [
-          %StockItemQtyChanged{
-            stock_item_uuid: stock_item.stock_item_uuid,
-            item_uuid: item_uuid,
-            warehouse_uuid: warehouse_uuid,
-            stock_uom_uuid: stock_item.stock_uom_uuid,
-            total_on_hand: decimal_sub(stock_item.total_on_hand, cmd.qty)
-          },
-          %InventoryEntryCreated{
-            inventory_entry_uuid: Ecto.UUID.generate(),
-            item_uuid: item_uuid,
-            warehouse_uuid: warehouse_uuid,
-            stock_uom_uuid: stock_item.stock_uom_uuid,
-            actual_qty: D.negate(to_decimal(cmd.qty)),
-            qty_after_transaction: decimal_sub(stock_item.total_on_hand, cmd.qty),
-            type: :decrease_stock
-          }
-        ]
-      else
-        {:error, :insufficient_stock}
-      end
+      # if D.gte?(to_decimal(stock_item.total_on_hand), to_decimal(cmd.qty)) do
+      [
+        %StockItemQtyChanged{
+          stock_item_uuid: stock_item.stock_item_uuid,
+          item_uuid: item_uuid,
+          warehouse_uuid: warehouse_uuid,
+          stock_uom_uuid: stock_item.stock_uom_uuid,
+          total_on_hand: decimal_sub(stock_item.total_on_hand, cmd.qty)
+        },
+        %InventoryEntryCreated{
+          inventory_entry_uuid: Ecto.UUID.generate(),
+          item_uuid: item_uuid,
+          warehouse_uuid: warehouse_uuid,
+          stock_uom_uuid: stock_item.stock_uom_uuid,
+          actual_qty: D.negate(to_decimal(cmd.qty)),
+          qty_after_transaction: decimal_sub(stock_item.total_on_hand, cmd.qty),
+          type: :decrease_stock
+        }
+      ]
+
+      # else
+      #   {:error, :insufficient_stock}
+      # end
     else
       {:error, :not_allowed}
     end

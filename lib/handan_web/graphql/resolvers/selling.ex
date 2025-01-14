@@ -72,4 +72,10 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
     request
     |> Dispatcher.run(:confirm_delivery_note)
   end
+
+  @doc "complete delivery note"
+  def complete_delivery_note(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:complete_delivery_note)
+  end
 end

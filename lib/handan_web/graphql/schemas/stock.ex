@@ -29,6 +29,7 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :uom_name, :string
     field :conversion_factor, :integer
     field :sequence, :integer
+
     field :item, :item, resolve: dataloader(Stock, :item)
   end
 
@@ -49,6 +50,7 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :qty_after_transaction, :decimal
     field :thread_uuid, :id
     field :thread_type, :string
+    field :stock_uom_uuid, :id
     field :item, :item, resolve: dataloader(Stock, :item)
     field :warehouse, :warehouse, resolve: dataloader(Stock, :warehouse)
     field :stock_uom, :stock_uom, resolve: dataloader(Stock, :stock_uom)
@@ -70,6 +72,20 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
       middleware(M.Authorize, :user)
 
       resolve(&R.Stock.list_items/2)
+    end
+
+    @desc "list stock items"
+    field :stock_items, list_of(:stock_item) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.list_stock_items/2)
+    end
+
+    @desc "list inventory entries"
+    field :inventory_entries, list_of(:inventory_entry) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.list_inventory_entries/2)
     end
   end
 

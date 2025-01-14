@@ -23,7 +23,10 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :customer_uuid, :id
     field :warehouse, :warehouse, resolve: dataloader(Selling, :warehouse)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
+
     field :items, list_of(:sales_order_item), resolve: dataloader(Selling, :items)
+    field :delivery_notes, list_of(:delivery_note), resolve: dataloader(Selling, :delivery_notes)
+    field :sales_invoices, list_of(:sales_invoice), resolve: dataloader(Selling, :sales_invoices)
 
     timestamp_fields()
   end
@@ -50,6 +53,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :customer_name, :string
     field :amount, :decimal
 
+    field :sales_order_uuid, :id
     field :status, :string
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
@@ -225,6 +229,15 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
       middleware(M.Authorize, :user)
 
       resolve(&R.Selling.confirm_delivery_note/3)
+    end
+
+    @desc "complete delivery note"
+    field :complete_delivery_note, :delivery_note do
+      arg(:request, non_null(:delivery_note_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.complete_delivery_note/3)
     end
   end
 
