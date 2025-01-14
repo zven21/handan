@@ -5,7 +5,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   use Handan.EventSourcing.Type
 
-  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2]
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
   alias Decimal, as: D
 
   deftype do
