@@ -1,7 +1,7 @@
 defmodule Handan.Production.Commands.CreateWorkOrder do
   @moduledoc false
 
-  @required_fields ~w(work_order_uuid item_uuid stock_uom_uuid warehouse_uuid planned_qty start_time end_time)a
+  @required_fields ~w(work_order_uuid bom_uuid warehouse_uuid planned_qty)a
 
   use Handan.EventSourcing.Command
 
@@ -70,7 +70,15 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
                 }
               end)
 
-            %{cmd | items: updated_items, material_request_items: updated_material_request_items}
+            %{
+              cmd
+              | items: updated_items,
+                material_request_items: updated_material_request_items,
+                item_uuid: bom.item_uuid,
+                item_name: bom.item_name,
+                stock_uom_uuid: bom.item.default_stock_uom_uuid,
+                uom_name: bom.item.default_stock_uom_name
+            }
         end
       end
 
@@ -80,7 +88,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     end
 
     defp get_bom(bom_uuid) do
-      from(b in BOM, where: b.uuid == ^bom_uuid, preload: [:bom_items, :bom_processes], limit: 1)
+      from(b in BOM, where: b.uuid == ^bom_uuid, preload: [:item, :bom_items, :bom_processes], limit: 1)
       |> Handan.Repo.one()
     end
   end

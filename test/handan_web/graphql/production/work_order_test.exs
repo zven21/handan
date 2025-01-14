@@ -77,19 +77,16 @@ defmodule HandanWeb.GraphQL.WorkOrderTest do
     @query """
     mutation ($request: CreateWorkOrderRequest!) {
       CreateWorkOrder(request: $request) {
-        item_uuid
         status
       }
     }
     """
 
     @tag :company_owner
-    test "should create work order", %{conn: conn, item: item, warehouse: warehouse} do
+    test "should create work order", %{conn: conn, bom: bom, warehouse: warehouse} do
       request = %{
-        item_uuid: item.uuid,
         warehouse_uuid: warehouse.uuid,
-        bom_uuid: item.default_bom_uuid,
-        stock_uom_uuid: item.default_stock_uom_uuid,
+        bom_uuid: bom.uuid,
         planned_qty: 100,
         start_time: "2022-01-01T00:00:00Z",
         end_time: "2022-01-01T08:00:00Z"
@@ -100,8 +97,7 @@ defmodule HandanWeb.GraphQL.WorkOrderTest do
       assert result == %{
                "data" => %{
                  "CreateWorkOrder" => %{
-                   "status" => "draft",
-                   "item_uuid" => item.uuid
+                   "status" => "draft"
                  }
                }
              }

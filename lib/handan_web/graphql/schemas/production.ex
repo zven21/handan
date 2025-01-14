@@ -26,6 +26,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :supplier_uuid, :id
     field :sales_order_uuid, :id
     field :stock_uom_uuid, :id
+    field :bom_uuid, :id
 
     # field :supplier, :supplier, resolve: dataloader(Production, :supplier)
     field :bom, :bom, resolve: dataloader(Production, :bom)
@@ -256,8 +257,6 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   input_object :create_work_order_request do
-    field :item_uuid, :id
-    field :stock_uom_uuid, :id
     field :bom_uuid, :id
     field :warehouse_uuid, :id
     field :planned_qty, :decimal

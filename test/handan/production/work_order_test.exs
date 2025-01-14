@@ -17,13 +17,10 @@ defmodule Handan.Production.WorkOrderTest do
       :create_bom
     ]
 
-    test "should succeed with valid request", %{has_bom_item: item, warehouse: warehouse} do
+    test "should succeed with valid request", %{bom: bom, warehouse: warehouse} do
       request = %{
         work_order_uuid: Ecto.UUID.generate(),
-        item_uuid: item.uuid,
-        item_name: item.name,
-        bom_uuid: item.default_bom_uuid,
-        stock_uom_uuid: item.default_stock_uom_uuid,
+        bom_uuid: bom.uuid,
         warehouse_uuid: warehouse.uuid,
         planned_qty: 100,
         start_time: DateTime.utc_now(),

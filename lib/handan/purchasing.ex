@@ -17,7 +17,4 @@ defmodule Handan.Purchasing do
 
   defdelegate get_purchase_invoice(purchase_invoice_uuid), to: PurchaseOrderQuery
   defdelegate list_purchase_invoices, to: PurchaseOrderQuery
-
-  defdelegate get_receipt_note_item(receipt_note_item_uuid), to: PurchaseOrderQuery
-  defdelegate list_receipt_note_items, to: PurchaseOrderQuery
 end
