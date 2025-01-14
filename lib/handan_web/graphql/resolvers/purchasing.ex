@@ -19,6 +19,18 @@ defmodule HandanWeb.GraphQL.Resolvers.Purchasing do
   @doc "list purchase orders"
   def list_purchase_orders(_, _), do: Purchasing.list_purchase_orders()
 
+  @doc "get purchase invoice"
+  def get_purchase_invoice(%{request: %{purchase_invoice_uuid: uuid}}, _), do: Purchasing.get_purchase_invoice(uuid)
+
+  @doc "list purchase invoices"
+  def list_purchase_invoices(_, _), do: Purchasing.list_purchase_invoices()
+
+  @doc "get receipt note"
+  def get_receipt_note(%{request: %{receipt_note_uuid: uuid}}, _), do: Purchasing.get_receipt_note(uuid)
+
+  @doc "list receipt notes"
+  def list_receipt_notes(_, _), do: Purchasing.list_receipt_notes()
+
   def create_supplier(_, %{request: request}, _) do
     request
     |> Map.put(:supplier_uuid, Ecto.UUID.generate())
@@ -62,5 +74,11 @@ defmodule HandanWeb.GraphQL.Resolvers.Purchasing do
   def confirm_receipt_note(_, %{request: request}, _) do
     request
     |> Dispatcher.run(:confirm_receipt_note)
+  end
+
+  @doc "complete receipt note"
+  def complete_receipt_note(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:complete_receipt_note)
   end
 end

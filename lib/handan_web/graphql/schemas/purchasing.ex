@@ -32,7 +32,10 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :remaining_qty, :decimal
 
     field :supplier, :supplier, resolve: dataloader(Purchasing, :supplier)
+
     field :items, list_of(:purchase_order_item), resolve: dataloader(Purchasing, :items)
+    field :purchase_invoices, list_of(:purchase_invoice), resolve: dataloader(Purchasing, :purchase_invoices)
+    field :receipt_notes, list_of(:receipt_note), resolve: dataloader(Purchasing, :receipt_notes)
 
     timestamp_fields()
   end
@@ -55,14 +58,8 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :uuid, :id
     field :status, :string
     field :purchase_order_uuid, :id
-    field :item_name, :string
-    field :stock_uom_uuid, :id
-    field :unit_price, :decimal
     field :amount, :decimal
-    field :uom_name, :string
-    field :ordered_qty, :decimal
-    field :received_qty, :decimal
-    field :remaining_qty, :decimal
+    field :supplier_name, :string
 
     timestamp_fields()
   end
@@ -122,6 +119,36 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
       resolve(&R.Purchasing.list_purchase_orders/2)
     end
+
+    @desc "get purchase invoice"
+    field :purchase_invoice, :purchase_invoice do
+      arg(:request, non_null(:purchase_invoice_request))
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.get_purchase_invoice/2)
+    end
+
+    @desc "list purchase invoices"
+    field :purchase_invoices, list_of(:purchase_invoice) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.list_purchase_invoices/2)
+    end
+
+    @desc "get receipt note"
+    field :receipt_note, :receipt_note do
+      arg(:request, non_null(:receipt_note_request))
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.get_receipt_note/2)
+    end
+
+    @desc "list receipt notes"
+    field :receipt_notes, list_of(:receipt_note) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.list_receipt_notes/2)
+    end
   end
 
   object :purchasing_mutations do
@@ -177,6 +204,14 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
       middleware(M.Authorize, :user)
 
       resolve(&R.Purchasing.confirm_receipt_note/3)
+    end
+
+    @desc "complete receipt note"
+    field :complete_receipt_note, :receipt_note do
+      arg(:request, non_null(:receipt_note_request))
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.complete_receipt_note/3)
     end
   end
 
