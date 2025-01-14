@@ -61,6 +61,33 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
     end
   end
 
+  describe "create supplier" do
+    @query """
+    mutation ($request: CreateSupplierRequest!) {
+      CreateSupplier(request: $request) {
+        name
+        address
+      }
+    }
+    """
+
+    @tag :company_owner
+    test "should create purchase", %{conn: conn} do
+      request = %{
+        name: "new-supplier",
+        address: "address-1"
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "CreateSupplier" => %{"address" => request.address, "name" => request.name}
+               }
+             }
+    end
+  end
+
   describe "get purchase order" do
     setup [
       :register_user,

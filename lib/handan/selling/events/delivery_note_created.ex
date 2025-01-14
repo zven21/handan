@@ -10,6 +10,7 @@ defmodule Handan.Selling.Events.DeliveryNoteCreated do
     field :status, :string
     field :customer_name, :string
     field :customer_address, :string
+    field :warehouse_uuid, Ecto.UUID
     field :total_qty, :decimal
     field :total_amount, :decimal
   end

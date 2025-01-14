@@ -4,6 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Stock
 
@@ -19,12 +20,16 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :bom, :bom, resolve: dataloader(Stock, :bom)
     field :stock_items, list_of(:stock_item), resolve: dataloader(Stock, :stock_items)
     field :stock_uoms, list_of(:stock_uom), resolve: dataloader(Stock, :stock_uoms)
+
+    timestamp_fields()
   end
 
   object :stock_uom do
     field :uuid, :id
+    field :uom_name, :string
     field :conversion_factor, :integer
     field :sequence, :integer
+
     field :item, :item, resolve: dataloader(Stock, :item)
   end
 
@@ -34,6 +39,8 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :item, :item, resolve: dataloader(Stock, :item)
     field :stock_uom, :stock_uom, resolve: dataloader(Stock, :stock_uom)
     field :warehouse, :warehouse, resolve: dataloader(Stock, :warehouse)
+
+    timestamp_fields()
   end
 
   object :inventory_entry do
@@ -43,9 +50,12 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
     field :qty_after_transaction, :decimal
     field :thread_uuid, :id
     field :thread_type, :string
+    field :stock_uom_uuid, :id
     field :item, :item, resolve: dataloader(Stock, :item)
     field :warehouse, :warehouse, resolve: dataloader(Stock, :warehouse)
     field :stock_uom, :stock_uom, resolve: dataloader(Stock, :stock_uom)
+
+    timestamp_fields()
   end
 
   object :stock_queries do
@@ -62,6 +72,20 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
       middleware(M.Authorize, :user)
 
       resolve(&R.Stock.list_items/2)
+    end
+
+    @desc "list stock items"
+    field :stock_items, list_of(:stock_item) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.list_stock_items/2)
+    end
+
+    @desc "list inventory entries"
+    field :inventory_entries, list_of(:inventory_entry) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Stock.list_inventory_entries/2)
     end
   end
 

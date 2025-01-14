@@ -4,6 +4,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
   use HandanWeb.GraphQL.Helpers.GQLSchemaSuite
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
+  import HandanWeb.GraphQL.Helpers.Fields, only: [timestamp_fields: 0]
 
   alias Handan.Finance
 
@@ -19,11 +20,15 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :total_amount, :decimal
 
     field :payment_method, :payment_method, resolve: dataloader(Finance, :payment_method)
+
+    timestamp_fields()
   end
 
   object :payment_method do
     field :uuid, :id
     field :name, :string
+
+    timestamp_fields()
   end
 
   object :finance_queries do

@@ -5,6 +5,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   use Handan.EventSourcing.Type
   import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2]
+  import Handan.Infrastructure.Helper, only: [to_atom: 1]
 
   alias Decimal, as: D
 
@@ -126,7 +127,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %CreateSalesOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid, status: :draft} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = _cmd) do
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = _cmd) do
     sales_order_confirmed_evt = %SalesOrderConfirmed{
       sales_order_uuid: sales_order_uuid,
       status: :to_deliver_and_bill
@@ -165,6 +166,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         customer_uuid: state.customer_uuid,
         customer_name: state.customer_name,
         customer_address: state.customer_address,
+        warehouse_uuid: state.warehouse_uuid,
         status: "draft",
         total_qty: cmd.total_qty,
         total_amount: cmd.total_amount
@@ -426,9 +428,9 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   def apply(%__MODULE__{} = state, %SalesOrderStatusChanged{} = evt) do
     %__MODULE__{
       state
-      | status: evt.to_status,
-        delivery_status: evt.to_delivery_status,
-        billing_status: evt.to_billing_status
+      | status: to_atom(evt.to_status),
+        delivery_status: to_atom(evt.to_delivery_status),
+        billing_status: to_atom(evt.to_billing_status)
     }
   end
 

@@ -10,6 +10,12 @@ defmodule HandanWeb.GraphQL.Resolvers.Stock do
   @doc "list items"
   def list_items(_, _), do: Stock.list_items()
 
+  @doc "list stock items"
+  def list_stock_items(_, _), do: Stock.list_stock_items()
+
+  @doc "list inventory entries"
+  def list_inventory_entries(_, _), do: Stock.list_inventory_entries()
+
   @doc "create item"
   def create_item(_, %{request: request}, _) do
     request

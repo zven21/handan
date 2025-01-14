@@ -16,9 +16,10 @@ defmodule Handan.EventApp do
     end
   end
 
+  # warning: redefining module Jason.Encoder.Decimal (current version loaded from _build/test/lib/jason/ebin/Elixir.Jason.Encoder.Decimal.beam)
   defimpl Jason.Encoder, for: Decimal do
-    def encode(struct, opts) do
-      Jason.Encode.string(to_string(struct), opts)
+    def encode(decimal, opts) do
+      Jason.Encode.string(Decimal.to_string(decimal), opts)
     end
   end
 

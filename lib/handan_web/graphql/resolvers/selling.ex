@@ -13,7 +13,26 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   def get_sales_order(%{request: %{sales_order_uuid: uuid}}, _), do: Selling.get_sales_order(uuid)
 
   @doc "list sales orders"
-  def get_sales_orders(_, _), do: Selling.list_sales_orders()
+  def list_sales_orders(_, _), do: Selling.list_sales_orders()
+
+  @doc "get delivery note"
+  def get_delivery_note(%{request: %{delivery_note_uuid: uuid}}, _), do: Selling.get_delivery_note(uuid)
+
+  @doc "list delivery notes"
+  def list_delivery_notes(_, _), do: Selling.list_delivery_notes()
+
+  @doc "get sales invoice"
+  def get_sales_invoice(%{request: %{sales_invoice_uuid: uuid}}, _), do: Selling.get_sales_invoice(uuid)
+
+  @doc "list sales invoices"
+  def list_sales_invoices(_, _), do: Selling.list_sales_invoices()
+
+  @doc "create customer"
+  def create_customer(_, %{request: request}, _) do
+    request
+    |> Map.put(:customer_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:create_customer)
+  end
 
   @doc "create sales order"
   def create_sales_order(_, %{request: request}, _) do
@@ -52,5 +71,11 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   def confirm_delivery_note(_, %{request: request}, _) do
     request
     |> Dispatcher.run(:confirm_delivery_note)
+  end
+
+  @doc "complete delivery note"
+  def complete_delivery_note(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:complete_delivery_note)
   end
 end

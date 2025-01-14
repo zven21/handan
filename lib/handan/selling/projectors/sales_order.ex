@@ -42,7 +42,11 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         customer_uuid: evt.customer_uuid,
         customer_name: evt.customer_name,
         total_amount: to_decimal(evt.total_amount),
+        remaining_amount: to_decimal(evt.total_amount),
+        paid_amount: to_decimal(evt.paid_amount),
         total_qty: to_decimal(evt.total_qty),
+        delivered_qty: to_decimal(evt.delivered_qty),
+        remaining_qty: to_decimal(evt.remaining_qty),
         status: to_atom(evt.status),
         delivery_status: to_atom(evt.delivery_status),
         billing_status: to_atom(evt.billing_status),
@@ -85,6 +89,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         status: to_atom(evt.status),
         total_qty: to_decimal(evt.total_qty),
         total_amount: to_decimal(evt.total_amount),
+        warehouse_uuid: evt.warehouse_uuid,
         customer_name: evt.customer_name
       }
 

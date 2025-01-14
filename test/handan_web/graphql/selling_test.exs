@@ -63,6 +63,33 @@ defmodule HandanWeb.GraphQL.SellingTest do
     end
   end
 
+  describe "create customer" do
+    @query """
+    mutation ($request: CreateCustomerRequest!) {
+      CreateCustomer(request: $request) {
+        name
+        address
+      }
+    }
+    """
+
+    @tag :company_owner
+    test "should create customer ok", %{conn: conn} do
+      request = %{
+        name: "new-customer",
+        address: "address-1"
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "CreateCustomer" => %{"address" => request.address, "name" => request.name}
+               }
+             }
+    end
+  end
+
   describe "get sales order" do
     setup [
       :register_user,
@@ -121,6 +148,134 @@ defmodule HandanWeb.GraphQL.SellingTest do
       assert result == %{
                "data" => %{
                  "salesOrders" => [%{"uuid" => sales_order.uuid}]
+               }
+             }
+    end
+  end
+
+  describe "get delivery note" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_delivery_note
+    ]
+
+    @query """
+    query ($request: DeliveryNoteRequest!) {
+      deliveryNote(request: $request) {
+        uuid
+      }
+    }
+    """
+    @tag :company_owner
+    test "should succeed with valid request", %{conn: conn, delivery_note: delivery_note} do
+      request = %{
+        delivery_note_uuid: delivery_note.uuid
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "deliveryNote" => %{
+                   "uuid" => delivery_note.uuid
+                 }
+               }
+             }
+    end
+  end
+
+  describe "list delivery notes" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_delivery_note
+    ]
+
+    @query """
+    query {
+      deliveryNotes {
+        uuid
+      }
+    }
+    """
+    @tag :company_owner
+    test "should succeed with valid request", %{conn: conn, delivery_note: delivery_note} do
+      result = conn |> post("/api", query: @query) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "deliveryNotes" => [%{"uuid" => delivery_note.uuid}]
+               }
+             }
+    end
+  end
+
+  describe "get sales invoice" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_sales_invoice
+    ]
+
+    @query """
+    query ($request: SalesInvoiceRequest!) {
+      salesInvoice(request: $request) {
+        uuid
+      }
+    }
+    """
+    @tag :company_owner
+    test "should succeed with valid request", %{conn: conn, sales_invoice: sales_invoice} do
+      request = %{
+        sales_invoice_uuid: sales_invoice.uuid
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "salesInvoice" => %{
+                   "uuid" => sales_invoice.uuid
+                 }
+               }
+             }
+    end
+  end
+
+  describe "list sales invoices" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_customer,
+      :create_item,
+      :create_sales_order,
+      :create_sales_invoice
+    ]
+
+    @query """
+    query {
+      salesInvoices {
+        uuid
+      }
+    }
+    """
+    @tag :company_owner
+    test "should succeed with valid request", %{conn: conn, sales_invoice: sales_invoice} do
+      result = conn |> post("/api", query: @query) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "salesInvoices" => [%{"uuid" => sales_invoice.uuid}]
                }
              }
     end

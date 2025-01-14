@@ -27,6 +27,8 @@ defmodule Handan.Purchasing.Projections.PurchaseOrder do
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
 
     has_many :items, Handan.Purchasing.Projections.PurchaseOrderItem, foreign_key: :purchase_order_uuid, references: :uuid
+    has_many :purchase_invoices, Handan.Purchasing.Projections.PurchaseInvoice, foreign_key: :purchase_order_uuid, references: :uuid
+    has_many :receipt_notes, Handan.Purchasing.Projections.ReceiptNote, foreign_key: :purchase_order_uuid, references: :uuid
 
     timestamps(type: :utc_datetime)
   end
