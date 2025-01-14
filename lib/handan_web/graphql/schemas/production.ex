@@ -46,6 +46,10 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :required_qty, :decimal
     field :defective_qty, :decimal
     field :produced_qty, :decimal
+
+    field :work_order_uuid, :id
+    field :job_cards, list_of(:job_card), resolve: dataloader(Production, :job_cards)
+
     timestamp_fields()
   end
 
@@ -103,6 +107,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :work_order_item_uuid, :id
     field :work_order_uuid, :id
 
+    field :operator_staff, :staff, resolve: dataloader(Production, :operator_staff)
     field :work_order_item, :work_order_item, resolve: dataloader(Production, :work_order_item)
     field :work_order, :work_order, resolve: dataloader(Production, :work_order)
 
@@ -180,6 +185,21 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :work_orders, list_of(:work_order) do
       middleware(M.Authorize, :user)
       resolve(&R.Production.list_work_orders/2)
+    end
+
+    @desc "get work order item"
+    field :work_order_item, :work_order_item do
+      arg(:request, non_null(:id_request))
+
+      middleware(M.Authorize, :user)
+      resolve(&R.Production.get_work_order_item/2)
+    end
+
+    @desc "list work order items"
+    field :work_order_items, list_of(:work_order_item) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Production.list_work_order_items/2)
     end
 
     @desc "get workstation"

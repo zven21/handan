@@ -197,7 +197,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
       work_order_qty_changed_evt = %WorkOrderQtyChanged{
         work_order_uuid: cmd.work_order_uuid,
-        produced_qty: decimal_sub(state.produced_qty, cmd.stored_qty),
+        produced_qty: state.produced_qty,
         stored_qty: decimal_add(state.stored_qty, cmd.stored_qty)
       }
 

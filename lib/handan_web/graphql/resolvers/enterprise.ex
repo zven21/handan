@@ -7,6 +7,9 @@ defmodule HandanWeb.GraphQL.Resolvers.Enterprise do
   @doc "get company"
   def get_company(_, %{context: %{current_company: company}}), do: Enterprise.get_company(company.uuid)
 
+  @doc "list staff"
+  def list_staff(_, _), do: Enterprise.list_staff()
+
   @doc "create company"
   def create_company(%{request: request}, %{context: %{current_user: user, current_company: _company}}, _) do
     request

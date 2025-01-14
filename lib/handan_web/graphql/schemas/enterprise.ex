@@ -8,7 +8,6 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
 
   alias Handan.Enterprise
 
-  # types
   object :company do
     field :uuid, :id
     field :name, :string
@@ -67,6 +66,13 @@ defmodule HandanWeb.GraphQL.Schemas.Enterprise do
       middleware(M.Authorize, :user)
 
       resolve(&R.Enterprise.list_uoms/2)
+    end
+
+    @desc "list staff"
+    field :list_staff, list_of(:staff) do
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Enterprise.list_staff/2)
     end
   end
 
