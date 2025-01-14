@@ -44,7 +44,6 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   @doc "confirm sales order"
   def confirm_sales_order(_, %{request: request}, _) do
     request
-    |> IO.inspect(label: "request")
     |> Dispatcher.run(:confirm_sales_order)
   end
 

@@ -89,6 +89,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         status: to_atom(evt.status),
         total_qty: to_decimal(evt.total_qty),
         total_amount: to_decimal(evt.total_amount),
+        warehouse_uuid: evt.warehouse_uuid,
         customer_name: evt.customer_name
       }
 
