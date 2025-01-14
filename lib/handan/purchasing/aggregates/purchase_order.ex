@@ -165,6 +165,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
         supplier_uuid: state.supplier_uuid,
         supplier_name: state.supplier_name,
         supplier_address: state.supplier_address,
+        warehouse_uuid: state.warehouse_uuid,
         status: "draft",
         total_qty: cmd.total_qty,
         total_amount: cmd.total_amount

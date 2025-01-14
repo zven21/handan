@@ -73,6 +73,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
   end
 
   object :bom_process do
+    field :uuid, :id
     field :position, :integer
     field :process_name, :string
     field :tool_required, :string

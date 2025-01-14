@@ -70,6 +70,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :sales_order_uuid, :id
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
+    field :warehouse, :warehouse, resolve: dataloader(Selling, :warehouse)
     field :items, list_of(:delivery_note_item), resolve: dataloader(Selling, :items)
 
     timestamp_fields()

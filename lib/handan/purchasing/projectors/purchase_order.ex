@@ -86,6 +86,7 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
         status: to_atom(evt.status),
         total_qty: to_decimal(evt.total_qty),
         total_amount: to_decimal(evt.total_amount),
+        warehouse_uuid: evt.warehouse_uuid,
         supplier_name: evt.supplier_name
       }
 

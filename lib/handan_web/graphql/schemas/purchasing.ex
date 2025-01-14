@@ -73,6 +73,7 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :status, :string
 
     field :items, list_of(:receipt_note_item), resolve: dataloader(Purchasing, :items)
+    field :warehouse, :warehouse, resolve: dataloader(Purchasing, :warehouse)
 
     timestamp_fields()
   end

@@ -12,5 +12,6 @@ defmodule Handan.Purchasing.Events.ReceiptNoteCreated do
     field :total_qty, :decimal
     field :total_amount, :decimal
     field :status, :string
+    field :warehouse_uuid, Ecto.UUID
   end
 end
