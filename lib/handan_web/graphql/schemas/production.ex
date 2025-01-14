@@ -101,6 +101,9 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :work_order_item_uuid, :id
     field :work_order_uuid, :id
 
+    field :work_order_item, :work_order_item, resolve: dataloader(Production, :work_order_item)
+    field :work_order, :work_order, resolve: dataloader(Production, :work_order)
+
     timestamp_fields()
   end
 
