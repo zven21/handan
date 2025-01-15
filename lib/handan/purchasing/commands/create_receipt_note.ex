@@ -16,6 +16,7 @@ defmodule Handan.Purchasing.Commands.CreateReceiptNote do
     field :supplier_uuid, Ecto.UUID
     field :supplier_name, :string
     field :supplier_address, :string
+    field :is_draft, :boolean, default: false
     field :receipt_items, {:array, :map}
   end
 

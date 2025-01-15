@@ -172,14 +172,6 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
       resolve(&R.Purchasing.create_purchase_order/3)
     end
 
-    @desc "confirm purchase order"
-    field :confirm_purchase_order, :purchase_order do
-      arg(:request, non_null(:purchase_order_request))
-      middleware(M.Authorize, :user)
-
-      resolve(&R.Purchasing.confirm_purchase_order/3)
-    end
-
     @desc "create purchase invoice"
     field :create_purchase_invoice, :purchase_invoice do
       arg(:request, non_null(:create_purchase_invoice_request))
@@ -187,27 +179,11 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
       resolve(&R.Purchasing.create_purchase_invoice/3)
     end
 
-    @desc "confirm purchase invoice"
-    field :confirm_purchase_invoice, :purchase_invoice do
-      arg(:request, non_null(:purchase_invoice_request))
-      middleware(M.Authorize, :user)
-      resolve(&R.Purchasing.confirm_purchase_invoice/3)
-    end
-
     @desc "create receipt note"
     field :create_receipt_note, :receipt_note do
       arg(:request, non_null(:create_receipt_note_request))
       middleware(M.Authorize, :user)
       resolve(&R.Purchasing.create_receipt_note/3)
-    end
-
-    @desc "confirm receipt note"
-    field :confirm_receipt_note, :receipt_note do
-      arg(:request, non_null(:receipt_note_request))
-
-      middleware(M.Authorize, :user)
-
-      resolve(&R.Purchasing.confirm_receipt_note/3)
     end
 
     @desc "complete receipt note"

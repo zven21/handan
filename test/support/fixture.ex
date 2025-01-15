@@ -118,14 +118,6 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def confirm_delivery_note(%{fully_delivery_note: fully_delivery_note}) do
-    {:ok, delivery_note} = fixture(:confirm_delivery_note, sales_order_uuid: fully_delivery_note.sales_order_uuid, delivery_note_uuid: fully_delivery_note.uuid)
-
-    [
-      delivery_note: delivery_note
-    ]
-  end
-
   def create_sales_invoice(%{sales_order: sales_order}) do
     {:ok, sales_invoice} = fixture(:sales_invoice, sales_order_uuid: sales_order.uuid, amount: 1)
 
@@ -172,14 +164,6 @@ defmodule Handan.Fixture do
     ]
 
     {:ok, receipt_note} = fixture(:receipt_note, purchase_order_uuid: purchase_order.uuid, receipt_items: receipt_items)
-
-    [
-      receipt_note: receipt_note
-    ]
-  end
-
-  def confirm_receipt_note(%{receipt_note: receipt_note}) do
-    {:ok, receipt_note} = fixture(:confirm_receipt_note, purchase_order_uuid: receipt_note.purchase_order_uuid, receipt_note_uuid: receipt_note.uuid)
 
     [
       receipt_note: receipt_note
@@ -327,12 +311,10 @@ defmodule Handan.Fixture do
   def fixture(:customer, attrs), do: Dispatcher.run(build(:customer, attrs), :create_customer)
   def fixture(:sales_order, attrs), do: Dispatcher.run(build(:sales_order, attrs), :create_sales_order)
   def fixture(:delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :create_delivery_note)
-  def fixture(:confirm_delivery_note, attrs), do: Dispatcher.run(build(:delivery_note, attrs), :confirm_delivery_note)
   def fixture(:sales_invoice, attrs), do: Dispatcher.run(build(:sales_invoice, attrs), :create_sales_invoice)
   def fixture(:supplier, attrs), do: Dispatcher.run(build(:supplier, attrs), :create_supplier)
   def fixture(:purchase_order, attrs), do: Dispatcher.run(build(:purchase_order, attrs), :create_purchase_order)
   def fixture(:receipt_note, attrs), do: Dispatcher.run(build(:receipt_note, attrs), :create_receipt_note)
-  def fixture(:confirm_receipt_note, attrs), do: Dispatcher.run(build(:receipt_note, attrs), :confirm_receipt_note)
   def fixture(:purchase_invoice, attrs), do: Dispatcher.run(build(:purchase_invoice, attrs), :create_purchase_invoice)
   def fixture(:bom, attrs), do: Dispatcher.run(build(:bom, attrs), :create_bom)
   def fixture(:process, attrs), do: Dispatcher.run(build(:process, attrs), :create_process)

@@ -192,46 +192,9 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
       assert result == %{
                "data" => %{
                  "CreatePurchaseOrder" => %{
-                   "status" => "draft",
+                   "status" => "to_receive_and_bill",
                    "supplier_uuid" => supplier.uuid,
                    "items" => [%{"item_name" => item.name}]
-                 }
-               }
-             }
-    end
-  end
-
-  describe "confirm purchase order" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_supplier,
-      :create_item,
-      :create_purchase_order
-    ]
-
-    @query """
-    mutation ($request: PurchaseOrderRequest!) {
-      ConfirmPurchaseOrder(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm purchase order", %{conn: conn, purchase_order: purchase_order} do
-      request = %{
-        purchase_order_uuid: purchase_order.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmPurchaseOrder" => %{
-                   "status" => "to_receive_and_bill",
-                   "uuid" => purchase_order.uuid
                  }
                }
              }
@@ -269,46 +232,7 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
                "data" => %{
                  "CreatePurchaseInvoice" => %{
                    "amount" => "1",
-                   "status" => "draft"
-                 }
-               }
-             }
-    end
-  end
-
-  describe "confirm purchase invoice" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_supplier,
-      :create_item,
-      :create_purchase_order,
-      :create_purchase_invoice
-    ]
-
-    @query """
-    mutation ($request: PurchaseInvoiceRequest!) {
-      ConfirmPurchaseInvoice(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm purchase invoice", %{conn: conn, purchase_order: purchase_order, purchase_invoice: purchase_invoice} do
-      request = %{
-        purchase_order_uuid: purchase_order.uuid,
-        purchase_invoice_uuid: purchase_invoice.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmPurchaseInvoice" => %{
-                   "status" => "submitted",
-                   "uuid" => purchase_invoice.uuid
+                   "status" => "submitted"
                  }
                }
              }
@@ -359,46 +283,7 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
                    "purchase_order_uuid" => purchase_order.uuid,
                    "total_qty" => "100",
                    "items" => [%{"item_name" => item.name}],
-                   "status" => "draft"
-                 }
-               }
-             }
-    end
-  end
-
-  describe "confirm receipt note" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_supplier,
-      :create_item,
-      :create_purchase_order,
-      :create_receipt_note
-    ]
-
-    @query """
-    mutation ($request: ReceiptNoteRequest!) {
-      ConfirmReceiptNote(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm receipt note", %{conn: conn, purchase_order: purchase_order, receipt_note: receipt_note} do
-      request = %{
-        purchase_order_uuid: purchase_order.uuid,
-        receipt_note_uuid: receipt_note.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmReceiptNote" => %{
-                   "status" => "to_receive",
-                   "uuid" => receipt_note.uuid
+                   "status" => "to_receive"
                  }
                }
              }

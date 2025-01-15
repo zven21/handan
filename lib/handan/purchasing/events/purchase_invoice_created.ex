@@ -15,5 +15,6 @@ defmodule Handan.Purchasing.Events.PurchaseInvoiceCreated do
     field :supplier_address, :string
 
     field :amount, :decimal
+    field :status, :string
   end
 end

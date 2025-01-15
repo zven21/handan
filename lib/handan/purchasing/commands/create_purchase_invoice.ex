@@ -10,6 +10,7 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseInvoice do
     field :purchase_order_uuid, Ecto.UUID
     field :amount, :decimal, default: 0
     field :code, :string
+    field :is_draft, :boolean, default: false
   end
 
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do

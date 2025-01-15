@@ -28,5 +28,6 @@ defmodule Handan.Purchasing.Events.PurchaseOrderCreated do
     field :billing_status, :string
 
     field :warehouse_uuid, Ecto.UUID
+    field :warehouse_name, :string
   end
 end
