@@ -293,7 +293,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
       }
 
       to_billing_status =
-        case D.eq?(state.remaining_amount, 0) do
+        case D.eq?(new_remaining_amount, 0) do
           true -> :fully_billed
           false -> :partly_billed
         end
