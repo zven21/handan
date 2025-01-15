@@ -12,7 +12,6 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     SalesOrderCreated,
     SalesOrderDeleted,
     SalesOrderItemAdded,
-    SalesOrderConfirmed,
     SalesOrderStatusChanged,
     SalesOrderSummaryChanged,
     SalesOrderItemAdjusted
@@ -20,14 +19,12 @@ defmodule Handan.Selling.Projectors.SalesOrder do
 
   alias Handan.Selling.Events.{
     SalesInvoiceCreated,
-    SalesInvoiceConfirmed,
     SalesInvoicePaid
   }
 
   alias Handan.Selling.Events.{
     DeliveryNoteCreated,
     DeliveryNoteItemAdded,
-    DeliveryNoteConfirmed,
     DeliveryNoteCompleted
   }
 
@@ -51,7 +48,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         status: to_atom(evt.status),
         delivery_status: to_atom(evt.delivery_status),
         billing_status: to_atom(evt.billing_status),
-        warehouse_uuid: evt.warehouse_uuid
+        warehouse_uuid: evt.warehouse_uuid,
+        warehouse_name: evt.warehouse_name
       }
 
       Ecto.Multi.insert(multi, :sales_order_created, sales_order)
@@ -117,14 +115,6 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     Ecto.Multi.insert(multi, :delivery_note_item_added, delivery_note_item)
   end)
 
-  project(%SalesOrderConfirmed{} = evt, _meta, fn multi ->
-    set_fields = [
-      status: evt.status
-    ]
-
-    Ecto.Multi.update_all(multi, :sales_order_confirmed, sales_order_query(evt.sales_order_uuid), set: set_fields)
-  end)
-
   project(%SalesOrderStatusChanged{} = evt, _meta, fn multi ->
     set_fields = [
       status: evt.to_status,
@@ -155,11 +145,6 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     Ecto.Multi.update_all(multi, :sales_order_item_adjusted, sales_order_item_query(evt.sales_order_item_uuid), set: set_fields)
   end)
 
-  project(%DeliveryNoteConfirmed{} = evt, _meta, fn multi ->
-    set_fields = [status: evt.status]
-    Ecto.Multi.update_all(multi, :delivery_note_confirmed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
-  end)
-
   project(%DeliveryNoteCompleted{} = evt, _meta, fn multi ->
     set_fields = [status: evt.status]
     Ecto.Multi.update_all(multi, :delivery_note_completed, delivery_note_query(evt.delivery_note_uuid), set: set_fields)
@@ -173,15 +158,11 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         customer_uuid: evt.customer_uuid,
         customer_name: evt.customer_name,
         amount: to_decimal(evt.amount),
+        status: to_atom(evt.status),
         code: evt.code
       }
 
     Ecto.Multi.insert(multi, :sales_invoice_created, sales_invoice)
-  end)
-
-  project(%SalesInvoiceConfirmed{} = evt, _meta, fn multi ->
-    set_fields = [status: evt.status]
-    Ecto.Multi.update_all(multi, :sales_invoice_confirmed, sales_invoice_query(evt.sales_invoice_uuid), set: set_fields)
   end)
 
   project(%SalesInvoicePaid{} = evt, _meta, fn multi ->

@@ -12,6 +12,7 @@ defmodule Handan.Selling.Commands.CreateDeliveryNote do
     field :code, :string
     field :total_qty, :decimal
     field :total_amount, :decimal
+    field :is_draft, :boolean, default: false
 
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string

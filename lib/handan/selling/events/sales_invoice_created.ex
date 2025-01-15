@@ -13,6 +13,7 @@ defmodule Handan.Selling.Events.SalesInvoiceCreated do
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string
+    field :status, :string
 
     field :amount, :decimal
   end

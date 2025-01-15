@@ -22,6 +22,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :supplier_name, :string
     field :sales_order_uuid, Ecto.UUID
 
+    # 工单类型
     field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
     field :items, {:array, :map}, default: []
     field :material_request_items, {:array, :map}, default: []

@@ -8,20 +8,22 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
   defcommand do
     field :sales_order_uuid, Ecto.UUID
     field :customer_uuid, Ecto.UUID
-
-    field :code, :string
     field :customer_name, :string
     field :customer_address, :string
+    field :is_draft, :boolean, default: false
+
+    field :code, :string
     field :total_amount, :decimal, default: 0
-    field :warehouse_uuid, Ecto.UUID
     field :total_qty, :decimal, default: 0
+    field :warehouse_uuid, Ecto.UUID
+    field :warehouse_name, :string
     field :sales_items, {:array, :map}
   end
 
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1, decimal_mult: 2, decimal_add: 2]
     alias Decimal, as: D
-    alias Handan.{Stock, Selling}
+    alias Handan.{Stock, Selling, Enterprise}
     alias Handan.Selling.Commands.CreateSalesOrder
 
     def enrich(%CreateSalesOrder{} = cmd, _) do
@@ -32,6 +34,16 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
 
           _ ->
             %{cmd | customer_uuid: nil}
+        end
+      end
+
+      handle_warehouse_fn = fn cmd ->
+        case Enterprise.get_warehouse(cmd.warehouse_uuid) do
+          {:ok, warehouse} ->
+            %{cmd | warehouse_name: warehouse.name}
+
+          _ ->
+            %{cmd | warehouse_uuid: nil}
         end
       end
 
@@ -71,6 +83,7 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
       end
 
       %{cmd | code: Handan.Infrastructure.Helper.generate_code("SO")}
+      |> handle_warehouse_fn.()
       |> handle_customer_fn.()
       |> handle_sales_item_fn.()
       |> validator()

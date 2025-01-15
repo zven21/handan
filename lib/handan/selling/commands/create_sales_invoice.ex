@@ -9,6 +9,7 @@ defmodule Handan.Selling.Commands.CreateSalesInvoice do
     field :sales_invoice_uuid, Ecto.UUID
     field :sales_order_uuid, Ecto.UUID
     field :code, :string
+    field :is_draft, :boolean, default: false
     field :amount, :decimal, default: 0
   end
 

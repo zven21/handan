@@ -14,10 +14,7 @@ defmodule Handan.Selling.Router do
     CreateCustomer,
     DeleteCustomer,
     CreateDeliveryNote,
-    ConfirmDeliveryNote,
-    ConfirmSalesOrder,
     CreateSalesInvoice,
-    ConfirmSalesInvoice,
     CompleteDeliveryNote
   }
 
@@ -35,10 +32,7 @@ defmodule Handan.Selling.Router do
       CreateSalesOrder,
       DeleteSalesOrder,
       CreateDeliveryNote,
-      ConfirmDeliveryNote,
-      ConfirmSalesOrder,
       CreateSalesInvoice,
-      ConfirmSalesInvoice,
       CompleteDeliveryNote
     ],
     to: SalesOrder,

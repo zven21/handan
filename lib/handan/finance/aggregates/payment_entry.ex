@@ -75,10 +75,12 @@ defmodule Handan.Finance.Aggregates.PaymentEntry do
 
   def execute(_, %CreatePaymentEntry{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{} = _state, %DeletePaymentEntry{} = cmd) do
+  def execute(%__MODULE__{payment_entry_uuid: payment_entry_uuid} = _state, %DeletePaymentEntry{payment_entry_uuid: payment_entry_uuid} = _cmd) do
     payment_entry_evt = %PaymentEntryDeleted{
-      payment_entry_uuid: cmd.payment_entry_uuid
+      payment_entry_uuid: payment_entry_uuid
     }
+
+    # FIXME 需要更改对应的销售发票和采购发票的状态
 
     payment_entry_evt
   end

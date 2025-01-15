@@ -9,6 +9,9 @@ defmodule Handan.Enterprise.Queries.CompanyQuery do
   @doc "list warehouses"
   def list_warehouses, do: Turbo.list(Warehouse)
 
+  @doc "get warehouse"
+  def get_warehouse(warehouse_uuid), do: Turbo.get(Warehouse, warehouse_uuid)
+
   @doc "list uoms"
   def list_uoms, do: Turbo.list(UOM)
 end

@@ -15,6 +15,7 @@ defmodule Handan.Enterprise do
 
   # warehouse
   defdelegate list_warehouses, to: CompanyQuery
+  defdelegate get_warehouse(uuid), to: CompanyQuery
 
   # uom
   defdelegate list_uoms, to: CompanyQuery

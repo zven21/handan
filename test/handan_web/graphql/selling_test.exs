@@ -329,43 +329,6 @@ defmodule HandanWeb.GraphQL.SellingTest do
     end
   end
 
-  describe "confirm sales order" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_customer,
-      :create_item,
-      :create_sales_order
-    ]
-
-    @query """
-    mutation ($request: SalesOrderRequest!) {
-      ConfirmSalesOrder(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm sales order", %{conn: conn, sales_order: sales_order} do
-      request = %{
-        sales_order_uuid: sales_order.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmSalesOrder" => %{
-                   "status" => "to_deliver_and_bill",
-                   "uuid" => sales_order.uuid
-                 }
-               }
-             }
-    end
-  end
-
   describe "create delivery note" do
     setup [
       :register_user,
@@ -410,46 +373,7 @@ defmodule HandanWeb.GraphQL.SellingTest do
                    "sales_order_uuid" => sales_order.uuid,
                    "total_qty" => "100",
                    "items" => [%{"item_name" => item.name}],
-                   "status" => "draft"
-                 }
-               }
-             }
-    end
-  end
-
-  describe "confirm delivery note" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_customer,
-      :create_item,
-      :create_sales_order,
-      :create_delivery_note
-    ]
-
-    @query """
-    mutation ($request: DeliveryNoteRequest!) {
-      ConfirmDeliveryNote(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm delivery note", %{conn: conn, sales_order: sales_order, delivery_note: delivery_note} do
-      request = %{
-        sales_order_uuid: sales_order.uuid,
-        delivery_note_uuid: delivery_note.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmDeliveryNote" => %{
-                   "status" => "to_deliver",
-                   "uuid" => delivery_note.uuid
+                   "status" => "to_deliver"
                  }
                }
              }
@@ -487,46 +411,7 @@ defmodule HandanWeb.GraphQL.SellingTest do
                "data" => %{
                  "CreateSalesInvoice" => %{
                    "amount" => "1",
-                   "status" => "draft"
-                 }
-               }
-             }
-    end
-  end
-
-  describe "confirm sales invoice" do
-    setup [
-      :register_user,
-      :create_company,
-      :create_customer,
-      :create_item,
-      :create_sales_order,
-      :create_sales_invoice
-    ]
-
-    @query """
-    mutation ($request: SalesInvoiceRequest!) {
-      ConfirmSalesInvoice(request: $request) {
-        status
-        uuid
-      }
-    }
-    """
-
-    @tag :company_owner
-    test "should confirm sales invoice", %{conn: conn, sales_order: sales_order, sales_invoice: sales_invoice} do
-      request = %{
-        sales_order_uuid: sales_order.uuid,
-        sales_invoice_uuid: sales_invoice.uuid
-      }
-
-      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
-
-      assert result == %{
-               "data" => %{
-                 "ConfirmSalesInvoice" => %{
-                   "status" => "submitted",
-                   "uuid" => sales_invoice.uuid
+                   "status" => "submitted"
                  }
                }
              }
