@@ -4,6 +4,7 @@ defmodule Handan.Repo.Migrations.CreatePurchaseInvoices do
   def change do
     create table(:purchase_invoices, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
+      add :code, :string
       add :amount, :decimal
       add :status, :string
       add :supplier_name, :string
@@ -13,6 +14,7 @@ defmodule Handan.Repo.Migrations.CreatePurchaseInvoices do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:purchase_invoices, [:code])
     create index(:purchase_invoices, [:purchase_order_uuid])
     create index(:purchase_invoices, [:supplier_uuid])
   end

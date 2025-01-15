@@ -4,6 +4,7 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNotes do
   def change do
     create table(:delivery_notes, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
+      add :code, :string
       add :total_qty, :decimal
       add :total_amount, :decimal
       add :status, :string
@@ -15,6 +16,7 @@ defmodule Handan.Repo.Migrations.CreateDeliveryNotes do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:delivery_notes, [:code])
     create index(:delivery_notes, [:customer_uuid])
     create index(:delivery_notes, [:sales_order_uuid])
     create index(:delivery_notes, [:warehouse_uuid])

@@ -8,6 +8,7 @@ defmodule Handan.Purchasing.Projections.ReceiptNote do
   @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "receipt_notes" do
+    field :code, :string
     field :supplier_name, :string
     field :total_amount, :decimal
     field :total_qty, :decimal
