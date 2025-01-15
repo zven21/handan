@@ -5,6 +5,7 @@ defmodule Handan.Purchasing.Events.PurchaseOrderCreated do
 
   defevent do
     field :purchase_order_uuid, Ecto.UUID
+    field :code, :string
 
     # 供应商
     field :supplier_uuid, Ecto.UUID

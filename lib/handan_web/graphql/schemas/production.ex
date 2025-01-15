@@ -10,6 +10,7 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
 
   object :work_order do
     field :uuid, :id
+    field :code, :string
     field :title, :string
     field :start_time, :datetime
     field :end_time, :datetime

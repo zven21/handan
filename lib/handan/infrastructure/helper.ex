@@ -12,4 +12,11 @@ defmodule Handan.Infrastructure.Helper do
   def to_array(v) when v == "", do: []
   def to_array(v) when is_binary(v), do: v |> String.split(",")
   def to_array(v) when is_list(v), do: v
+
+  @doc "generate code"
+  def generate_code(prefix) do
+    prefix <> format_current_time()
+  end
+
+  defp format_current_time, do: Timex.format!(Timex.now(), "{YYYY}{0M}{0D}{h24}{0m}{0s}")
 end

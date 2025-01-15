@@ -11,6 +11,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :bom_uuid, Ecto.UUID
     field :item_name, :string
     field :uom_name, :string
+    field :code, :string
     field :stock_uom_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
     field :planned_qty, :decimal
@@ -82,7 +83,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
         end
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("WO")}
       |> handle_bom_fn.()
       |> then(&{:ok, &1})
     end

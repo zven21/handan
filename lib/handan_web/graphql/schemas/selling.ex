@@ -10,6 +10,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :sales_order do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :billing_status, :string
     field :delivery_status, :string
@@ -50,6 +51,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :sales_invoice do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :amount, :decimal
 
@@ -63,6 +65,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :delivery_note do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :status, :string
     field :total_qty, :decimal

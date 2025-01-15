@@ -8,7 +8,7 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
   defcommand do
     field :purchase_order_uuid, Ecto.UUID
     field :supplier_uuid, Ecto.UUID
-
+    field :code, :string
     field :supplier_name, :string
     field :supplier_address, :string
     field :total_amount, :decimal, default: 0
@@ -69,7 +69,7 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
         %{cmd | purchase_items: updated_purchase_items, total_amount: total_amount, total_qty: total_qty}
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("PO")}
       |> handle_supplier_fn.()
       |> handle_purchase_item_fn.()
       |> validator()

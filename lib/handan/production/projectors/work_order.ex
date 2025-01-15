@@ -29,6 +29,7 @@ defmodule Handan.Production.Projectors.WorkOrder do
 
       work_order = %WorkOrder{
         uuid: evt.work_order_uuid,
+        code: evt.code,
         item_uuid: evt.item_uuid,
         item_name: evt.item_name,
         uom_name: evt.uom_name,

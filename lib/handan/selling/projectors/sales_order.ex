@@ -39,6 +39,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     fn multi ->
       sales_order = %SalesOrder{
         uuid: evt.sales_order_uuid,
+        code: evt.code,
         customer_uuid: evt.customer_uuid,
         customer_name: evt.customer_name,
         total_amount: to_decimal(evt.total_amount),
@@ -84,6 +85,7 @@ defmodule Handan.Selling.Projectors.SalesOrder do
     delivery_note =
       %DeliveryNote{
         uuid: evt.delivery_note_uuid,
+        code: evt.code,
         sales_order_uuid: evt.sales_order_uuid,
         customer_uuid: evt.customer_uuid,
         status: to_atom(evt.status),
@@ -170,7 +172,8 @@ defmodule Handan.Selling.Projectors.SalesOrder do
         sales_order_uuid: evt.sales_order_uuid,
         customer_uuid: evt.customer_uuid,
         customer_name: evt.customer_name,
-        amount: to_decimal(evt.amount)
+        amount: to_decimal(evt.amount),
+        code: evt.code
       }
 
     Ecto.Multi.insert(multi, :sales_invoice_created, sales_invoice)

@@ -5,6 +5,7 @@ defmodule Handan.Selling.Events.SalesOrderCreated do
 
   defevent do
     field :sales_order_uuid, Ecto.UUID
+    field :code, :string
 
     # customer
     field :customer_uuid, Ecto.UUID

@@ -12,6 +12,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
   deftype do
     field :purchase_order_uuid, Ecto.UUID
     field :supplier_uuid, Ecto.UUID
+    field :code, :string
     field :supplier_name, :string
     field :supplier_address, :string
     field :warehouse_uuid, Ecto.UUID
@@ -87,6 +88,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
   def execute(%__MODULE__{purchase_order_uuid: nil}, %CreatePurchaseOrder{} = cmd) do
     purchase_order_evt = %PurchaseOrderCreated{
       purchase_order_uuid: cmd.purchase_order_uuid,
+      code: cmd.code,
       supplier_uuid: cmd.supplier_uuid,
       supplier_name: cmd.supplier_name,
       supplier_address: cmd.supplier_address,
@@ -161,6 +163,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     else
       receipt_note_created_evt = %ReceiptNoteCreated{
         receipt_note_uuid: cmd.receipt_note_uuid,
+        code: cmd.code,
         purchase_order_uuid: state.purchase_order_uuid,
         supplier_uuid: state.supplier_uuid,
         supplier_name: state.supplier_name,
@@ -261,6 +264,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
             supplier_uuid: state.supplier_uuid,
             supplier_name: state.supplier_name,
             supplier_address: state.supplier_address,
+            code: cmd.code,
             amount: cmd.amount
           }
 
@@ -362,6 +366,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     %__MODULE__{
       purchase_order
       | purchase_order_uuid: event.purchase_order_uuid,
+        code: event.code,
         supplier_uuid: event.supplier_uuid,
         supplier_name: event.supplier_name,
         supplier_address: event.supplier_address,

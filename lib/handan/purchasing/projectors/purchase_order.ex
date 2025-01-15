@@ -39,6 +39,7 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
     fn multi ->
       purchase_order = %PurchaseOrder{
         uuid: evt.purchase_order_uuid,
+        code: evt.code,
         supplier_uuid: evt.supplier_uuid,
         supplier_name: evt.supplier_name,
         supplier_address: evt.supplier_address,
@@ -83,6 +84,7 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
         uuid: evt.receipt_note_uuid,
         purchase_order_uuid: evt.purchase_order_uuid,
         supplier_uuid: evt.supplier_uuid,
+        code: evt.code,
         status: to_atom(evt.status),
         total_qty: to_decimal(evt.total_qty),
         total_amount: to_decimal(evt.total_amount),
@@ -167,7 +169,8 @@ defmodule Handan.Purchasing.Projectors.PurchaseOrder do
         purchase_order_uuid: evt.purchase_order_uuid,
         supplier_uuid: evt.supplier_uuid,
         supplier_name: evt.supplier_name,
-        amount: to_decimal(evt.amount)
+        amount: to_decimal(evt.amount),
+        code: evt.code
       }
 
     Ecto.Multi.insert(multi, :purchase_invoice_created, purchase_invoice)

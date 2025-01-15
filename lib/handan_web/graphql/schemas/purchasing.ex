@@ -18,6 +18,7 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
   object :purchase_order do
     field :uuid, :id
+    field :code, :string
     field :status, :string
     field :receipt_status, :string
     field :billing_status, :string
@@ -56,6 +57,7 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
   object :purchase_invoice do
     field :uuid, :id
+    field :code, :string
     field :status, :string
     field :purchase_order_uuid, :id
     field :amount, :decimal
@@ -66,6 +68,7 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
   object :receipt_note do
     field :uuid, :id
+    field :code, :string
     field :purchase_order_uuid, :id
     field :supplier_name, :string
     field :total_amount, :decimal

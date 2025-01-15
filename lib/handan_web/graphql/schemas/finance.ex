@@ -10,6 +10,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
 
   object :payment_entry do
     field :uuid, :id
+    field :code, :string
     field :memo, :string
     field :attachments, list_of(:string)
     field :party_name, :string

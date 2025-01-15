@@ -6,6 +6,7 @@ defmodule Handan.Selling.Events.DeliveryNoteCreated do
   defevent do
     field :delivery_note_uuid, Ecto.UUID
     field :sales_order_uuid, Ecto.UUID
+    field :code, :string
     field :customer_uuid, Ecto.UUID
     field :status, :string
     field :customer_name, :string

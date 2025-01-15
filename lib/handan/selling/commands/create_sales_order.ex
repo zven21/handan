@@ -9,6 +9,7 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
     field :sales_order_uuid, Ecto.UUID
     field :customer_uuid, Ecto.UUID
 
+    field :code, :string
     field :customer_name, :string
     field :customer_address, :string
     field :total_amount, :decimal, default: 0
@@ -69,7 +70,7 @@ defmodule Handan.Selling.Commands.CreateSalesOrder do
         %{cmd | sales_items: updated_sales_items, total_amount: total_amount, total_qty: total_qty}
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("SO")}
       |> handle_customer_fn.()
       |> handle_sales_item_fn.()
       |> validator()

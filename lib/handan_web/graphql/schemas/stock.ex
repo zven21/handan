@@ -45,6 +45,7 @@ defmodule HandanWeb.GraphQL.Schemas.Stock do
 
   object :inventory_entry do
     field :uuid, :id
+    field :code, :string
     field :actual_qty, :decimal
     field :type, :string
     field :qty_after_transaction, :decimal

@@ -11,6 +11,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   deftype do
     field :sales_order_uuid, Ecto.UUID
+    field :code, :string
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string
@@ -88,6 +89,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   def execute(%__MODULE__{sales_order_uuid: nil}, %CreateSalesOrder{} = cmd) do
     sales_order_evt = %SalesOrderCreated{
       sales_order_uuid: cmd.sales_order_uuid,
+      code: cmd.code,
       customer_uuid: cmd.customer_uuid,
       status: :draft,
       customer_name: cmd.customer_name,
@@ -163,6 +165,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
       delivery_note_created_evt = %DeliveryNoteCreated{
         delivery_note_uuid: cmd.delivery_note_uuid,
         sales_order_uuid: state.sales_order_uuid,
+        code: cmd.code,
         customer_uuid: state.customer_uuid,
         customer_name: state.customer_name,
         customer_address: state.customer_address,
@@ -258,7 +261,8 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
             sales_order_uuid: sales_order_uuid,
             customer_uuid: state.customer_uuid,
             customer_name: state.customer_name,
-            amount: cmd.amount
+            amount: cmd.amount,
+            code: cmd.code
           }
 
           sales_invoice_evt
@@ -357,7 +361,8 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     %__MODULE__{
       state
       | sales_order_uuid: evt.sales_order_uuid,
-        status: evt.status,
+        code: evt.code,
+        status: to_atom(evt.status),
         delivery_status: evt.delivery_status,
         billing_status: evt.billing_status,
         customer_name: evt.customer_name,
