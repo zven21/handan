@@ -8,6 +8,9 @@ defmodule Handan.Purchasing.Projections.PurchaseOrder do
   @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "purchase_orders" do
+    field :code, :string
+    field :warehouse_name, :string
+
     field :status, Ecto.Enum, values: ~w(draft to_receive to_bill to_receive_and_bill completed cancelled)a, default: :draft
     field :receipt_status, Ecto.Enum, values: ~w(not_received partly_received fully_received closed)a, default: :not_received
     field :billing_status, Ecto.Enum, values: ~w(not_billed partly_billed fully_billed closed)a, default: :not_billed

@@ -4,6 +4,7 @@ defmodule Handan.Repo.Migrations.CreateSalesOrders do
   def change do
     create table(:sales_orders, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
+      add :code, :string
       add :customer_uuid, :binary_id
       add :customer_name, :string
       add :delivery_status, :string
@@ -19,10 +20,14 @@ defmodule Handan.Repo.Migrations.CreateSalesOrders do
       add :remaining_amount, :decimal
 
       add :warehouse_uuid, :binary_id
+      add :warehouse_name, :string
 
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:sales_orders, [:code])
     create index(:sales_orders, [:customer_uuid])
+    create index(:sales_orders, [:status])
+    create index(:sales_orders, [:warehouse_uuid])
   end
 end
