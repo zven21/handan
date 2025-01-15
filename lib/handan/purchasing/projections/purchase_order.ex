@@ -5,7 +5,7 @@ defmodule Handan.Purchasing.Projections.PurchaseOrder do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "purchase_orders" do
     field :status, Ecto.Enum, values: ~w(draft to_receive to_bill to_receive_and_bill completed cancelled)a, default: :draft

@@ -3,7 +3,7 @@ defmodule Handan.Production.Projections.JobCard do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "job_cards" do
     field :start_time, :utc_datetime

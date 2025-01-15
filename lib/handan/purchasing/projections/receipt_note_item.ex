@@ -5,7 +5,7 @@ defmodule Handan.Purchasing.Projections.ReceiptNoteItem do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "receipt_note_items" do
     field :item_name, :string

@@ -3,7 +3,7 @@ defmodule Handan.Enterprise.Projections.Warehouse do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "warehouses" do
     field :name, :string

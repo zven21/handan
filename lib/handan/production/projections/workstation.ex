@@ -3,7 +3,7 @@ defmodule Handan.Production.Projections.Workstation do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "workstations" do
     field :admin_uuid, :string

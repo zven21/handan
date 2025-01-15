@@ -5,7 +5,7 @@ defmodule Handan.Purchasing.Projections.PurchaseInvoice do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "purchase_invoices" do
     field :amount, :decimal, default: 0

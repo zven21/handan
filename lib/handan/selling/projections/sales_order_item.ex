@@ -3,7 +3,7 @@ defmodule Handan.Selling.Projections.SalesOrderItem do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "sales_order_items" do
     field :item_name, :string
