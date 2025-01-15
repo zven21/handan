@@ -6,6 +6,7 @@ defmodule Handan.Production.Projections.WorkOrder do
   @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "work_orders" do
+    field :code, :string
     field :title, :string
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
@@ -28,6 +29,8 @@ defmodule Handan.Production.Projections.WorkOrder do
     field :supplier_uuid, :binary_id
     field :supplier_name, :string
     field :sales_order_uuid, :binary_id
+
+    field :warehouse_name, :string
 
     belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid
     belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid

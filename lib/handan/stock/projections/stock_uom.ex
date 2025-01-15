@@ -3,7 +3,7 @@ defmodule Handan.Stock.Projections.StockUOM do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "stock_uoms" do
     field :uom_name, :string

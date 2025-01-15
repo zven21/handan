@@ -3,9 +3,10 @@ defmodule Handan.Selling.Projections.SalesInvoice do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "sales_invoices" do
+    field :code, :string
     field :customer_name, :string
     field :amount, :decimal
 

@@ -17,10 +17,7 @@ defmodule Handan.Purchasing.Router do
     CreatePurchaseOrder,
     DeletePurchaseOrder,
     CreatePurchaseInvoice,
-    ConfirmPurchaseInvoice,
-    ConfirmPurchaseOrder,
     CreateReceiptNote,
-    ConfirmReceiptNote,
     CompleteReceiptNote
   }
 
@@ -47,9 +44,6 @@ defmodule Handan.Purchasing.Router do
       CreatePurchaseOrder,
       CreateReceiptNote,
       CreatePurchaseInvoice,
-      ConfirmPurchaseInvoice,
-      ConfirmReceiptNote,
-      ConfirmPurchaseOrder,
       DeletePurchaseOrder,
       CompleteReceiptNote
     ],

@@ -4,6 +4,7 @@ defmodule Handan.Repo.Migrations.CreateSalesInvoices do
   def change do
     create table(:sales_invoices, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
+      add :code, :string
       add :amount, :decimal
       add :status, :string
 
@@ -14,6 +15,7 @@ defmodule Handan.Repo.Migrations.CreateSalesInvoices do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:sales_invoices, [:code])
     create index(:sales_invoices, [:customer_uuid])
     create index(:sales_invoices, [:sales_order_uuid])
   end

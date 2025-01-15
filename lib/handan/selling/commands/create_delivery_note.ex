@@ -9,8 +9,10 @@ defmodule Handan.Selling.Commands.CreateDeliveryNote do
     field :delivery_note_uuid, Ecto.UUID
     field :sales_order_uuid, Ecto.UUID
 
+    field :code, :string
     field :total_qty, :decimal
     field :total_amount, :decimal
+    field :is_draft, :boolean, default: false
 
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
@@ -66,7 +68,7 @@ defmodule Handan.Selling.Commands.CreateDeliveryNote do
         %{cmd | delivery_items: updated_delivery_items, total_qty: total_qty, total_amount: total_amount}
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("DN")}
       |> handle_delivery_item_fn.()
       |> validator()
     end

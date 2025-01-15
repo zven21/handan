@@ -5,6 +5,7 @@ defmodule Handan.Production.Events.WorkOrderCreated do
 
   defevent do
     field :work_order_uuid, Ecto.UUID
+    field :code, :string
     field :item_uuid, Ecto.UUID
     field :item_name, :string
     field :uom_name, :string

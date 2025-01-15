@@ -8,11 +8,15 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
   defcommand do
     field :purchase_order_uuid, Ecto.UUID
     field :supplier_uuid, Ecto.UUID
-
+    field :code, :string
     field :supplier_name, :string
     field :supplier_address, :string
     field :total_amount, :decimal, default: 0
+    field :is_draft, :boolean, default: false
+
     field :warehouse_uuid, Ecto.UUID
+    field :warehouse_name, :string
+
     field :total_qty, :decimal, default: 0
     field :purchase_items, {:array, :map}
   end
@@ -20,7 +24,7 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
   defimpl Handan.EventSourcing.Middleware.Enrichable, for: __MODULE__ do
     import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1, decimal_mult: 2, decimal_add: 2]
     alias Decimal, as: D
-    alias Handan.{Stock, Purchasing}
+    alias Handan.{Stock, Purchasing, Enterprise}
     alias Handan.Purchasing.Commands.CreatePurchaseOrder
 
     def enrich(%CreatePurchaseOrder{} = cmd, _) do
@@ -31,6 +35,16 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
 
           _ ->
             %{cmd | supplier_uuid: nil}
+        end
+      end
+
+      handle_warehouse_fn = fn cmd ->
+        case Enterprise.get_warehouse(cmd.warehouse_uuid) do
+          {:ok, warehouse} ->
+            %{cmd | warehouse_name: warehouse.name}
+
+          _ ->
+            %{cmd | warehouse_uuid: nil}
         end
       end
 
@@ -69,8 +83,9 @@ defmodule Handan.Purchasing.Commands.CreatePurchaseOrder do
         %{cmd | purchase_items: updated_purchase_items, total_amount: total_amount, total_qty: total_qty}
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("PO")}
       |> handle_supplier_fn.()
+      |> handle_warehouse_fn.()
       |> handle_purchase_item_fn.()
       |> validator()
     end

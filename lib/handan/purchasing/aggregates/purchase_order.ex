@@ -12,8 +12,10 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
   deftype do
     field :purchase_order_uuid, Ecto.UUID
     field :supplier_uuid, Ecto.UUID
+    field :code, :string
     field :supplier_name, :string
     field :supplier_address, :string
+    field :warehouse_name, :string
     field :warehouse_uuid, Ecto.UUID
 
     field :total_amount, :decimal
@@ -43,35 +45,29 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   alias Handan.Purchasing.Commands.{
     CreatePurchaseOrder,
-    DeletePurchaseOrder,
-    ConfirmPurchaseOrder
+    DeletePurchaseOrder
   }
 
   alias Handan.Purchasing.Commands.{
     CreateReceiptNote,
-    ConfirmReceiptNote,
     CompleteReceiptNote
   }
 
   alias Handan.Purchasing.Commands.{
-    CreatePurchaseInvoice,
-    ConfirmPurchaseInvoice
+    CreatePurchaseInvoice
   }
 
   alias Handan.Purchasing.Events.{
     PurchaseOrderCreated,
     PurchaseOrderDeleted,
-    PurchaseOrderConfirmed,
     PurchaseOrderItemAdded,
     PurchaseOrderStatusChanged,
     PurchaseOrderItemAdjusted,
     ReceiptNoteCreated,
-    ReceiptNoteConfirmed,
     ReceiptNoteCompleted,
     ReceiptNoteItemAdded,
     PurchaseOrderSummaryChanged,
-    PurchaseInvoiceCreated,
-    PurchaseInvoiceConfirmed
+    PurchaseInvoiceCreated
   }
 
   alias Handan.Stock.Events.InventoryUnitInbound
@@ -85,19 +81,23 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
   def after_error(_), do: :timer.hours(1)
 
   def execute(%__MODULE__{purchase_order_uuid: nil}, %CreatePurchaseOrder{} = cmd) do
+    to_status = if cmd.is_draft, do: :draft, else: :to_receive_and_bill
+
     purchase_order_evt = %PurchaseOrderCreated{
       purchase_order_uuid: cmd.purchase_order_uuid,
+      code: cmd.code,
       supplier_uuid: cmd.supplier_uuid,
       supplier_name: cmd.supplier_name,
       supplier_address: cmd.supplier_address,
       warehouse_uuid: cmd.warehouse_uuid,
+      warehouse_name: cmd.warehouse_name,
       total_amount: cmd.total_amount,
       paid_amount: 0,
       remaining_amount: cmd.total_amount,
       total_qty: cmd.total_qty,
       received_qty: 0,
       remaining_qty: cmd.total_qty,
-      status: :draft,
+      status: to_status,
       receipt_status: :not_received,
       billing_status: :not_billed
     }
@@ -136,190 +136,234 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
 
   def execute(_, %DeletePurchaseOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{status: :draft, purchase_order_uuid: purchase_order_uuid} = state, %ConfirmPurchaseOrder{purchase_order_uuid: purchase_order_uuid}) do
-    purchase_order_evt = %PurchaseOrderConfirmed{
-      purchase_order_uuid: purchase_order_uuid,
-      status: :to_receive_and_bill
+  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %CreateReceiptNote{purchase_order_uuid: purchase_order_uuid} = cmd) do
+    to_status =
+      case cmd.is_draft do
+        true -> :draft
+        false -> :to_receive
+      end
+
+    receipt_note_created_evt = %ReceiptNoteCreated{
+      receipt_note_uuid: cmd.receipt_note_uuid,
+      code: cmd.code,
+      purchase_order_uuid: state.purchase_order_uuid,
+      supplier_uuid: state.supplier_uuid,
+      supplier_name: state.supplier_name,
+      supplier_address: state.supplier_address,
+      warehouse_uuid: state.warehouse_uuid,
+      status: to_status,
+      total_qty: cmd.total_qty,
+      total_amount: cmd.total_amount
     }
 
-    status_changed_evt = %PurchaseOrderStatusChanged{
+    receipt_note_items_evt =
+      cmd.receipt_items
+      |> Enum.map(fn receipt_item ->
+        %ReceiptNoteItemAdded{
+          receipt_note_item_uuid: receipt_item.receipt_note_item_uuid,
+          receipt_note_uuid: cmd.receipt_note_uuid,
+          purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
+          purchase_order_uuid: state.purchase_order_uuid,
+          item_uuid: receipt_item.item_uuid,
+          stock_uom_uuid: receipt_item.stock_uom_uuid,
+          uom_name: receipt_item.uom_name,
+          actual_qty: receipt_item.actual_qty,
+          amount: receipt_item.amount,
+          unit_price: receipt_item.unit_price,
+          item_name: receipt_item.item_name
+        }
+      end)
+
+    purchase_order_items_evt =
+      cmd.receipt_items
+      |> Enum.map(fn receipt_item ->
+        purchase_order_item = Map.get(state.purchase_items, receipt_item.purchase_order_item_uuid)
+
+        new_received_qty = decimal_add(purchase_order_item.received_qty, receipt_item.actual_qty)
+        new_remaining_qty = decimal_sub(purchase_order_item.ordered_qty, new_received_qty)
+
+        %PurchaseOrderItemAdjusted{
+          purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
+          purchase_order_uuid: purchase_order_uuid,
+          item_uuid: receipt_item.item_uuid,
+          received_qty: new_received_qty,
+          remaining_qty: new_remaining_qty
+        }
+      end)
+
+    to_receipt_status = calculate_receipt_status(state, purchase_order_items_evt)
+
+    purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
       purchase_order_uuid: purchase_order_uuid,
-      from_status: :draft,
-      to_status: :to_receive_and_bill,
-      from_receipt_status: state.receipt_status,
-      to_receipt_status: state.receipt_status,
       from_billing_status: state.billing_status,
-      to_billing_status: state.billing_status
+      to_billing_status: state.billing_status,
+      from_status: state.status,
+      to_status: calculate_status(%{receipt_status: to_receipt_status, billing_status: state.billing_status}),
+      from_receipt_status: state.receipt_status,
+      to_receipt_status: to_receipt_status
     }
 
-    [purchase_order_evt, status_changed_evt]
-  end
-
-  def execute(%__MODULE__{} = state, %CreateReceiptNote{} = cmd) do
-    if Map.has_key?(state.receipt_notes, cmd.receipt_note_uuid) do
-      {:error, :receipt_note_already_exists}
-    else
-      receipt_note_created_evt = %ReceiptNoteCreated{
-        receipt_note_uuid: cmd.receipt_note_uuid,
-        purchase_order_uuid: state.purchase_order_uuid,
-        supplier_uuid: state.supplier_uuid,
-        supplier_name: state.supplier_name,
-        supplier_address: state.supplier_address,
-        status: "draft",
-        total_qty: cmd.total_qty,
-        total_amount: cmd.total_amount
-      }
-
-      receipt_note_items_evt =
-        cmd.receipt_items
-        |> Enum.map(fn receipt_item ->
-          %ReceiptNoteItemAdded{
-            receipt_note_item_uuid: receipt_item.receipt_note_item_uuid,
-            receipt_note_uuid: cmd.receipt_note_uuid,
-            purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
-            purchase_order_uuid: state.purchase_order_uuid,
-            item_uuid: receipt_item.item_uuid,
-            stock_uom_uuid: receipt_item.stock_uom_uuid,
-            uom_name: receipt_item.uom_name,
-            actual_qty: receipt_item.actual_qty,
-            amount: receipt_item.amount,
-            unit_price: receipt_item.unit_price,
-            item_name: receipt_item.item_name
-          }
-        end)
-
-      [receipt_note_created_evt | receipt_note_items_evt]
-      |> List.flatten()
-    end
+    [receipt_note_created_evt, receipt_note_items_evt, purchase_order_items_evt, purchase_order_status_changed_evt]
+    |> List.flatten()
   end
 
   def execute(_, %CreateReceiptNote{}), do: {:error, :not_allowed}
 
-  def execute(
-        %__MODULE__{purchase_order_uuid: purchase_order_uuid} = state,
-        %ConfirmReceiptNote{purchase_order_uuid: purchase_order_uuid, receipt_note_uuid: receipt_note_uuid} = cmd
-      ) do
-    if Map.has_key?(state.receipt_notes, receipt_note_uuid) do
-      # receipt_note = Map.get(state.receipt_notes, receipt_note_uuid)
+  # def execute(
+  #       %__MODULE__{purchase_order_uuid: purchase_order_uuid} = state,
+  #       %ConfirmReceiptNote{purchase_order_uuid: purchase_order_uuid, receipt_note_uuid: receipt_note_uuid} = cmd
+  #     ) do
+  #   if Map.has_key?(state.receipt_notes, receipt_note_uuid) do
+  #     # receipt_note = Map.get(state.receipt_notes, receipt_note_uuid)
 
-      receipt_note_confirmed_evt = %ReceiptNoteConfirmed{
-        receipt_note_uuid: receipt_note_uuid,
-        purchase_order_uuid: purchase_order_uuid,
-        status: :to_receive
+  #     receipt_note_confirmed_evt = %ReceiptNoteConfirmed{
+  #       receipt_note_uuid: receipt_note_uuid,
+  #       purchase_order_uuid: purchase_order_uuid,
+  #       status: :to_receive
+  #     }
+
+  #     purchase_order_items_evt =
+  #       state.receipt_note_items
+  #       |> Map.values()
+  #       |> Enum.filter(fn receipt_item -> receipt_item.receipt_note_uuid == cmd.receipt_note_uuid end)
+  #       |> Enum.map(fn receipt_item ->
+  #         purchase_order_item = Map.get(state.purchase_items, receipt_item.purchase_order_item_uuid)
+
+  #         new_received_qty = decimal_add(purchase_order_item.received_qty, receipt_item.actual_qty)
+  #         new_remaining_qty = decimal_sub(purchase_order_item.ordered_qty, new_received_qty)
+
+  #         %PurchaseOrderItemAdjusted{
+  #           purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
+  #           purchase_order_uuid: purchase_order_uuid,
+  #           item_uuid: receipt_item.item_uuid,
+  #           received_qty: new_received_qty,
+  #           remaining_qty: new_remaining_qty
+  #         }
+  #       end)
+
+  #     to_receipt_status = calculate_receipt_status(state, purchase_order_items_evt)
+
+  #     purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
+  #       purchase_order_uuid: purchase_order_uuid,
+  #       from_billing_status: state.billing_status,
+  #       to_billing_status: state.billing_status,
+  #       from_status: state.status,
+  #       to_status: calculate_status(%{receipt_status: to_receipt_status, billing_status: state.billing_status}),
+  #       from_receipt_status: state.receipt_status,
+  #       to_receipt_status: to_receipt_status
+  #     }
+
+  #     [receipt_note_confirmed_evt, purchase_order_items_evt, purchase_order_status_changed_evt]
+  #     |> List.flatten()
+  #   else
+  #     {:error, :receipt_note_not_found}
+  #   end
+  # end
+
+  # def execute(_, %ConfirmReceiptNote{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %CreatePurchaseInvoice{purchase_order_uuid: purchase_order_uuid} = cmd) do
+    if D.gte?(state.remaining_amount, cmd.amount) do
+      to_status =
+        case cmd.is_draft do
+          true -> :draft
+          false -> :submitted
+        end
+
+      purchase_invoice_evt = %PurchaseInvoiceCreated{
+        purchase_invoice_uuid: cmd.purchase_invoice_uuid,
+        purchase_order_uuid: state.purchase_order_uuid,
+        supplier_uuid: state.supplier_uuid,
+        supplier_name: state.supplier_name,
+        supplier_address: state.supplier_address,
+        code: cmd.code,
+        amount: cmd.amount,
+        status: to_status
       }
 
-      purchase_order_items_evt =
-        state.receipt_note_items
-        |> Map.values()
-        |> Enum.filter(fn receipt_item -> receipt_item.receipt_note_uuid == cmd.receipt_note_uuid end)
-        |> Enum.map(fn receipt_item ->
-          purchase_order_item = Map.get(state.purchase_items, receipt_item.purchase_order_item_uuid)
+      new_paid_amount = decimal_add(state.paid_amount, cmd.amount)
+      new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
 
-          new_received_qty = decimal_add(purchase_order_item.received_qty, receipt_item.actual_qty)
-          new_remaining_qty = decimal_sub(purchase_order_item.ordered_qty, new_received_qty)
+      purchase_order_summary_changed_evt = %PurchaseOrderSummaryChanged{
+        purchase_order_uuid: purchase_order_uuid,
+        paid_amount: new_paid_amount,
+        remaining_amount: new_remaining_amount,
+        received_qty: state.received_qty,
+        remaining_qty: state.remaining_qty
+      }
 
-          %PurchaseOrderItemAdjusted{
-            purchase_order_item_uuid: receipt_item.purchase_order_item_uuid,
-            purchase_order_uuid: purchase_order_uuid,
-            item_uuid: receipt_item.item_uuid,
-            received_qty: new_received_qty,
-            remaining_qty: new_remaining_qty
-          }
-        end)
-
-      to_receipt_status = calculate_receipt_status(state, purchase_order_items_evt)
+      to_billing_status =
+        case D.eq?(new_remaining_amount, 0) do
+          true -> :fully_billed
+          false -> :partly_billed
+        end
 
       purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
         purchase_order_uuid: purchase_order_uuid,
         from_billing_status: state.billing_status,
-        to_billing_status: state.billing_status,
-        from_status: state.status,
-        to_status: calculate_status(%{receipt_status: to_receipt_status, billing_status: state.billing_status}),
+        to_billing_status: to_billing_status,
         from_receipt_status: state.receipt_status,
-        to_receipt_status: to_receipt_status
+        to_receipt_status: state.receipt_status,
+        from_status: state.status,
+        to_status: calculate_status(%{receipt_status: state.receipt_status, billing_status: to_billing_status})
       }
 
-      [receipt_note_confirmed_evt, purchase_order_items_evt, purchase_order_status_changed_evt]
+      [purchase_invoice_evt, purchase_order_summary_changed_evt, purchase_order_status_changed_evt]
       |> List.flatten()
     else
-      {:error, :receipt_note_not_found}
-    end
-  end
-
-  def execute(_, %ConfirmReceiptNote{}), do: {:error, :not_allowed}
-
-  def execute(%__MODULE__{} = state, %CreatePurchaseInvoice{} = cmd) do
-    if Map.has_key?(state.purchase_invoices, cmd.purchase_invoice_uuid) do
-      {:error, :purchase_invoice_already_exists}
-    else
-      case D.gte?(state.remaining_amount, cmd.amount) do
-        true ->
-          purchase_invoice_evt = %PurchaseInvoiceCreated{
-            purchase_invoice_uuid: cmd.purchase_invoice_uuid,
-            purchase_order_uuid: state.purchase_order_uuid,
-            supplier_uuid: state.supplier_uuid,
-            supplier_name: state.supplier_name,
-            supplier_address: state.supplier_address,
-            amount: cmd.amount
-          }
-
-          purchase_invoice_evt
-
-        false ->
-          {:error, :amount_too_large}
-      end
+      {:error, :amount_too_large}
     end
   end
 
   def execute(_, %CreatePurchaseInvoice{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %ConfirmPurchaseInvoice{purchase_order_uuid: purchase_order_uuid} = cmd) do
-    if Map.has_key?(state.purchase_invoices, cmd.purchase_invoice_uuid) do
-      purchase_invoice = Map.get(state.purchase_invoices, cmd.purchase_invoice_uuid)
+  # def execute(%__MODULE__{purchase_order_uuid: purchase_order_uuid} = state, %ConfirmPurchaseInvoice{purchase_order_uuid: purchase_order_uuid} = cmd) do
+  #   if Map.has_key?(state.purchase_invoices, cmd.purchase_invoice_uuid) do
+  #     purchase_invoice = Map.get(state.purchase_invoices, cmd.purchase_invoice_uuid)
 
-      case D.gte?(state.remaining_amount, purchase_invoice.amount) do
-        true ->
-          new_paid_amount = decimal_add(state.paid_amount, purchase_invoice.amount)
-          new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
+  #     case D.gte?(state.remaining_amount, purchase_invoice.amount) do
+  #       true ->
+  #         new_paid_amount = decimal_add(state.paid_amount, purchase_invoice.amount)
+  #         new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
 
-          purchase_invoice_confirmed_evt = %PurchaseInvoiceConfirmed{
-            purchase_invoice_uuid: purchase_invoice.purchase_invoice_uuid,
-            purchase_order_uuid: purchase_order_uuid,
-            status: :submitted
-          }
+  #         purchase_invoice_confirmed_evt = %PurchaseInvoiceConfirmed{
+  #           purchase_invoice_uuid: purchase_invoice.purchase_invoice_uuid,
+  #           purchase_order_uuid: purchase_order_uuid,
+  #           status: :submitted
+  #         }
 
-          purchase_order_summary_changed_evt = %PurchaseOrderSummaryChanged{
-            purchase_order_uuid: purchase_order_uuid,
-            paid_amount: new_paid_amount,
-            remaining_amount: new_remaining_amount,
-            received_qty: state.received_qty,
-            remaining_qty: state.remaining_qty
-          }
+  #         purchase_order_summary_changed_evt = %PurchaseOrderSummaryChanged{
+  #           purchase_order_uuid: purchase_order_uuid,
+  #           paid_amount: new_paid_amount,
+  #           remaining_amount: new_remaining_amount,
+  #           received_qty: state.received_qty,
+  #           remaining_qty: state.remaining_qty
+  #         }
 
-          to_billing_status = calculate_billing_status(state, state.purchase_invoices)
+  #         to_billing_status = calculate_billing_status(state, state.purchase_invoices)
 
-          purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
-            purchase_order_uuid: purchase_order_uuid,
-            from_billing_status: state.billing_status,
-            to_billing_status: to_billing_status,
-            from_receipt_status: state.receipt_status,
-            to_receipt_status: state.receipt_status,
-            from_status: state.status,
-            to_status: calculate_status(%{receipt_status: state.receipt_status, billing_status: to_billing_status})
-          }
+  #         purchase_order_status_changed_evt = %PurchaseOrderStatusChanged{
+  #           purchase_order_uuid: purchase_order_uuid,
+  #           from_billing_status: state.billing_status,
+  #           to_billing_status: to_billing_status,
+  #           from_receipt_status: state.receipt_status,
+  #           to_receipt_status: state.receipt_status,
+  #           from_status: state.status,
+  #           to_status: calculate_status(%{receipt_status: state.receipt_status, billing_status: to_billing_status})
+  #         }
 
-          [purchase_invoice_confirmed_evt, purchase_order_summary_changed_evt, purchase_order_status_changed_evt]
-          |> List.flatten()
+  #         [purchase_invoice_confirmed_evt, purchase_order_summary_changed_evt, purchase_order_status_changed_evt]
+  #         |> List.flatten()
 
-        false ->
-          {:error, :amount_too_large}
-      end
-    else
-      {:error, :sales_invoice_not_found}
-    end
-  end
+  #       false ->
+  #         {:error, :amount_too_large}
+  #     end
+  #   else
+  #     {:error, :sales_invoice_not_found}
+  #   end
+  # end
 
-  def execute(_, %ConfirmPurchaseInvoice{}), do: {:error, :not_allowed}
+  # def execute(_, %ConfirmPurchaseInvoice{}), do: {:error, :not_allowed}
 
   def execute(
         %__MODULE__{purchase_order_uuid: purchase_order_uuid} = state,
@@ -361,10 +405,12 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     %__MODULE__{
       purchase_order
       | purchase_order_uuid: event.purchase_order_uuid,
+        code: event.code,
         supplier_uuid: event.supplier_uuid,
         supplier_name: event.supplier_name,
         supplier_address: event.supplier_address,
         warehouse_uuid: event.warehouse_uuid,
+        warehouse_name: event.warehouse_name,
         total_amount: event.total_amount,
         paid_amount: event.paid_amount,
         remaining_amount: event.remaining_amount,
@@ -390,10 +436,6 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     }
   end
 
-  def apply(%__MODULE__{} = state, %PurchaseOrderConfirmed{} = evt) do
-    %__MODULE__{state | status: evt.status}
-  end
-
   def apply(%__MODULE__{} = state, %PurchaseOrderStatusChanged{} = evt) do
     %__MODULE__{state | status: evt.to_status, receipt_status: evt.to_receipt_status, billing_status: evt.to_billing_status}
   end
@@ -402,10 +444,6 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     new_receipt_notes = Map.put(state.receipt_notes, evt.receipt_note_uuid, Map.from_struct(evt))
 
     %__MODULE__{state | receipt_notes: new_receipt_notes}
-  end
-
-  def apply(%__MODULE__{} = state, %ReceiptNoteConfirmed{} = evt) do
-    %__MODULE__{state | receipt_status: evt.status}
   end
 
   def apply(%__MODULE__{} = state, %ReceiptNoteItemAdded{} = evt) do
@@ -432,17 +470,6 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     new_purchase_invoices = Map.put(state.purchase_invoices, evt.purchase_invoice_uuid, Map.from_struct(evt))
 
     %__MODULE__{state | purchase_invoices: new_purchase_invoices}
-  end
-
-  def apply(%__MODULE__{} = state, %PurchaseInvoiceConfirmed{} = evt) do
-    updated_purchase_invoices =
-      state.purchase_invoices
-      |> Map.update!(evt.purchase_invoice_uuid, fn item ->
-        item
-        |> Map.merge(Map.from_struct(evt))
-      end)
-
-    %__MODULE__{state | purchase_invoices: updated_purchase_invoices}
   end
 
   def apply(%__MODULE__{} = state, %PurchaseOrderSummaryChanged{} = evt) do
@@ -490,19 +517,19 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
     end
   end
 
-  defp calculate_billing_status(%{total_amount: total_amount} = _state, purchase_invoices) do
-    paid_amount =
-      purchase_invoices
-      |> Map.values()
-      |> Enum.reduce(0, fn purchase_invoice, acc ->
-        decimal_add(acc, purchase_invoice.amount)
-      end)
+  # defp calculate_billing_status(%{total_amount: total_amount} = _state, purchase_invoices) do
+  #   paid_amount =
+  #     purchase_invoices
+  #     |> Map.values()
+  #     |> Enum.reduce(0, fn purchase_invoice, acc ->
+  #       decimal_add(acc, purchase_invoice.amount)
+  #     end)
 
-    case D.eq?(total_amount, paid_amount) do
-      true -> :fully_billed
-      false -> :partly_billed
-    end
-  end
+  #   case D.eq?(total_amount, paid_amount) do
+  #     true -> :fully_billed
+  #     false -> :partly_billed
+  #   end
+  # end
 
   defp calculate_status(%{receipt_status: :fully_received, billing_status: :fully_billed}), do: :completed
   defp calculate_status(%{receipt_status: :fully_received, billing_status: :partly_billed}), do: :to_bill

@@ -10,6 +10,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :sales_order do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :billing_status, :string
     field :delivery_status, :string
@@ -21,6 +22,8 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :delivered_qty, :decimal
     field :remaining_qty, :decimal
     field :customer_uuid, :id
+    field :warehouse_name, :string
+    field :warehouse_uuid, :id
     field :warehouse, :warehouse, resolve: dataloader(Selling, :warehouse)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
 
@@ -50,6 +53,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :sales_invoice do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :amount, :decimal
 
@@ -63,6 +67,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
   object :delivery_note do
     field :uuid, :id
+    field :code, :string
     field :customer_name, :string
     field :status, :string
     field :total_qty, :decimal
@@ -70,6 +75,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :sales_order_uuid, :id
     field :sales_order, :sales_order, resolve: dataloader(Selling, :sales_order)
     field :customer, :customer, resolve: dataloader(Selling, :customer)
+    field :warehouse, :warehouse, resolve: dataloader(Selling, :warehouse)
     field :items, list_of(:delivery_note_item), resolve: dataloader(Selling, :items)
 
     timestamp_fields()
@@ -186,15 +192,6 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
       resolve(&R.Selling.create_sales_order/3)
     end
 
-    @desc "confirm sales order"
-    field :confirm_sales_order, :sales_order do
-      arg(:request, non_null(:sales_order_request))
-
-      middleware(M.Authorize, :user)
-
-      resolve(&R.Selling.confirm_sales_order/3)
-    end
-
     @desc "create sales invoice"
     field :create_sales_invoice, :sales_invoice do
       arg(:request, non_null(:create_sales_invoice_request))
@@ -204,15 +201,6 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
       resolve(&R.Selling.create_sales_invoice/3)
     end
 
-    @desc "confirm sales invoice"
-    field :confirm_sales_invoice, :sales_invoice do
-      arg(:request, non_null(:sales_invoice_request))
-
-      middleware(M.Authorize, :user)
-
-      resolve(&R.Selling.confirm_sales_invoice/3)
-    end
-
     @desc "create delivery note"
     field :create_delivery_note, :delivery_note do
       arg(:request, non_null(:create_delivery_note_request))
@@ -220,15 +208,6 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
       middleware(M.Authorize, :user)
 
       resolve(&R.Selling.create_delivery_note/3)
-    end
-
-    @desc "confirm delivery note"
-    field :confirm_delivery_note, :delivery_note do
-      arg(:request, non_null(:delivery_note_request))
-
-      middleware(M.Authorize, :user)
-
-      resolve(&R.Selling.confirm_delivery_note/3)
     end
 
     @desc "complete delivery note"

@@ -5,11 +5,12 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   use Handan.EventSourcing.Type
 
-  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2]
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
   alias Decimal, as: D
 
   deftype do
     field :work_order_uuid, Ecto.UUID
+    field :code, :string
     field :item_uuid, Ecto.UUID
     field :stock_uom_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
@@ -63,6 +64,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   def execute(%__MODULE__{work_order_uuid: nil}, %CreateWorkOrder{} = cmd) do
     work_order_evt = %WorkOrderCreated{
       work_order_uuid: cmd.work_order_uuid,
+      code: cmd.code,
       item_uuid: cmd.item_uuid,
       item_name: cmd.item_name,
       uom_name: cmd.uom_name,
@@ -197,7 +199,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
       work_order_qty_changed_evt = %WorkOrderQtyChanged{
         work_order_uuid: cmd.work_order_uuid,
-        produced_qty: decimal_sub(state.produced_qty, cmd.stored_qty),
+        produced_qty: state.produced_qty,
         stored_qty: decimal_add(state.stored_qty, cmd.stored_qty)
       }
 
@@ -213,6 +215,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     %__MODULE__{
       state
       | work_order_uuid: evt.work_order_uuid,
+        code: evt.code,
         item_uuid: evt.item_uuid,
         stock_uom_uuid: evt.stock_uom_uuid,
         warehouse_uuid: evt.warehouse_uuid,

@@ -8,11 +8,13 @@ defmodule Handan.Purchasing.Events.PurchaseInvoiceCreated do
   defevent do
     field :purchase_invoice_uuid, Ecto.UUID
     field :purchase_order_uuid, Ecto.UUID
+    field :code, :string
 
     field :supplier_uuid, Ecto.UUID
     field :supplier_name, :string
     field :supplier_address, :string
 
     field :amount, :decimal
+    field :status, :string
   end
 end

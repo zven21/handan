@@ -11,10 +11,12 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   deftype do
     field :sales_order_uuid, Ecto.UUID
+    field :code, :string
     field :customer_uuid, Ecto.UUID
     field :customer_name, :string
     field :customer_address, :string
     field :warehouse_uuid, Ecto.UUID
+    field :warehouse_name, :string
 
     field :total_amount, :decimal
     field :paid_amount, :decimal, default: 0
@@ -43,18 +45,15 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   alias Handan.Selling.Commands.{
     CreateSalesOrder,
-    DeleteSalesOrder,
-    ConfirmSalesOrder
+    DeleteSalesOrder
   }
 
   alias Handan.Selling.Commands.{
-    CreateSalesInvoice,
-    ConfirmSalesInvoice
+    CreateSalesInvoice
   }
 
   alias Handan.Selling.Commands.{
     CreateDeliveryNote,
-    ConfirmDeliveryNote,
     CompleteDeliveryNote
   }
 
@@ -67,10 +66,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     DeliveryNoteItemAdded,
     SalesOrderStatusChanged,
     SalesOrderSummaryChanged,
-    DeliveryNoteConfirmed,
-    SalesOrderConfirmed,
     SalesInvoiceCreated,
-    SalesInvoiceConfirmed,
     DeliveryNoteCompleted
   }
 
@@ -86,10 +82,17 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   # 创建销售订单
   def execute(%__MODULE__{sales_order_uuid: nil}, %CreateSalesOrder{} = cmd) do
+    to_status =
+      case cmd.is_draft do
+        true -> :draft
+        false -> :to_deliver_and_bill
+      end
+
     sales_order_evt = %SalesOrderCreated{
       sales_order_uuid: cmd.sales_order_uuid,
+      code: cmd.code,
       customer_uuid: cmd.customer_uuid,
-      status: :draft,
+      status: to_status,
       customer_name: cmd.customer_name,
       customer_address: cmd.customer_address,
       total_amount: cmd.total_amount,
@@ -99,6 +102,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
       delivered_qty: 0,
       remaining_qty: cmd.total_qty,
       warehouse_uuid: cmd.warehouse_uuid,
+      warehouse_name: cmd.warehouse_name,
       delivery_status: :not_delivered,
       billing_status: :not_billed
     }
@@ -127,25 +131,6 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %CreateSalesOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesOrder{sales_order_uuid: sales_order_uuid} = _cmd) do
-    sales_order_confirmed_evt = %SalesOrderConfirmed{
-      sales_order_uuid: sales_order_uuid,
-      status: :to_deliver_and_bill
-    }
-
-    status_changed_evt = %SalesOrderStatusChanged{
-      sales_order_uuid: sales_order_uuid,
-      from_status: :draft,
-      to_status: :to_deliver_and_bill,
-      from_delivery_status: state.delivery_status,
-      to_delivery_status: state.delivery_status,
-      from_billing_status: state.billing_status,
-      to_billing_status: state.billing_status
-    }
-
-    [sales_order_confirmed_evt, status_changed_evt]
-  end
-
   def execute(%__MODULE__{} = _state, %DeleteSalesOrder{} = cmd) do
     sales_order_evt = %SalesOrderDeleted{
       sales_order_uuid: cmd.sales_order_uuid
@@ -156,18 +141,25 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
 
   def execute(_, %DeleteSalesOrder{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{} = state, %CreateDeliveryNote{} = cmd) do
+  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %CreateDeliveryNote{sales_order_uuid: sales_order_uuid} = cmd) do
     if Map.has_key?(state.delivery_notes, cmd.delivery_note_uuid) do
       {:error, :delivery_note_already_exists}
     else
+      to_status =
+        case cmd.is_draft do
+          true -> :draft
+          false -> :to_deliver
+        end
+
       delivery_note_created_evt = %DeliveryNoteCreated{
         delivery_note_uuid: cmd.delivery_note_uuid,
         sales_order_uuid: state.sales_order_uuid,
+        code: cmd.code,
         customer_uuid: state.customer_uuid,
         customer_name: state.customer_name,
         customer_address: state.customer_address,
         warehouse_uuid: state.warehouse_uuid,
-        status: "draft",
+        status: to_status,
         total_qty: cmd.total_qty,
         total_amount: cmd.total_amount
       }
@@ -190,37 +182,18 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
           }
         end)
 
-      [delivery_note_created_evt | delivery_note_items_evt]
-      |> List.flatten()
-    end
-  end
-
-  def execute(_, %CreateDeliveryNote{}), do: {:error, :not_allowed}
-
-  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmDeliveryNote{sales_order_uuid: sales_order_uuid, delivery_note_uuid: delivery_note_uuid} = cmd) do
-    if Map.has_key?(state.delivery_notes, delivery_note_uuid) do
-      # TODO delivery_note status 的判断
-      delivery_note = Map.get(state.delivery_notes, delivery_note_uuid)
-
-      delivery_note_confirmed_evt = %DeliveryNoteConfirmed{
-        delivery_note_uuid: delivery_note.delivery_note_uuid,
-        sales_order_uuid: sales_order_uuid,
-        status: :to_deliver
-      }
-
       sales_order_items_evt =
-        state.delivery_note_items
-        |> Map.values()
-        |> Enum.filter(fn delivery_item -> delivery_item.delivery_note_uuid == cmd.delivery_note_uuid end)
+        cmd.delivery_items
+        |> Enum.filter(fn delivery_item -> delivery_item.sales_order_item_uuid != nil end)
         |> Enum.map(fn delivery_item ->
-          sales_order_item = Map.get(state.sales_items, delivery_item.sales_order_item_uuid)
+          sales_item = Map.get(state.sales_items, delivery_item.sales_order_item_uuid)
 
-          new_delivered_qty = decimal_add(sales_order_item.delivered_qty, delivery_item.actual_qty)
-          new_remaining_qty = decimal_sub(sales_order_item.ordered_qty, new_delivered_qty)
+          new_delivered_qty = decimal_add(sales_item.delivered_qty, delivery_item.actual_qty)
+          new_remaining_qty = decimal_sub(sales_item.ordered_qty, new_delivered_qty)
 
           %SalesOrderItemAdjusted{
-            sales_order_item_uuid: delivery_item.sales_order_item_uuid,
-            sales_order_uuid: sales_order_uuid,
+            sales_order_item_uuid: sales_item.sales_order_item_uuid,
+            sales_order_uuid: state.sales_order_uuid,
             delivered_qty: new_delivered_qty,
             remaining_qty: new_remaining_qty
           }
@@ -238,86 +211,114 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
         to_delivery_status: to_delivery_status
       }
 
-      [delivery_note_confirmed_evt, sales_order_items_evt, sales_order_status_changed_evt]
+      [delivery_note_created_evt, delivery_note_items_evt, sales_order_items_evt, sales_order_status_changed_evt]
       |> List.flatten()
-    else
-      {:error, :delivery_note_not_found}
     end
   end
 
-  def execute(_, %ConfirmDeliveryNote{}), do: {:error, :not_allowed}
+  def execute(_, %CreateDeliveryNote{}), do: {:error, :not_allowed}
 
   def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %CreateSalesInvoice{sales_order_uuid: sales_order_uuid} = cmd) do
-    if Map.has_key?(state.sales_invoices, cmd.sales_invoice_uuid) do
-      {:error, :sales_invoice_already_exists}
+    if D.gte?(state.remaining_amount, cmd.amount) do
+      to_status =
+        case cmd.is_draft do
+          true -> :draft
+          false -> :submitted
+        end
+
+      new_paid_amount = decimal_add(state.paid_amount, cmd.amount)
+      new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
+
+      sales_invoice_evt = %SalesInvoiceCreated{
+        sales_invoice_uuid: cmd.sales_invoice_uuid,
+        sales_order_uuid: sales_order_uuid,
+        customer_uuid: state.customer_uuid,
+        customer_name: state.customer_name,
+        amount: cmd.amount,
+        code: cmd.code,
+        status: to_status
+      }
+
+      sales_order_summary_changed_evt = %SalesOrderSummaryChanged{
+        sales_order_uuid: sales_order_uuid,
+        paid_amount: new_paid_amount,
+        remaining_amount: new_remaining_amount,
+        delivered_qty: state.delivered_qty,
+        remaining_qty: state.remaining_qty
+      }
+
+      to_billing_status =
+        case D.eq?(new_remaining_amount, 0) do
+          true -> :fully_billed
+          false -> :partly_billed
+        end
+
+      sales_order_status_changed_evt = %SalesOrderStatusChanged{
+        sales_order_uuid: sales_order_uuid,
+        from_billing_status: state.billing_status,
+        to_billing_status: to_billing_status,
+        from_delivery_status: state.delivery_status,
+        to_delivery_status: state.delivery_status,
+        from_status: state.status,
+        to_status: calculate_status(%{delivery_status: state.delivery_status, billing_status: to_billing_status})
+      }
+
+      [sales_invoice_evt, sales_order_summary_changed_evt, sales_order_status_changed_evt]
+      |> List.flatten()
     else
-      case D.gte?(state.remaining_amount, cmd.amount) do
-        true ->
-          sales_invoice_evt = %SalesInvoiceCreated{
-            sales_invoice_uuid: cmd.sales_invoice_uuid,
-            sales_order_uuid: sales_order_uuid,
-            customer_uuid: state.customer_uuid,
-            customer_name: state.customer_name,
-            amount: cmd.amount
-          }
-
-          sales_invoice_evt
-
-        false ->
-          {:error, :amount_too_large}
-      end
+      {:error, :amount_too_large}
     end
   end
 
   def execute(_, %CreateSalesInvoice{}), do: {:error, :not_allowed}
 
-  def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesInvoice{sales_order_uuid: sales_order_uuid} = cmd) do
-    if Map.has_key?(state.sales_invoices, cmd.sales_invoice_uuid) do
-      sales_invoice = Map.get(state.sales_invoices, cmd.sales_invoice_uuid)
+  # def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %ConfirmSalesInvoice{sales_order_uuid: sales_order_uuid} = cmd) do
+  #   if Map.has_key?(state.sales_invoices, cmd.sales_invoice_uuid) do
+  #     sales_invoice = Map.get(state.sales_invoices, cmd.sales_invoice_uuid)
 
-      case D.gte?(state.remaining_amount, sales_invoice.amount) do
-        true ->
-          new_paid_amount = decimal_add(state.paid_amount, sales_invoice.amount)
-          new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
+  #     case D.gte?(state.remaining_amount, sales_invoice.amount) do
+  #       true ->
+  #         new_paid_amount = decimal_add(state.paid_amount, sales_invoice.amount)
+  #         new_remaining_amount = decimal_sub(state.total_amount, new_paid_amount)
 
-          sales_invoice_confirmed_evt = %SalesInvoiceConfirmed{
-            sales_invoice_uuid: sales_invoice.sales_invoice_uuid,
-            sales_order_uuid: sales_order_uuid,
-            status: :submitted
-          }
+  #         sales_invoice_confirmed_evt = %SalesInvoiceConfirmed{
+  #           sales_invoice_uuid: sales_invoice.sales_invoice_uuid,
+  #           sales_order_uuid: sales_order_uuid,
+  #           status: :submitted
+  #         }
 
-          sales_order_summary_changed_evt = %SalesOrderSummaryChanged{
-            sales_order_uuid: sales_order_uuid,
-            paid_amount: new_paid_amount,
-            remaining_amount: new_remaining_amount,
-            delivered_qty: state.delivered_qty,
-            remaining_qty: state.remaining_qty
-          }
+  #         sales_order_summary_changed_evt = %SalesOrderSummaryChanged{
+  #           sales_order_uuid: sales_order_uuid,
+  #           paid_amount: new_paid_amount,
+  #           remaining_amount: new_remaining_amount,
+  #           delivered_qty: state.delivered_qty,
+  #           remaining_qty: state.remaining_qty
+  #         }
 
-          to_billing_status = calculate_billing_status(state, state.sales_invoices)
+  #         to_billing_status = calculate_billing_status(state, state.sales_invoices)
 
-          sales_order_status_changed_evt = %SalesOrderStatusChanged{
-            sales_order_uuid: sales_order_uuid,
-            from_billing_status: state.billing_status,
-            to_billing_status: to_billing_status,
-            from_delivery_status: state.delivery_status,
-            to_delivery_status: state.delivery_status,
-            from_status: state.status,
-            to_status: calculate_status(%{delivery_status: state.delivery_status, billing_status: to_billing_status})
-          }
+  #         sales_order_status_changed_evt = %SalesOrderStatusChanged{
+  #           sales_order_uuid: sales_order_uuid,
+  #           from_billing_status: state.billing_status,
+  #           to_billing_status: to_billing_status,
+  #           from_delivery_status: state.delivery_status,
+  #           to_delivery_status: state.delivery_status,
+  #           from_status: state.status,
+  #           to_status: calculate_status(%{delivery_status: state.delivery_status, billing_status: to_billing_status})
+  #         }
 
-          [sales_invoice_confirmed_evt, sales_order_summary_changed_evt, sales_order_status_changed_evt]
-          |> List.flatten()
+  #         [sales_invoice_confirmed_evt, sales_order_summary_changed_evt, sales_order_status_changed_evt]
+  #         |> List.flatten()
 
-        false ->
-          {:error, :amount_too_large}
-      end
-    else
-      {:error, :sales_invoice_not_found}
-    end
-  end
+  #       false ->
+  #         {:error, :amount_too_large}
+  #     end
+  #   else
+  #     {:error, :sales_invoice_not_found}
+  #   end
+  # end
 
-  def execute(_, %ConfirmSalesInvoice{}), do: {:error, :not_allowed}
+  # def execute(_, %ConfirmSalesInvoice{}), do: {:error, :not_allowed}
 
   def execute(%__MODULE__{sales_order_uuid: sales_order_uuid} = state, %CompleteDeliveryNote{sales_order_uuid: sales_order_uuid, delivery_note_uuid: delivery_note_uuid} = _cmd) do
     if Map.has_key?(state.delivery_notes, delivery_note_uuid) do
@@ -357,12 +358,14 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     %__MODULE__{
       state
       | sales_order_uuid: evt.sales_order_uuid,
-        status: evt.status,
+        code: evt.code,
+        status: to_atom(evt.status),
         delivery_status: evt.delivery_status,
         billing_status: evt.billing_status,
         customer_name: evt.customer_name,
         customer_uuid: evt.customer_uuid,
         warehouse_uuid: evt.warehouse_uuid,
+        warehouse_name: evt.warehouse_name,
         customer_address: evt.customer_address,
         total_amount: evt.total_amount,
         paid_amount: evt.paid_amount,
@@ -404,26 +407,19 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     }
   end
 
-  def apply(%__MODULE__{} = state, %DeliveryNoteConfirmed{} = evt) do
-    updated_delivery_notes =
-      state.delivery_notes
-      |> Map.update!(evt.delivery_note_uuid, fn delivery_note ->
-        delivery_note
-        |> Map.merge(Map.from_struct(evt))
-      end)
+  # def apply(%__MODULE__{} = state, %DeliveryNoteConfirmed{} = evt) do
+  #   updated_delivery_notes =
+  #     state.delivery_notes
+  #     |> Map.update!(evt.delivery_note_uuid, fn delivery_note ->
+  #       delivery_note
+  #       |> Map.merge(Map.from_struct(evt))
+  #     end)
 
-    %__MODULE__{
-      state
-      | delivery_notes: updated_delivery_notes
-    }
-  end
-
-  def apply(%__MODULE__{} = state, %SalesOrderConfirmed{} = evt) do
-    %__MODULE__{
-      state
-      | status: evt.status
-    }
-  end
+  #   %__MODULE__{
+  #     state
+  #     | delivery_notes: updated_delivery_notes
+  #   }
+  # end
 
   def apply(%__MODULE__{} = state, %SalesOrderStatusChanged{} = evt) do
     %__MODULE__{
@@ -457,20 +453,20 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     }
   end
 
-  def apply(%__MODULE__{} = state, %SalesInvoiceConfirmed{} = evt) do
-    updated_sales_invoices =
-      state.sales_invoices
-      |> Map.update!(evt.sales_invoice_uuid, fn item ->
-        item
-        |> Map.merge(Map.from_struct(evt))
-      end)
+  # def apply(%__MODULE__{} = state, %SalesInvoiceConfirmed{} = evt) do
+  #   updated_sales_invoices =
+  #     state.sales_invoices
+  #     |> Map.update!(evt.sales_invoice_uuid, fn item ->
+  #       item
+  #       |> Map.merge(Map.from_struct(evt))
+  #     end)
 
-    %__MODULE__{
-      state
-      | status: evt.status,
-        sales_invoices: updated_sales_invoices
-    }
-  end
+  #   %__MODULE__{
+  #     state
+  #     | status: evt.status,
+  #       sales_invoices: updated_sales_invoices
+  #   }
+  # end
 
   def apply(%__MODULE__{} = state, %SalesOrderSummaryChanged{} = evt) do
     %__MODULE__{
@@ -523,19 +519,19 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
     end
   end
 
-  defp calculate_billing_status(state, sales_invoices) do
-    paid_amount =
-      sales_invoices
-      |> Map.values()
-      |> Enum.reduce(0, fn sales_invoice, acc ->
-        decimal_add(acc, sales_invoice.amount)
-      end)
+  # defp calculate_billing_status(state, sales_invoices) do
+  #   paid_amount =
+  #     sales_invoices
+  #     |> Map.values()
+  #     |> Enum.reduce(0, fn sales_invoice, acc ->
+  #       decimal_add(acc, sales_invoice.amount)
+  #     end)
 
-    case D.eq?(state.total_amount, paid_amount) do
-      true -> :fully_billed
-      false -> :partly_billed
-    end
-  end
+  #   case D.eq?(state.total_amount, paid_amount) do
+  #     true -> :fully_billed
+  #     false -> :partly_billed
+  #   end
+  # end
 
   defp calculate_status(%{delivery_status: :fully_delivered, billing_status: :fully_billed}), do: :completed
   defp calculate_status(%{delivery_status: :fully_delivered, billing_status: :partly_billed}), do: :to_bill

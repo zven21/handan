@@ -1,7 +1,7 @@
 import Ecto.Query, warn: false
 
 alias Handan.{Repo, Turbo, Dispatcher}
-alias Handan.{Accounts, Enterprise, Selling, Purchasing, Stock, Productions}
+alias Handan.{Accounts, Enterprise, Selling, Purchasing, Stock, Production}
 
 # Accounts
 alias Accounts.Projections.User
@@ -16,7 +16,7 @@ alias Selling.Projections.{SalesOrder, SalesOrderItem, Customer, SalesInvoice, D
 alias Purchasing.Projections.{PurchaseOrder, PurchaseOrderItem, Supplier, PurchaseInvoice, ReceiptOrder, ReceiptOrderItem}
 
 # Production
-alias Productions.Projections.{WorkOrder, WorkOrderItem, Warehouse, BOM, BOMItem, Process, BOMProcess, JobCard, MaterialRequest}
+alias Production.Projections.{WorkOrder, WorkOrderItem, Warehouse, BOM, BOMItem, Process, BOMProcess, JobCard, MaterialRequest}
 
 # Stock
 alias Stock.Projections.{StockUOM, StockItem, Item, InventoryEntry}

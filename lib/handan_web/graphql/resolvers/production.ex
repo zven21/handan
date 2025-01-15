@@ -16,6 +16,12 @@ defmodule HandanWeb.GraphQL.Resolvers.Production do
   @doc "list work orders"
   def list_work_orders(_, _), do: Production.list_work_orders()
 
+  @doc "get work order item"
+  def get_work_order_item(%{request: %{uuid: uuid}}, _), do: Production.get_work_order_item(uuid)
+
+  @doc "list work order items"
+  def list_work_order_items(_, _), do: Production.list_work_order_items()
+
   @doc "get bom"
   def get_bom(%{request: %{uuid: uuid}}, _), do: Production.get_bom(uuid)
 

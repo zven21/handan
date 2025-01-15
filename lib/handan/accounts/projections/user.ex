@@ -2,7 +2,7 @@ defmodule Handan.Accounts.Projections.User do
   @moduledoc false
 
   use Ecto.Schema
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "users" do
     field :email, :string

@@ -1,7 +1,7 @@
 defmodule Handan.Production.Commands.CreateWorkOrder do
   @moduledoc false
 
-  @required_fields ~w(work_order_uuid item_uuid stock_uom_uuid warehouse_uuid planned_qty start_time end_time)a
+  @required_fields ~w(work_order_uuid bom_uuid warehouse_uuid planned_qty)a
 
   use Handan.EventSourcing.Command
 
@@ -11,6 +11,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :bom_uuid, Ecto.UUID
     field :item_name, :string
     field :uom_name, :string
+    field :code, :string
     field :stock_uom_uuid, Ecto.UUID
     field :warehouse_uuid, Ecto.UUID
     field :planned_qty, :decimal
@@ -21,6 +22,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
     field :supplier_name, :string
     field :sales_order_uuid, Ecto.UUID
 
+    # 工单类型
     field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
     field :items, {:array, :map}, default: []
     field :material_request_items, {:array, :map}, default: []
@@ -47,8 +49,8 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
               |> Enum.map(fn bom_process ->
                 %{
                   work_order_item_uuid: Ecto.UUID.generate(),
-                  item_name: cmd.item_name,
-                  item_uuid: cmd.item_uuid,
+                  item_name: bom.item_name,
+                  item_uuid: bom.item_uuid,
                   work_order_uuid: cmd.work_order_uuid,
                   process_name: bom_process.process_name,
                   process_uuid: bom_process.process_uuid,
@@ -70,17 +72,25 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
                 }
               end)
 
-            %{cmd | items: updated_items, material_request_items: updated_material_request_items}
+            %{
+              cmd
+              | items: updated_items,
+                material_request_items: updated_material_request_items,
+                item_uuid: bom.item_uuid,
+                item_name: bom.item_name,
+                stock_uom_uuid: bom.item.default_stock_uom_uuid,
+                uom_name: bom.item.default_stock_uom_name
+            }
         end
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("WO")}
       |> handle_bom_fn.()
       |> then(&{:ok, &1})
     end
 
     defp get_bom(bom_uuid) do
-      from(b in BOM, where: b.uuid == ^bom_uuid, preload: [:bom_items, :bom_processes], limit: 1)
+      from(b in BOM, where: b.uuid == ^bom_uuid, preload: [:item, :bom_items, :bom_processes], limit: 1)
       |> Handan.Repo.one()
     end
   end

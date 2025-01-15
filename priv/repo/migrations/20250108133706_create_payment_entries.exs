@@ -4,6 +4,7 @@ defmodule Handan.Repo.Migrations.CreatePaymentEntries do
   def change do
     create table(:payment_entries, primary_key: false) do
       add :uuid, :binary_id, primary_key: true
+      add :code, :string
       add :party_uuid, :binary_id
       add :party_type, :string
       add :party_name, :string
@@ -17,6 +18,7 @@ defmodule Handan.Repo.Migrations.CreatePaymentEntries do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:payment_entries, [:code])
     create index(:payment_entries, [:party_uuid, :party_type])
     create index(:payment_entries, [:payment_method_uuid])
   end

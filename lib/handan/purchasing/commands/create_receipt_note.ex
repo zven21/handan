@@ -9,12 +9,14 @@ defmodule Handan.Purchasing.Commands.CreateReceiptNote do
     field :receipt_note_uuid, Ecto.UUID
     field :purchase_order_uuid, Ecto.UUID
 
+    field :code, :string
     field :total_qty, :decimal
     field :total_amount, :decimal
 
     field :supplier_uuid, Ecto.UUID
     field :supplier_name, :string
     field :supplier_address, :string
+    field :is_draft, :boolean, default: false
     field :receipt_items, {:array, :map}
   end
 
@@ -65,7 +67,7 @@ defmodule Handan.Purchasing.Commands.CreateReceiptNote do
         %{cmd | receipt_items: updated_receipt_items, total_qty: total_qty, total_amount: total_amount}
       end
 
-      cmd
+      %{cmd | code: Handan.Infrastructure.Helper.generate_code("RN")}
       |> handle_receipt_item_fn.()
       |> validator()
     end

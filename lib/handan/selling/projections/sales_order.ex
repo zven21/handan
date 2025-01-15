@@ -3,10 +3,12 @@ defmodule Handan.Selling.Projections.SalesOrder do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "sales_orders" do
+    field :code, :string
     field :customer_name, :string
+    field :warehouse_name, :string
 
     field :billing_status, Ecto.Enum, values: ~w(not_billed fully_billed partly_billed closed)a, default: :not_billed
     field :delivery_status, Ecto.Enum, values: ~w(not_delivered fully_delivered partly_delivered closed)a, default: :not_delivered

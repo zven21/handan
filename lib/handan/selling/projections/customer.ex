@@ -3,7 +3,7 @@ defmodule Handan.Selling.Projections.Customer do
 
   use Ecto.Schema
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:uuid, :binary_id, autogenerate: false}
   @foreign_key_type :binary_id
   schema "customers" do
     field :name, :string

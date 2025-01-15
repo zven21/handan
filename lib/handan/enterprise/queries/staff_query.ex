@@ -13,4 +13,6 @@ defmodule Handan.Enterprise.Queries.StaffQuery do
     from(s in Staff, where: s.user_uuid == ^user_uuid and s.company_uuid == ^company_uuid)
     |> Repo.one()
   end
+
+  def list_staff, do: Turbo.list(Staff)
 end

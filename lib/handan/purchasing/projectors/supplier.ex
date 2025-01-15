@@ -20,7 +20,8 @@ defmodule Handan.Purchasing.Projectors.Supplier do
       supplier = %Supplier{
         uuid: evt.supplier_uuid,
         name: evt.name,
-        address: evt.address
+        address: evt.address,
+        balance: 0
       }
 
       Ecto.Multi.insert(multi, :supplier_created, supplier)
