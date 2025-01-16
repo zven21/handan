@@ -17,4 +17,4 @@ defmodule Seeds do
   end
 end
 
-Seeds.server_initital_data()
+# Seeds.server_initital_data()
