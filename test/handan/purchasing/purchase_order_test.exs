@@ -199,7 +199,7 @@ defmodule Handan.Purchasing.PurchaseOrderTest do
       assert purchase_invoice.purchase_order_uuid == purchase_order.uuid
       assert purchase_invoice.supplier_uuid == purchase_order.supplier_uuid
       assert purchase_invoice.supplier_name == purchase_order.supplier_name
-      assert purchase_invoice.status == :submitted
+      assert purchase_invoice.status == :unpaid
     end
 
     test "should succeed with valid request when is_draft is true", %{purchase_order: purchase_order} do

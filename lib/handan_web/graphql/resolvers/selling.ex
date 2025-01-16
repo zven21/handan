@@ -27,6 +27,9 @@ defmodule HandanWeb.GraphQL.Resolvers.Selling do
   @doc "list sales invoices"
   def list_sales_invoices(_, _), do: Selling.list_sales_invoices()
 
+  @doc "unpaid sales invoices by customer"
+  def unpaid_sales_invoices_by_customer(%{request: %{uuid: uuid}}, _), do: Selling.unpaid_sales_invoices_by_customer(uuid)
+
   @doc "create customer"
   def create_customer(_, %{request: request}, _) do
     request

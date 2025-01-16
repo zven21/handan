@@ -55,6 +55,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :uuid, :id
     field :code, :string
     field :customer_name, :string
+    field :customer_uuid, :id
     field :amount, :decimal
 
     field :sales_order_uuid, :id
@@ -170,6 +171,15 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
       middleware(M.Authorize, :user)
 
       resolve(&R.Selling.list_sales_invoices/2)
+    end
+
+    @desc "unpaid sales invoices by customer"
+    field :unpaid_sales_invoices_by_customer, list_of(:sales_invoice) do
+      arg(:request, non_null(:id_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.unpaid_sales_invoices_by_customer/2)
     end
   end
 

@@ -156,6 +156,7 @@ defmodule HandanWeb.GraphQL.FinanceTest do
         party_uuid: customer.uuid,
         payment_method_uuid: payment_method.uuid,
         memo: "memo",
+        type: "sales_invoice",
         sales_invoice_ids: [sales_invoice.uuid]
       }
 

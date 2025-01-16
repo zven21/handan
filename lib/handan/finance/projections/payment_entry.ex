@@ -8,6 +8,7 @@ defmodule Handan.Finance.Projections.PaymentEntry do
   schema "payment_entries" do
     field :code, :string
     field :memo, :string
+    field :type, Ecto.Enum, values: [:sales_invoice, :purchase_invoice, :other]
     field :attachments, {:array, :string}, default: []
     field :party_name, :string
     field :party_type, :string

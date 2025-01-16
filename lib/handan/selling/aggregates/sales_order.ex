@@ -223,7 +223,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
       to_status =
         case cmd.is_draft do
           true -> :draft
-          false -> :submitted
+          false -> :unpaid
         end
 
       new_paid_amount = decimal_add(state.paid_amount, cmd.amount)
@@ -284,7 +284,7 @@ defmodule Handan.Selling.Aggregates.SalesOrder do
   #         sales_invoice_confirmed_evt = %SalesInvoiceConfirmed{
   #           sales_invoice_uuid: sales_invoice.sales_invoice_uuid,
   #           sales_order_uuid: sales_order_uuid,
-  #           status: :submitted
+  #           status: :unpaid
   #         }
 
   #         sales_order_summary_changed_evt = %SalesOrderSummaryChanged{

@@ -66,6 +66,10 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :purchase_order_uuid, :id
     field :amount, :decimal
     field :supplier_name, :string
+    field :supplier_uuid, :id
+
+    field :supplier, :supplier, resolve: dataloader(Purchasing, :supplier)
+    field :purchase_order, :purchase_order, resolve: dataloader(Purchasing, :purchase_order)
 
     timestamp_fields()
   end
@@ -156,6 +160,15 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
       middleware(M.Authorize, :user)
 
       resolve(&R.Purchasing.list_receipt_notes/2)
+    end
+
+    @desc "unpaid purchase invoices by supplier"
+    field :unpaid_purchase_invoices_by_supplier, list_of(:purchase_invoice) do
+      arg(:request, non_null(:id_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.unpaid_purchase_invoices_by_supplier/2)
     end
   end
 

@@ -5,6 +5,7 @@ defmodule Handan.Finance.Projectors.PaymentEntry do
 
   import Ecto.Query, warn: false
   import Handan.Infrastructure.DecimalHelper, only: [to_decimal: 1]
+  import Handan.Infrastructure.Helper, only: [to_atom: 1]
 
   alias Handan.Finance.Events.{
     PaymentEntryCreated,
@@ -19,6 +20,8 @@ defmodule Handan.Finance.Projectors.PaymentEntry do
     fn multi ->
       payment_entry = %PaymentEntry{
         uuid: evt.payment_entry_uuid,
+        code: evt.code,
+        type: to_atom(evt.type),
         party_type: evt.party_type,
         party_uuid: evt.party_uuid,
         payment_method_uuid: evt.payment_method_uuid,

@@ -10,7 +10,7 @@ defmodule Handan.Purchasing.Projections.PurchaseInvoice do
   schema "purchase_invoices" do
     field :code, :string
     field :amount, :decimal, default: 0
-    field :status, Ecto.Enum, values: ~w(draft submitted paid cancelled)a, default: :draft
+    field :status, Ecto.Enum, values: ~w(draft unpaid paid cancelled)a, default: :draft
     field :supplier_name, :string
 
     belongs_to :purchase_order, Handan.Purchasing.Projections.PurchaseOrder, foreign_key: :purchase_order_uuid, references: :uuid

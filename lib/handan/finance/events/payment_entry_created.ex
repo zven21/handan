@@ -10,6 +10,8 @@ defmodule Handan.Finance.Events.PaymentEntryCreated do
     field :payment_method_uuid, Ecto.UUID
     field :payment_method_name, :string
     field :memo, :string
+    field :code, :string
+    field :type, Ecto.Enum, values: ~w(sales_invoice purchase_invoice other)a
     field :attachments, {:array, :string}
     field :party_name, :string
     field :purchase_invoice_ids, {:array, Ecto.UUID}
