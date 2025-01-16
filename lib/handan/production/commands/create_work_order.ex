@@ -69,6 +69,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
                   item_uuid: item.item_uuid,
                   stock_uom_uuid: item.stock_uom_uuid,
                   uom_name: item.uom_name,
+                  warehouse_uuid: cmd.warehouse_uuid,
                   actual_qty: decimal_mult(cmd.planned_qty, item.qty)
                 }
               end)

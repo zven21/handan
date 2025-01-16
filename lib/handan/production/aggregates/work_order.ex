@@ -110,6 +110,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
           item_name: item.item_name,
           stock_uom_uuid: item.stock_uom_uuid,
           uom_name: item.uom_name,
+          warehouse_uuid: item.warehouse_uuid,
           actual_qty: item.actual_qty
         }
       end)

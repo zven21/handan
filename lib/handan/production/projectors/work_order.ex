@@ -85,6 +85,7 @@ defmodule Handan.Production.Projectors.WorkOrder do
       work_order_uuid: evt.work_order_uuid,
       item_uuid: evt.item_uuid,
       item_name: evt.item_name,
+      warehouse_uuid: evt.warehouse_uuid,
       actual_qty: to_decimal(evt.actual_qty),
       stock_uom_uuid: evt.stock_uom_uuid,
       uom_name: evt.uom_name
