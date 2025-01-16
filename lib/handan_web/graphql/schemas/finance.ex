@@ -12,6 +12,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :uuid, :id
     field :code, :string
     field :memo, :string
+    field :type, :string
     field :attachments, list_of(:string)
     field :party_name, :string
     field :party_type, :string
@@ -90,6 +91,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :purchase_invoice_ids, list_of(:id)
     field :sales_invoice_ids, list_of(:id)
     field :total_amount, :float
+    field :type, non_null(:string)
     field :memo, :string
     field :attachments, list_of(:string)
   end

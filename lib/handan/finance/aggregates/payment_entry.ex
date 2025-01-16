@@ -8,6 +8,7 @@ defmodule Handan.Finance.Aggregates.PaymentEntry do
   deftype do
     field :payment_entry_uuid, Ecto.UUID
     field :code, :string
+    field :type, :string
     field :party_type, :string
     field :party_uuid, Ecto.UUID
     field :payment_method_uuid, Ecto.UUID
@@ -43,6 +44,7 @@ defmodule Handan.Finance.Aggregates.PaymentEntry do
     payment_entry_evt = %PaymentEntryCreated{
       payment_entry_uuid: cmd.payment_entry_uuid,
       code: cmd.code,
+      type: cmd.type,
       party_type: cmd.party_type,
       party_uuid: cmd.party_uuid,
       payment_method_uuid: cmd.payment_method_uuid,
@@ -94,6 +96,7 @@ defmodule Handan.Finance.Aggregates.PaymentEntry do
       state
       | payment_entry_uuid: evt.payment_entry_uuid,
         code: evt.code,
+        type: evt.type,
         party_type: evt.party_type,
         party_uuid: evt.party_uuid,
         payment_method_uuid: evt.payment_method_uuid,

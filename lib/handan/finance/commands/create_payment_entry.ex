@@ -8,6 +8,7 @@ defmodule Handan.Finance.Commands.CreatePaymentEntry do
   defcommand do
     field :payment_entry_uuid, Ecto.UUID
     field :memo, :string
+    field :type, :string
     field :code, :string
     field :attachments, {:array, :string}, default: []
     field :party_name, :string
