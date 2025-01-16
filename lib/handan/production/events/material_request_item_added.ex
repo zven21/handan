@@ -11,5 +11,6 @@ defmodule Handan.Production.Events.MaterialRequestItemAdded do
     field :actual_qty, :decimal
     field :item_name, :string
     field :uom_name, :string
+    field :warehouse_uuid, Ecto.UUID
   end
 end

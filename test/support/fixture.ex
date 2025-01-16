@@ -178,12 +178,16 @@ defmodule Handan.Fixture do
     ]
   end
 
-  def create_bom(%{item: item, uom: uom}) do
+  def create_bom(%{item: item, uom: uom, warehouse: warehouse}) do
     stock_uoms = [
       %{uom_name: uom.name, uom_uuid: uom.uuid, conversion_factor: 1, sequence: 1}
     ]
 
-    {:ok, sub_item} = fixture(:item, name: "sub-bom-name", stock_uoms: stock_uoms)
+    opening_stocks = [
+      %{warehouse_uuid: warehouse.uuid, qty: 0}
+    ]
+
+    {:ok, sub_item} = fixture(:item, name: "sub-bom-name", stock_uoms: stock_uoms, opening_stocks: opening_stocks)
     {:ok, process} = fixture(:process, name: "process-name")
 
     {:ok, bom} =

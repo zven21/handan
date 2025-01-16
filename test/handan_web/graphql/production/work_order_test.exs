@@ -104,6 +104,41 @@ defmodule HandanWeb.GraphQL.WorkOrderTest do
     end
   end
 
+  describe "schedule work order" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order
+    ]
+
+    @query """
+    mutation ($request: WorkOrderRequest!) {
+      ScheduleWorkOrder(request: $request) {
+        status
+      }
+    }
+    """
+
+    @tag :company_owner
+    test "should schedule work order", %{conn: conn, work_order: work_order} do
+      request = %{
+        work_order_uuid: work_order.uuid
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "ScheduleWorkOrder" => %{
+                   "status" => "scheduling"
+                 }
+               }
+             }
+    end
+  end
+
   describe "report job card" do
     setup [
       :register_user,

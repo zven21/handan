@@ -32,6 +32,10 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
     field :received_qty, :decimal
     field :remaining_qty, :decimal
 
+    field :warehouse_name, :string
+    field :warehouse_uuid, :id
+
+    field :warehouse, :warehouse, resolve: dataloader(Purchasing, :warehouse)
     field :supplier, :supplier, resolve: dataloader(Purchasing, :supplier)
 
     field :items, list_of(:purchase_order_item), resolve: dataloader(Purchasing, :items)

@@ -40,6 +40,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   alias Handan.Production.Commands.{
     CreateWorkOrder,
     DeleteWorkOrder,
+    ScheduleWorkOrder,
     ReportJobCard,
     StoreFinishItem
   }
@@ -49,12 +50,15 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     WorkOrderDeleted,
     WorkOrderItemAdded,
     MaterialRequestItemAdded,
+    MaterialRequestItemAdjusted,
     JobCardReported,
     WorkOrderQtyChanged,
-    WorkOrderItemQtyChanged
+    WorkOrderStatusChanged,
+    WorkOrderItemQtyChanged,
+    WorkOrderScheduled
   }
 
-  alias Handan.Stock.Events.InventoryUnitInbound
+  alias Handan.Stock.Events.{InventoryUnitInbound, InventoryUnitOutbound}
 
   def after_event(%WorkOrderDeleted{}), do: :stop
   def after_event(_), do: :timer.hours(1)
@@ -108,6 +112,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
           item_name: item.item_name,
           stock_uom_uuid: item.stock_uom_uuid,
           uom_name: item.uom_name,
+          warehouse_uuid: item.warehouse_uuid,
           actual_qty: item.actual_qty
         }
       end)
@@ -126,6 +131,40 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   end
 
   def execute(_, %DeleteWorkOrder{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{work_order_uuid: work_order_uuid} = state, %ScheduleWorkOrder{work_order_uuid: work_order_uuid} = _cmd) do
+    work_order_scheduled_evt = %WorkOrderScheduled{
+      work_order_uuid: work_order_uuid
+    }
+
+    # 出库
+    material_request_item_evts =
+      state.material_request_items
+      |> Map.values()
+      |> Enum.map(fn item ->
+        # remaining_qty = decimal_sub(item.actual_qty, item.received_qty)
+        # FIMME 此处暂不考虑库存短缺的情况，默认库存足够
+
+        [
+          %InventoryUnitOutbound{
+            item_uuid: item.item_uuid,
+            warehouse_uuid: item.warehouse_uuid,
+            stock_uom_uuid: item.stock_uom_uuid,
+            actual_qty: item.actual_qty,
+            type: :outboud
+          },
+          %MaterialRequestItemAdjusted{
+            material_request_item_uuid: item.material_request_item_uuid,
+            actual_qty: item.actual_qty,
+            received_qty: item.actual_qty,
+            remaining_qty: 0
+          }
+        ]
+      end)
+
+    [work_order_scheduled_evt, material_request_item_evts]
+    |> List.flatten()
+  end
 
   def execute(%__MODULE__{work_order_uuid: work_order_uuid} = state, %ReportJobCard{work_order_uuid: work_order_uuid} = cmd) do
     if Map.has_key?(state.items, cmd.work_order_item_uuid) do
@@ -197,13 +236,28 @@ defmodule Handan.Production.Aggregates.WorkOrder do
         type: :finish_item
       }
 
+      stored_qty = decimal_add(state.stored_qty, cmd.stored_qty)
+
       work_order_qty_changed_evt = %WorkOrderQtyChanged{
         work_order_uuid: cmd.work_order_uuid,
         produced_qty: state.produced_qty,
-        stored_qty: decimal_add(state.stored_qty, cmd.stored_qty)
+        stored_qty: stored_qty
       }
 
-      [finish_item_stored_evt, work_order_qty_changed_evt]
+      work_order_status_changed_evt =
+        case D.eq?(state.planned_qty, stored_qty) do
+          true ->
+            %WorkOrderStatusChanged{
+              work_order_uuid: cmd.work_order_uuid,
+              from_status: state.status,
+              to_status: :completed
+            }
+
+          false ->
+            []
+        end
+
+      [finish_item_stored_evt, work_order_qty_changed_evt, work_order_status_changed_evt]
     else
       {:error, :no_enough_stock}
     end
@@ -231,6 +285,10 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     %__MODULE__{state | deleted?: true}
   end
 
+  def apply(%__MODULE__{} = state, %WorkOrderScheduled{}) do
+    %__MODULE__{state | status: :scheduling}
+  end
+
   def apply(%__MODULE__{} = state, %WorkOrderItemAdded{} = evt) do
     updated_items = state.items |> Map.put(evt.work_order_item_uuid, evt)
 
@@ -247,6 +305,17 @@ defmodule Handan.Production.Aggregates.WorkOrder do
       state
       | material_request_items: updated_material_request_items
     }
+  end
+
+  def apply(%__MODULE__{} = state, %MaterialRequestItemAdjusted{} = evt) do
+    updated_material_request_items =
+      state.material_request_items
+      |> Map.update!(evt.material_request_item_uuid, fn material_request_item ->
+        material_request_item
+        |> Map.merge(Map.from_struct(evt))
+      end)
+
+    %__MODULE__{state | material_request_items: updated_material_request_items}
   end
 
   def apply(%__MODULE__{} = state, %JobCardReported{} = evt) do
@@ -269,7 +338,15 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     %__MODULE__{state | produced_qty: evt.produced_qty, scraped_qty: evt.scraped_qty}
   end
 
+  def apply(%__MODULE__{} = state, %WorkOrderStatusChanged{} = evt) do
+    %__MODULE__{state | status: evt.to_status}
+  end
+
   def apply(%__MODULE__{} = state, %InventoryUnitInbound{} = _evt) do
+    state
+  end
+
+  def apply(%__MODULE__{} = state, %InventoryUnitOutbound{} = _evt) do
     state
   end
 end

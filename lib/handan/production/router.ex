@@ -22,6 +22,7 @@ defmodule Handan.Production.Router do
 
   alias Handan.Production.Commands.{
     CreateWorkstation,
+    ScheduleWorkOrder,
     DeleteWorkstation
   }
 
@@ -74,6 +75,7 @@ defmodule Handan.Production.Router do
     [
       CreateWorkOrder,
       DeleteWorkOrder,
+      ScheduleWorkOrder,
       ReportJobCard,
       StoreFinishItem
     ],
