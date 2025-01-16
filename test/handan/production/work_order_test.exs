@@ -2,7 +2,7 @@ defmodule Handan.Production.WorkOrderTest do
   use Handan.DataCase
   @moduledoc false
 
-  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2]
+  import Handan.Infrastructure.DecimalHelper, only: [decimal_add: 2, decimal_sub: 2]
 
   alias Handan.Dispatcher
   alias Handan.Turbo
@@ -49,8 +49,13 @@ defmodule Handan.Production.WorkOrderTest do
         work_order_uuid: work_order.uuid
       }
 
-      assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :schedule_work_order)
+      material_request_item = hd(work_order.material_requests)
 
+      assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: material_request_item.warehouse_uuid, item_uuid: material_request_item.item_uuid})
+      assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :schedule_work_order)
+      assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: material_request_item.warehouse_uuid, item_uuid: material_request_item.item_uuid})
+
+      assert after_stock_item.total_on_hand == decimal_sub(before_stock_item.total_on_hand, material_request_item.actual_qty)
       assert update_work_order.status == :scheduling
     end
   end
@@ -135,13 +140,14 @@ defmodule Handan.Production.WorkOrderTest do
     test "should fail with invalid request", %{work_order: work_order} do
       request = %{
         work_order_uuid: work_order.uuid,
-        stored_qty: 10
+        stored_qty: work_order.planned_qty
       }
 
       assert {:ok, before_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: work_order.warehouse_uuid, item_uuid: work_order.item_uuid})
       assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :store_finish_item)
       assert {:ok, after_stock_item} = Turbo.get_by(StockItem, %{warehouse_uuid: work_order.warehouse_uuid, item_uuid: work_order.item_uuid})
 
+      assert update_work_order.status == :completed
       assert update_work_order.stored_qty == Decimal.new(request.stored_qty)
       assert after_stock_item.total_on_hand == decimal_add(before_stock_item.total_on_hand, request.stored_qty)
     end

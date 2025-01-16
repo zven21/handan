@@ -12,15 +12,11 @@ defmodule Handan.Production.Projections.WorkOrderMaterialRequest do
     field :received_qty, :decimal
     field :uom_name, :string
     field :stock_uom_uuid, :binary_id
-    field :bom_uuid, :binary_id
-    field :warehouse_uuid, :binary_id
-    field :item_uuid, :binary_id
-    field :work_order_uuid, :binary_id
 
-    # belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid
-    # belongs_to :work_order, Handan.Production.Projections.WorkOrder, foreign_key: :work_order_uuid, references: :uuid
-    # belongs_to :item, Handan.Stock.Projections.Item, foreign_key: :item_uuid, references: :uuid
-    # belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
+    belongs_to :bom, Handan.Production.Projections.BOM, foreign_key: :bom_uuid, references: :uuid
+    belongs_to :work_order, Handan.Production.Projections.WorkOrder, foreign_key: :work_order_uuid, references: :uuid
+    belongs_to :item, Handan.Stock.Projections.Item, foreign_key: :item_uuid, references: :uuid
+    belongs_to :warehouse, Handan.Enterprise.Projections.Warehouse, foreign_key: :warehouse_uuid, references: :uuid
 
     timestamps(type: :utc_datetime)
   end

@@ -347,7 +347,7 @@ defmodule Handan.Dispatcher.Matcher do
       command: Handan.Production.Commands.ScheduleWorkOrder,
       projection: Handan.Production.Projections.WorkOrder,
       result_type: :work_order_uuid,
-      preload: [:items]
+      preload: [:items, :material_requests]
     }
   end
 
