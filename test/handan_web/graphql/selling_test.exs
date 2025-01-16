@@ -281,6 +281,40 @@ defmodule HandanWeb.GraphQL.SellingTest do
     end
   end
 
+  describe "unpaid sales invoices by customer" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_customer,
+      :create_sales_order,
+      :create_sales_invoice
+    ]
+
+    @query """
+    query ($request: IdRequest!) {
+      unpaidSalesInvoicesByCustomer(request: $request) {
+        uuid
+        status
+      }
+    }
+    """
+    @tag :company_owner
+    test "should list unpaid sales invoices by customer", %{conn: conn, customer: customer, sales_invoice: sales_invoice} do
+      request = %{
+        uuid: customer.uuid
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "unpaidSalesInvoicesByCustomer" => [%{"uuid" => sales_invoice.uuid, "status" => "submitted"}]
+               }
+             }
+    end
+  end
+
   describe "create sales order" do
     setup [
       :register_user,

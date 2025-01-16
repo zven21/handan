@@ -2,7 +2,7 @@ defmodule Handan.Purchasing do
   @moduledoc """
   The Purchasing context.
   """
-  alias Handan.Purchasing.Queries.{SupplierQuery, PurchaseOrderQuery}
+  alias Handan.Purchasing.Queries.{SupplierQuery, PurchaseOrderQuery, PurchaseInvoiceQuery}
 
   # supplier
   defdelegate get_supplier(supplier_id), to: SupplierQuery
@@ -20,6 +20,7 @@ defmodule Handan.Purchasing do
   defdelegate list_receipt_notes, to: PurchaseOrderQuery
 
   # purchase invoice
-  defdelegate get_purchase_invoice(purchase_invoice_uuid), to: PurchaseOrderQuery
-  defdelegate list_purchase_invoices, to: PurchaseOrderQuery
+  defdelegate get_purchase_invoice(purchase_invoice_uuid), to: PurchaseInvoiceQuery
+  defdelegate list_purchase_invoices, to: PurchaseInvoiceQuery
+  defdelegate unpaid_purchase_invoices_by_supplier(supplier_uuid), to: PurchaseInvoiceQuery
 end

@@ -31,6 +31,8 @@ defmodule HandanWeb.GraphQL.Resolvers.Purchasing do
   @doc "list receipt notes"
   def list_receipt_notes(_, _), do: Purchasing.list_receipt_notes()
 
+  def unpaid_purchase_invoices_by_supplier(%{request: %{uuid: uuid}}, _), do: Purchasing.unpaid_purchase_invoices_by_supplier(uuid)
+
   def create_supplier(_, %{request: request}, _) do
     request
     |> Map.put(:supplier_uuid, Ecto.UUID.generate())

@@ -151,6 +151,40 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
     end
   end
 
+  describe "unpaid purchase invoices by supplier" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_supplier,
+      :create_purchase_order,
+      :create_purchase_invoice
+    ]
+
+    @query """
+    query ($request: IdRequest!) {
+      unpaidPurchaseInvoicesBySupplier(request: $request) {
+        uuid
+        status
+      }
+    }
+    """
+    @tag :company_owner
+    test "should list unpaid purchase invoices by supplier", %{conn: conn, supplier: supplier, purchase_invoice: purchase_invoice} do
+      request = %{
+        uuid: supplier.uuid
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "unpaidPurchaseInvoicesBySupplier" => [%{"uuid" => purchase_invoice.uuid, "status" => "submitted"}]
+               }
+             }
+    end
+  end
+
   describe "create purchase order" do
     setup [
       :register_user,

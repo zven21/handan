@@ -258,6 +258,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
         end
 
       [finish_item_stored_evt, work_order_qty_changed_evt, work_order_status_changed_evt]
+      |> List.flatten()
     else
       {:error, :no_enough_stock}
     end

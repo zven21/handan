@@ -301,6 +301,7 @@ defmodule Handan.Fixture do
         party_type: "customer",
         party_uuid: sales_invoice.customer_uuid,
         memo: "memo",
+        type: "sales_invoice",
         sales_invoice_ids: [sales_invoice.uuid]
       )
 

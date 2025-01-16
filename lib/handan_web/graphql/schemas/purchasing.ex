@@ -161,6 +161,15 @@ defmodule HandanWeb.GraphQL.Schemas.Purchasing do
 
       resolve(&R.Purchasing.list_receipt_notes/2)
     end
+
+    @desc "unpaid purchase invoices by supplier"
+    field :unpaid_purchase_invoices_by_supplier, list_of(:purchase_invoice) do
+      arg(:request, non_null(:id_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Purchasing.unpaid_purchase_invoices_by_supplier/2)
+    end
   end
 
   object :purchasing_mutations do

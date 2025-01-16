@@ -172,6 +172,15 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
       resolve(&R.Selling.list_sales_invoices/2)
     end
+
+    @desc "unpaid sales invoices by customer"
+    field :unpaid_sales_invoices_by_customer, list_of(:sales_invoice) do
+      arg(:request, non_null(:id_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Selling.unpaid_sales_invoices_by_customer/2)
+    end
   end
 
   object :selling_mutations do
