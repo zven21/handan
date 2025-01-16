@@ -24,6 +24,7 @@ defmodule Handan.Production.Commands.CreateWorkOrder do
 
     # 工单类型
     field :type, Ecto.Enum, values: ~w(sales_order subcontracting produce)a, default: :produce
+    field :status, Ecto.Enum, values: ~w(draft scheduling completed cancelled)a, default: :draft
     field :items, {:array, :map}, default: []
     field :material_request_items, {:array, :map}, default: []
   end

@@ -15,6 +15,7 @@ defmodule Handan.Production.Projectors.WorkOrder do
     MaterialRequestItemAdded,
     JobCardReported,
     WorkOrderQtyChanged,
+    WorkOrderScheduled,
     WorkOrderItemQtyChanged
   }
 
@@ -55,6 +56,10 @@ defmodule Handan.Production.Projectors.WorkOrder do
 
   project(%WorkOrderDeleted{} = evt, _meta, fn multi ->
     Ecto.Multi.delete_all(multi, :work_order_deleted, work_order_query(evt.work_order_uuid))
+  end)
+
+  project(%WorkOrderScheduled{} = evt, _meta, fn multi ->
+    Ecto.Multi.update_all(multi, :work_order_scheduled, work_order_query(evt.work_order_uuid), set: [status: :scheduling])
   end)
 
   project(%WorkOrderItemAdded{} = evt, _meta, fn multi ->

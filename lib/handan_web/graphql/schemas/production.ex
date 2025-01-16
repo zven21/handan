@@ -253,6 +253,15 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
       resolve(&R.Production.create_work_order/3)
     end
 
+    @desc "schedule work order"
+    field :schedule_work_order, :work_order do
+      arg(:request, non_null(:work_order_request))
+
+      middleware(M.Authorize, :user)
+
+      resolve(&R.Production.schedule_work_order/3)
+    end
+
     @desc "report job card"
     field :report_job_card, :work_order do
       arg(:request, non_null(:report_job_card_request))

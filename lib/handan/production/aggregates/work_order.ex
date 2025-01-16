@@ -40,6 +40,7 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   alias Handan.Production.Commands.{
     CreateWorkOrder,
     DeleteWorkOrder,
+    ScheduleWorkOrder,
     ReportJobCard,
     StoreFinishItem
   }
@@ -51,7 +52,8 @@ defmodule Handan.Production.Aggregates.WorkOrder do
     MaterialRequestItemAdded,
     JobCardReported,
     WorkOrderQtyChanged,
-    WorkOrderItemQtyChanged
+    WorkOrderItemQtyChanged,
+    WorkOrderScheduled
   }
 
   alias Handan.Stock.Events.InventoryUnitInbound
@@ -126,6 +128,16 @@ defmodule Handan.Production.Aggregates.WorkOrder do
   end
 
   def execute(_, %DeleteWorkOrder{}), do: {:error, :not_allowed}
+
+  def execute(%__MODULE__{work_order_uuid: work_order_uuid} = _state, %ScheduleWorkOrder{work_order_uuid: work_order_uuid} = _cmd) do
+    work_order_scheduled_evt = %WorkOrderScheduled{
+      work_order_uuid: work_order_uuid
+    }
+
+    # FIXME 是否考虑 material_request_items
+
+    [work_order_scheduled_evt]
+  end
 
   def execute(%__MODULE__{work_order_uuid: work_order_uuid} = state, %ReportJobCard{work_order_uuid: work_order_uuid} = cmd) do
     if Map.has_key?(state.items, cmd.work_order_item_uuid) do
@@ -229,6 +241,10 @@ defmodule Handan.Production.Aggregates.WorkOrder do
 
   def apply(%__MODULE__{} = state, %WorkOrderDeleted{}) do
     %__MODULE__{state | deleted?: true}
+  end
+
+  def apply(%__MODULE__{} = state, %WorkOrderScheduled{}) do
+    %__MODULE__{state | status: :scheduling}
   end
 
   def apply(%__MODULE__{} = state, %WorkOrderItemAdded{} = evt) do

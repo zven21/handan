@@ -35,6 +35,26 @@ defmodule Handan.Production.WorkOrderTest do
     end
   end
 
+  describe "schedule work order" do
+    setup [
+      :register_user,
+      :create_company,
+      :create_item,
+      :create_bom,
+      :create_work_order
+    ]
+
+    test "should succeed with valid request", %{work_order: work_order} do
+      request = %{
+        work_order_uuid: work_order.uuid
+      }
+
+      assert {:ok, %WorkOrder{} = update_work_order} = Dispatcher.run(request, :schedule_work_order)
+
+      assert update_work_order.status == :scheduling
+    end
+  end
+
   describe "delete work order" do
     setup [
       :register_user,

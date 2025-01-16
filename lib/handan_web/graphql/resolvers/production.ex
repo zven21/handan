@@ -55,6 +55,12 @@ defmodule HandanWeb.GraphQL.Resolvers.Production do
     |> Dispatcher.run(:create_work_order)
   end
 
+  @doc "schedule work order"
+  def schedule_work_order(_, %{request: request}, _) do
+    request
+    |> Dispatcher.run(:schedule_work_order)
+  end
+
   @doc "update work order"
   def update_work_order(_, %{request: request}, _) do
     request

@@ -1,6 +1,7 @@
 defmodule Handan.Production.Queries.WorkOrderQuery do
   @moduledoc false
 
+  import Ecto.Query
   alias Handan.Turbo
   alias Handan.Production.Projections.{WorkOrder, WorkOrderItem}
 
@@ -22,5 +23,13 @@ defmodule Handan.Production.Queries.WorkOrderQuery do
   @doc """
   List work order items
   """
-  def list_work_order_items, do: Turbo.list(WorkOrderItem)
+  def list_work_order_items do
+    from(woi in WorkOrderItem,
+      join: wo in WorkOrder,
+      on: woi.work_order_uuid == wo.uuid,
+      where: wo.status == :scheduling,
+      select: woi
+    )
+    |> Turbo.list()
+  end
 end
