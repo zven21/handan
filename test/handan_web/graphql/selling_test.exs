@@ -309,7 +309,7 @@ defmodule HandanWeb.GraphQL.SellingTest do
 
       assert result == %{
                "data" => %{
-                 "unpaidSalesInvoicesByCustomer" => [%{"uuid" => sales_invoice.uuid, "status" => "submitted"}]
+                 "unpaidSalesInvoicesByCustomer" => [%{"uuid" => sales_invoice.uuid, "status" => "unpaid"}]
                }
              }
     end
@@ -445,7 +445,7 @@ defmodule HandanWeb.GraphQL.SellingTest do
                "data" => %{
                  "CreateSalesInvoice" => %{
                    "amount" => "1",
-                   "status" => "submitted"
+                   "status" => "unpaid"
                  }
                }
              }

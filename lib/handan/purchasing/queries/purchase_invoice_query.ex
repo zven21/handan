@@ -15,7 +15,7 @@ defmodule Handan.Purchasing.Queries.PurchaseInvoiceQuery do
 
   @doc "unpaid purchase invoices by supplier"
   def unpaid_purchase_invoices_by_supplier(supplier_uuid) do
-    from(p in PurchaseInvoice, where: p.supplier_uuid == ^supplier_uuid, where: p.status == :submitted)
+    from(p in PurchaseInvoice, where: p.supplier_uuid == ^supplier_uuid, where: p.status == :unpaid)
     |> Turbo.list()
   end
 end

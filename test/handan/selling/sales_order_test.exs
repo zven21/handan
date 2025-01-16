@@ -216,7 +216,7 @@ defmodule Handan.Selling.SalesOrderTest do
       assert sales_invoice.sales_order_uuid == sales_order.uuid
       assert sales_invoice.customer_uuid == sales_order.customer_uuid
       assert sales_invoice.customer_name == sales_order.customer_name
-      assert sales_invoice.status == :submitted
+      assert sales_invoice.status == :unpaid
     end
   end
 end

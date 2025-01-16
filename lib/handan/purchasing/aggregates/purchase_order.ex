@@ -267,7 +267,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
       to_status =
         case cmd.is_draft do
           true -> :draft
-          false -> :submitted
+          false -> :unpaid
         end
 
       purchase_invoice_evt = %PurchaseInvoiceCreated{
@@ -329,7 +329,7 @@ defmodule Handan.Purchasing.Aggregates.PurchaseOrder do
   #         purchase_invoice_confirmed_evt = %PurchaseInvoiceConfirmed{
   #           purchase_invoice_uuid: purchase_invoice.purchase_invoice_uuid,
   #           purchase_order_uuid: purchase_order_uuid,
-  #           status: :submitted
+  #           status: :unpaid
   #         }
 
   #         purchase_order_summary_changed_evt = %PurchaseOrderSummaryChanged{

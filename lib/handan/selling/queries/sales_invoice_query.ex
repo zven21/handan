@@ -13,7 +13,7 @@ defmodule Handan.Selling.Queries.SalesInvoiceQuery do
 
   @doc "unpaid sales invoices by customer"
   def unpaid_sales_invoices_by_customer(customer_uuid) do
-    from(s in SalesInvoice, where: s.customer_uuid == ^customer_uuid, where: s.status == :submitted)
+    from(s in SalesInvoice, where: s.customer_uuid == ^customer_uuid, where: s.status == :unpaid)
     |> Turbo.list()
   end
 end

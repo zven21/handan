@@ -179,7 +179,7 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
 
       assert result == %{
                "data" => %{
-                 "unpaidPurchaseInvoicesBySupplier" => [%{"uuid" => purchase_invoice.uuid, "status" => "submitted"}]
+                 "unpaidPurchaseInvoicesBySupplier" => [%{"uuid" => purchase_invoice.uuid, "status" => "unpaid"}]
                }
              }
     end
@@ -266,7 +266,7 @@ defmodule HandanWeb.GraphQL.PurchasingTest do
                "data" => %{
                  "CreatePurchaseInvoice" => %{
                    "amount" => "1",
-                   "status" => "submitted"
+                   "status" => "unpaid"
                  }
                }
              }
