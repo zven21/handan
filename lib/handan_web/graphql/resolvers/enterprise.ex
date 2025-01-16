@@ -11,7 +11,7 @@ defmodule HandanWeb.GraphQL.Resolvers.Enterprise do
   def list_staff(_, _), do: Enterprise.list_staff()
 
   @doc "create company"
-  def create_company(%{request: request}, %{context: %{current_user: user, current_company: _company}}, _) do
+  def create_company(_, %{request: request}, %{context: %{current_user: user}}) do
     request
     |> Map.put(:user_uuid, user.uuid)
     |> Map.put(:company_uuid, Ecto.UUID.generate())
