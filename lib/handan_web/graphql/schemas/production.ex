@@ -47,8 +47,9 @@ defmodule HandanWeb.GraphQL.Schemas.Production do
     field :required_qty, :decimal
     field :defective_qty, :decimal
     field :produced_qty, :decimal
-
     field :work_order_uuid, :id
+
+    field :work_order, :work_order, resolve: dataloader(Production, :work_order)
     field :job_cards, list_of(:job_card), resolve: dataloader(Production, :job_cards)
 
     timestamp_fields()
