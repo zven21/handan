@@ -3,3 +3,4 @@ set -eu
 
 cd -P -- "$(dirname -- "$0")"
 exec ./handan eval Handan.Release.migrate
+# exec ./handan eval Handan.EventStoreInitial.init_event_store

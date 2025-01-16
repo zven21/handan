@@ -2,8 +2,7 @@ defmodule Handan.EventStoreInitial do
 	def init_event_store do
     {:ok, _} = Application.ensure_all_started(:postgrex)
     {:ok, _} = Application.ensure_all_started(:ssl)
-
-    :ok = Application.ensure_all_started(:handan)
+    {:ok, _} = Application.ensure_all_started(:handan)
 
     config = Handan.EventStore.config()
 
