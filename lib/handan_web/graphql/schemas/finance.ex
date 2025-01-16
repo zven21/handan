@@ -19,6 +19,7 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
     field :purchase_invoice_ids, list_of(:string)
     field :sales_invoice_ids, list_of(:string)
     field :total_amount, :decimal
+    field :payment_method_uuid, :id
 
     field :payment_method, :payment_method, resolve: dataloader(Finance, :payment_method)
 
@@ -83,15 +84,14 @@ defmodule HandanWeb.GraphQL.Schemas.Finance do
   end
 
   input_object :create_payment_entry_request do
+    field :party_type, non_null(:string)
+    field :party_uuid, non_null(:id)
+    field :payment_method_uuid, non_null(:id)
+    field :purchase_invoice_ids, list_of(:id)
+    field :sales_invoice_ids, list_of(:id)
+    field :total_amount, :float
     field :memo, :string
     field :attachments, list_of(:string)
-    field :party_name, :string
-    field :party_type, :string
-    field :party_uuid, :id
-    field :payment_method_uuid, :id
-    field :purchase_invoice_ids, list_of(:string)
-    field :sales_invoice_ids, list_of(:string)
-    field :total_amount, :float
   end
 
   input_object :create_payment_method_request do

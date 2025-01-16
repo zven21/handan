@@ -1,7 +1,7 @@
 import Ecto.Query, warn: false
 
 alias Handan.{Repo, Turbo, Dispatcher}
-alias Handan.{Accounts, Enterprise, Selling, Purchasing, Stock, Production}
+alias Handan.{Accounts, Enterprise, Selling, Purchasing, Stock, Production, Finance}
 
 # Accounts
 alias Accounts.Projections.User

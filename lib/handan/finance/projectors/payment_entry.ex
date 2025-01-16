@@ -19,6 +19,7 @@ defmodule Handan.Finance.Projectors.PaymentEntry do
     fn multi ->
       payment_entry = %PaymentEntry{
         uuid: evt.payment_entry_uuid,
+        code: evt.code,
         party_type: evt.party_type,
         party_uuid: evt.party_uuid,
         payment_method_uuid: evt.payment_method_uuid,

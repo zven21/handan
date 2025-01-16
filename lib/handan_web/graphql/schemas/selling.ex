@@ -55,6 +55,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :uuid, :id
     field :code, :string
     field :customer_name, :string
+    field :customer_uuid, :id
     field :amount, :decimal
 
     field :sales_order_uuid, :id

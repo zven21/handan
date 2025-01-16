@@ -71,8 +71,8 @@ defmodule Handan.Finance.Commands.CreatePaymentEntry do
 
       %{cmd | code: Handan.Infrastructure.Helper.generate_code("PE")}
       |> handle_party_fn.()
-      |> handle_total_amount_fn.()
       |> handle_payment_method_fn.()
+      |> handle_total_amount_fn.()
       |> then(&{:ok, &1})
     end
   end
