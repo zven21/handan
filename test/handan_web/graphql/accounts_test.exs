@@ -3,6 +3,33 @@ defmodule HandanWeb.GraphQL.AccountsTest do
 
   use HandanWeb.ConnCase
 
+  describe "register" do
+    @query """
+    mutation ($request: RegisterRequest!) {
+      register(request: $request) {
+        email
+      }
+    }
+    """
+
+    test "should succeed with valid request", %{conn: conn} do
+      request = %{
+        email: "test@test.com",
+        password: "123123123"
+      }
+
+      result = conn |> post("/api", query: @query, variables: %{request: request}) |> json_response(200)
+
+      assert result == %{
+               "data" => %{
+                 "register" => %{
+                   "email" => "test@test.com"
+                 }
+               }
+             }
+    end
+  end
+
   describe "login" do
     @query """
     mutation ($request: LoginRequest!) {

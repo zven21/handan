@@ -32,12 +32,21 @@ defmodule HandanWeb.GraphQL.Schemas.Accounts do
 
     @desc "register"
     field :register, :user do
-      resolve(fn _, _, _ -> {:ok, %{}} end)
+      arg(:request, non_null(:register_request))
+
+      resolve(&R.Accounts.register/3)
     end
   end
 
   input_object :login_request do
     field :email, :string
     field :password, :string
+  end
+
+  input_object :register_request do
+    field :email, non_null(:string)
+    field :password, non_null(:string)
+    field :nickname, :string
+    field :avatar_url, :string
   end
 end

@@ -120,7 +120,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
 
     @desc "list customers"
     field :customers, list_of(:customer) do
-      middleware(M.Authorize, :user)
+      # middleware(M.Authorize, :user)
 
       resolve(&R.Selling.get_customers/2)
     end
@@ -188,7 +188,7 @@ defmodule HandanWeb.GraphQL.Schemas.Selling do
     field :create_customer, :customer do
       arg(:request, non_null(:create_customer_request))
 
-      middleware(M.Authorize, :user)
+      # middleware(M.Authorize, :user)
 
       resolve(&R.Selling.create_customer/3)
     end

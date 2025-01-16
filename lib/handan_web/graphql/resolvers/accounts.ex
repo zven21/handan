@@ -2,6 +2,7 @@ defmodule HandanWeb.GraphQL.Resolvers.Accounts do
   @moduledoc false
 
   alias Handan.Accounts
+  alias Handan.Dispatcher
 
   def login(_, %{request: request}, _) do
     with {:ok, %{user: user, token: token}} <- Accounts.login(request) do
@@ -9,6 +10,16 @@ defmodule HandanWeb.GraphQL.Resolvers.Accounts do
     else
       # {:error, [message: "login failed", code: ecode(:create_fails)]}
       _ -> {:error, "login failed"}
+    end
+  end
+
+  def register(_, %{request: request}, _) do
+    request
+    |> Map.put(:user_uuid, Ecto.UUID.generate())
+    |> Dispatcher.run(:register_user)
+    |> case do
+      {:ok, %{user: user, token: token}} -> {:ok, Map.put(user, :access_token, token)}
+      {:error, reason} -> {:error, reason}
     end
   end
 

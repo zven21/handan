@@ -28,10 +28,10 @@ if config_env() == :prod do
       For example: ecto://USER:PASS@HOST/DATABASE
       """
 
-  event_store_url =
-    System.get_env("EVENT_STORE_URL") ||
+  event_database_url =
+    System.get_env("EVENT_DATABASE_URL") ||
       raise """
-      environment variable EVENT_STORE_URL is missing.
+      environment variable EVENT_DATABASE_URL is missing.
       For example: postgres://USER:PASS@HOST/DATABASE
       """
 
@@ -44,9 +44,10 @@ if config_env() == :prod do
     socket_options: maybe_ipv6
 
   config :handan, Handan.EventStore,
+    serializer: Commanded.Serialization.JsonSerializer,
     # ssl: true,
-    url: event_store_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    url: event_database_url,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5"),
     socket_options: maybe_ipv6
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
