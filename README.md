@@ -6,6 +6,13 @@ Handan is a project under construction, it is one of the ERP (MES) solutions for
 
 The frontend page is based on `NextJS` framework, [click here](https://github.com/zven21/handan_web).
 
+<div align="center">
+	<img src="./docs/live-demo.jpg"/>
+</div>
+
+<div align="center">
+	<a href="https://handan-web.vercel.app">Live Demo</a>
+</div>
 
 ## **Getting Started**
 
@@ -18,12 +25,20 @@ To start your Phoenix server and run tests:
 
 ## **Technologies Used**
 
+### Backend Technology
+
 This project utilizes the following technologies:
 
 * **Phoenix**: A web framework for Elixir that allows for the creation of fast, scalable, and maintainable web applications.
 * **Commanded(CQRS)**: A command handling framework for building event-driven systems.
 * **Absinthe(GraphQL)**: A query language for APIs that allows for more flexible and efficient data retrieval.
 
+### Frontend Technology
+
+* **NextJS**: A React framework for building server-side rendered applications.
+* **TailwindCSS**: A utility-first CSS framework for building modern websites.	
+* **Apollo Client(GraphQL)**: A fully-featured, production ready caching GraphQL client for every UI framework and GraphQL server.
+* **Zustand**: Bear necessities for state management in React.
 
 ## **Flow Diagram**
 
