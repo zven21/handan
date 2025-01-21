@@ -14,6 +14,14 @@ The frontend page is based on `NextJS` framework, [click here](https://github.co
 	<a href="https://handan-web.vercel.app">Live Demo</a>
 </div>
 
+## Intro
+
+Many small enterprises face a dilemma when seeking ERP (MES) software. The relevant software on the market either has overly complex functions. When using it, enterprises need to spend a lot of time and energy on learning and adapting, which makes it difficult for employees to get started and may even reduce work efficiency instead of increasing it. Or the price is exorbitant. For small  enterprises with relatively limited funds and resources, the procurement and subsequent maintenance costs become a heavy burden, greatly restricting the pace of the enterprises' digital transformation.
+
+Based on a profound understanding of these pain points, we are determined to independently develop a configurable - process ERP (MES) system suitable for small enterprises.
+
+At present, we have successfully completed the MVP version. Although there may still be some minor bugs at this stage, the core business processes, that is, what we often call the "happy path", can be successfully completed. This means that the most critical business operations of enterprises, such as production plan formulation, material management, order tracking, etc., can be efficiently achieved through this system.
+
 ## **Getting Started**
 
 To start your Phoenix server and run tests:
