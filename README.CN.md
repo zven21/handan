@@ -6,6 +6,14 @@
 
 前端页面基于 NextJS 框架，[点击此处](https://github.com/zven21/handan_web)。
 
+<div align="center">
+	<img src="./docs/live-demo.jpg"/>
+</div>
+
+<div align="center">
+	<a href="https://handan-web.vercel.app">Live Demo</a>
+</div>
+
 ## **快速上手**
 
 要启动 Phoenix 服务器并运行测试：
@@ -22,23 +30,21 @@
 * **Commanded(CQRS)**: 一个用于构建事件驱动系统的命令处理框架。
 * **Absinthe(GraphQL)**: 一个用于 API 的查询语言，允许更灵活和高效的数据检索。
 
-
 ## **流程图**
 
 ![flow](./docs/flow.jpg)
 
 ## **任务**
 
-- [x] 核心领域模型
+- [x] MVP 
 - [x] 账号和Session模块
-- [x] 企业模块
-- [x] 库存 && 商品模块
-- [x] 销售模块
-- [x] 采购模块
-- [x] 生产制造模块
-- [x] 财务模块
-- [x] 外协模块
-- [x] GraphQL API
+- [ ] 企业模块
+- [ ] 库存 && 商品模块
+- [ ] 销售模块
+- [ ] 采购模块
+- [ ] 生产制造模块
+- [ ] 财务模块
+- [ ] 外协模块
 
 ## **贡献**
 
