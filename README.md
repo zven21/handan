@@ -46,16 +46,15 @@ This project utilizes the following technologies:
 
 ## **Features**
 
-- [x] Core Domain Model
-- [x] Accounts
-- [x] Enterprise
-- [x] Stock && Item
-- [x] Selling
-- [x] Purchasing
-- [x] Production
-- [x] Finance
-- [x] Subcontracting
-- [x] GraphQL API
+- [x] MVP 
+- [x] Accounts Context
+- [ ] Enterprise Context
+- [ ] Stock Context
+- [ ] Selling Context
+- [ ] Purchasing Context
+- [ ] Production Context
+- [ ] Finance Context
+- [ ] Subcontracting Context
 
 ## **Contributing**
 
